@@ -135,10 +135,15 @@ func (ix *IHex) InsertData(istart uint, idata []byte) {
     
     if ok {
         data := ix.areas[area]
-        newdata := make([]byte, istart - iend + uint(len(idata)) + uint(len(data)))
+        newdata := make([]byte, len(data) + len(idata))
+        
         copy(newdata, data[:istart-area])
         copy(newdata[istart-area:], idata)
-        copy(newdata[(istart-area) + uint(len(idata)):], data[iend-area:])
+        
+        if iend-area < uint(len(data)) {
+            copy(newdata[(istart-area) + uint(len(idata)):], data[iend-area:])
+        }
+        
         ix.areas[area] = newdata
     
     } else {

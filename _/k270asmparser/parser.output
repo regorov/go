@@ -1,0 +1,446 @@
+
+state 0
+	$accept: .source $end 
+
+	IDENTIFIER  shift 9
+	S8  shift 14
+	STRING  shift 12
+	U8  shift 13
+	.  error
+
+	instruction  goto 5
+	label  goto 6
+	source  goto 1
+	signed_structdata  goto 11
+	stringdata  goto 8
+	structdata  goto 7
+	toplevel  goto 4
+	toplevel_nl  goto 3
+	unsigned_structdata  goto 10
+	toplevels  goto 2
+
+state 1
+	$accept:  source.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	source:  toplevels.    (1)
+	toplevels:  toplevels.toplevel_nl 
+
+	IDENTIFIER  shift 9
+	S8  shift 14
+	STRING  shift 12
+	U8  shift 13
+	.  reduce 1 (src line 55)
+
+	instruction  goto 5
+	label  goto 6
+	signed_structdata  goto 11
+	stringdata  goto 8
+	structdata  goto 7
+	toplevel  goto 4
+	toplevel_nl  goto 15
+	unsigned_structdata  goto 10
+
+state 3
+	toplevels:  toplevel_nl.    (3)
+
+	.  reduce 3 (src line 67)
+
+
+state 4
+	toplevel_nl:  toplevel.NEWLINE 
+
+	NEWLINE  shift 16
+	.  error
+
+
+state 5
+	toplevel:  instruction.    (5)
+
+	.  reduce 5 (src line 78)
+
+
+state 6
+	toplevel:  label.    (6)
+
+	.  reduce 6 (src line 80)
+
+
+state 7
+	toplevel:  structdata.    (7)
+
+	.  reduce 7 (src line 81)
+
+
+state 8
+	toplevel:  stringdata.    (8)
+
+	.  reduce 8 (src line 82)
+
+
+state 9
+	instruction:  IDENTIFIER.operand_list 
+	instruction:  IDENTIFIER.    (10)
+	label:  IDENTIFIER.COLON 
+
+	COLON  shift 18
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	REGISTER  shift 23
+	.  reduce 10 (src line 93)
+
+	integer  goto 22
+	integer_const  goto 24
+	labelref  goto 25
+	operand  goto 19
+	register  goto 20
+	register_pair  goto 21
+	operand_list  goto 17
+
+state 10
+	structdata:  unsigned_structdata.    (19)
+
+	.  reduce 19 (src line 139)
+
+
+state 11
+	structdata:  signed_structdata.    (20)
+
+	.  reduce 20 (src line 141)
+
+
+state 12
+	stringdata:  STRING.LITSTRING 
+
+	LITSTRING  shift 28
+	.  error
+
+
+state 13
+	unsigned_structdata:  U8.integer $$21 U16 integer $$22 U32 integer $$23 U64 integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 29
+	integer_const  goto 24
+	labelref  goto 25
+
+state 14
+	signed_structdata:  S8.integer $$25 S16 integer $$26 S32 integer $$27 S64 integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 30
+	integer_const  goto 24
+	labelref  goto 25
+
+state 15
+	toplevels:  toplevels toplevel_nl.    (2)
+
+	.  reduce 2 (src line 61)
+
+
+state 16
+	toplevel_nl:  toplevel NEWLINE.    (4)
+
+	.  reduce 4 (src line 72)
+
+
+state 17
+	instruction:  IDENTIFIER operand_list.    (9)
+	operand_list:  operand_list.COMMA operand 
+
+	COMMA  shift 31
+	.  reduce 9 (src line 87)
+
+
+state 18
+	label:  IDENTIFIER COLON.    (18)
+
+	.  reduce 18 (src line 133)
+
+
+state 19
+	operand_list:  operand.    (12)
+
+	.  reduce 12 (src line 104)
+
+
+state 20
+	operand:  register.    (13)
+
+	.  reduce 13 (src line 109)
+
+
+state 21
+	operand:  register_pair.    (14)
+
+	.  reduce 14 (src line 111)
+
+
+state 22
+	operand:  integer.    (15)
+
+	.  reduce 15 (src line 112)
+
+
+state 23
+	register:  REGISTER.    (16)
+	register_pair:  REGISTER.COLON REGISTER 
+
+	COLON  shift 32
+	.  reduce 16 (src line 117)
+
+
+state 24
+	integer:  integer_const.    (30)
+
+	.  reduce 30 (src line 194)
+
+
+state 25
+	integer:  labelref.    (31)
+
+	.  reduce 31 (src line 196)
+
+
+state 26
+	integer_const:  INTEGER.    (32)
+
+	.  reduce 32 (src line 201)
+
+
+state 27
+	labelref:  IDENTIFIER.    (33)
+
+	.  reduce 33 (src line 207)
+
+
+state 28
+	stringdata:  STRING LITSTRING.    (29)
+
+	.  reduce 29 (src line 188)
+
+
+state 29
+	unsigned_structdata:  U8 integer.$$21 U16 integer $$22 U32 integer $$23 U64 integer 
+	$$21: .    (21)
+
+	.  reduce 21 (src line 146)
+
+	$$21  goto 33
+
+state 30
+	signed_structdata:  S8 integer.$$25 S16 integer $$26 S32 integer $$27 S64 integer 
+	$$25: .    (25)
+
+	.  reduce 25 (src line 167)
+
+	$$25  goto 34
+
+state 31
+	operand_list:  operand_list COMMA.operand 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	REGISTER  shift 23
+	.  error
+
+	integer  goto 22
+	integer_const  goto 24
+	labelref  goto 25
+	operand  goto 35
+	register  goto 20
+	register_pair  goto 21
+
+state 32
+	register_pair:  REGISTER COLON.REGISTER 
+
+	REGISTER  shift 36
+	.  error
+
+
+state 33
+	unsigned_structdata:  U8 integer $$21.U16 integer $$22 U32 integer $$23 U64 integer 
+
+	U16  shift 37
+	.  error
+
+
+state 34
+	signed_structdata:  S8 integer $$25.S16 integer $$26 S32 integer $$27 S64 integer 
+
+	S16  shift 38
+	.  error
+
+
+state 35
+	operand_list:  operand_list COMMA operand.    (11)
+
+	.  reduce 11 (src line 98)
+
+
+state 36
+	register_pair:  REGISTER COLON REGISTER.    (17)
+
+	.  reduce 17 (src line 123)
+
+
+state 37
+	unsigned_structdata:  U8 integer $$21 U16.integer $$22 U32 integer $$23 U64 integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 39
+	integer_const  goto 24
+	labelref  goto 25
+
+state 38
+	signed_structdata:  S8 integer $$25 S16.integer $$26 S32 integer $$27 S64 integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 40
+	integer_const  goto 24
+	labelref  goto 25
+
+state 39
+	unsigned_structdata:  U8 integer $$21 U16 integer.$$22 U32 integer $$23 U64 integer 
+	$$22: .    (22)
+
+	.  reduce 22 (src line 152)
+
+	$$22  goto 41
+
+state 40
+	signed_structdata:  S8 integer $$25 S16 integer.$$26 S32 integer $$27 S64 integer 
+	$$26: .    (26)
+
+	.  reduce 26 (src line 173)
+
+	$$26  goto 42
+
+state 41
+	unsigned_structdata:  U8 integer $$21 U16 integer $$22.U32 integer $$23 U64 integer 
+
+	U32  shift 43
+	.  error
+
+
+state 42
+	signed_structdata:  S8 integer $$25 S16 integer $$26.S32 integer $$27 S64 integer 
+
+	S32  shift 44
+	.  error
+
+
+state 43
+	unsigned_structdata:  U8 integer $$21 U16 integer $$22 U32.integer $$23 U64 integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 45
+	integer_const  goto 24
+	labelref  goto 25
+
+state 44
+	signed_structdata:  S8 integer $$25 S16 integer $$26 S32.integer $$27 S64 integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 46
+	integer_const  goto 24
+	labelref  goto 25
+
+state 45
+	unsigned_structdata:  U8 integer $$21 U16 integer $$22 U32 integer.$$23 U64 integer 
+	$$23: .    (23)
+
+	.  reduce 23 (src line 157)
+
+	$$23  goto 47
+
+state 46
+	signed_structdata:  S8 integer $$25 S16 integer $$26 S32 integer.$$27 S64 integer 
+	$$27: .    (27)
+
+	.  reduce 27 (src line 178)
+
+	$$27  goto 48
+
+state 47
+	unsigned_structdata:  U8 integer $$21 U16 integer $$22 U32 integer $$23.U64 integer 
+
+	U64  shift 49
+	.  error
+
+
+state 48
+	signed_structdata:  S8 integer $$25 S16 integer $$26 S32 integer $$27.S64 integer 
+
+	S64  shift 50
+	.  error
+
+
+state 49
+	unsigned_structdata:  U8 integer $$21 U16 integer $$22 U32 integer $$23 U64.integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 51
+	integer_const  goto 24
+	labelref  goto 25
+
+state 50
+	signed_structdata:  S8 integer $$25 S16 integer $$26 S32 integer $$27 S64.integer 
+
+	IDENTIFIER  shift 27
+	INTEGER  shift 26
+	.  error
+
+	integer  goto 52
+	integer_const  goto 24
+	labelref  goto 25
+
+state 51
+	unsigned_structdata:  U8 integer $$21 U16 integer $$22 U32 integer $$23 U64 integer.    (24)
+
+	.  reduce 24 (src line 162)
+
+
+state 52
+	signed_structdata:  S8 integer $$25 S16 integer $$26 S32 integer $$27 S64 integer.    (28)
+
+	.  reduce 28 (src line 183)
+
+
+19 terminals, 24 nonterminals
+34 grammar rules, 53/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+73 working sets used
+memory: parser 68/30000
+4 extra closures
+42 shift entries, 1 exceptions
+33 goto entries
+28 entries saved by goto default
+Optimizer space used: output 57/30000
+57 table entries, 0 zero
+maximum spread: 19, maximum offset: 50

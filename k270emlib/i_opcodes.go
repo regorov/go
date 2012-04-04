@@ -56,7 +56,5 @@ func HandleCall(em *Emulator, i int) {
 }
 
 func HandleInt(em *Emulator, i int) {
-    em.SetInterruptsEnabled(false)
-    em.PushWord(em.pc)
-    em.pc = em.InterruptRegistryLoad(uint8(i))
+    em.Interrupt(uint8(i))
 }

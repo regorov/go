@@ -7,8 +7,8 @@ import (
 var AB2Opcodes = [16]func(*Emulator, int, int){
     HandleAOpcode,
     nil,
-    nil,
-    nil,
+    HandleLdv,
+    HandleStv,
     HandlePand,
     HandlePor,
     HandlePxor,
@@ -34,6 +34,20 @@ func HandleAB2Opcode(em *Emulator, a int, i int) {
     } else {
         f(em, a, b)
     }
+}
+
+func HandleLdv(em *Emulator, a int, b int) {
+    addr := em.GetWordReg(b)
+    data := em.VideoMemoryLoad(addr)
+    em.SetReg(a, data)
+    em.LogInstruction("ldv %s, %s -- VMEM[0x%04X] = 0x%02X", RegisterNames[a], WordRegisterNames[b >> 1], addr, data)
+}
+
+func HandleStv(em *Emulator, a int, b int) {
+    data := em.GetReg(a)
+    addr := em.GetWordReg(b)
+    em.VideoMemoryStore(addr, data)
+    em.LogInstruction("stv %s, %s -- VMEM[0x%04X] = 0x%02X", WordRegisterNames[b >> 1], RegisterNames[a], addr, data)
 }
 
 func HandlePand(em *Emulator, a int, b int) {

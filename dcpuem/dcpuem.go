@@ -4,7 +4,7 @@ import (
     "bufio"
     "flag"
     "fmt"
-    "github.com/kierdavis/go/k270emlib"
+    "github.com/kierdavis/go/dcpuemlib"
     "github.com/kierdavis/go/ihex"
     "os"
 )
@@ -30,9 +30,9 @@ func main() {
     ix, err := ihex.ReadIHex(reader); die(err)
     program := ix.ExtractDataToEnd(0)
     
-    em := k270emlib.NewEmulator()
-    em.SetMemory(program)
-    em.SetTraceFile(os.Stdout)
+    em := dcpuemlib.NewEmulator()
+    em.LoadProgramBytes(program)
+    em.TraceFile = os.Stdout
     
     em.Run()
 }
