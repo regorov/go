@@ -1,4 +1,6 @@
-// Command k270em is a frontend to the k270emlib K270 processor emulator, including a SDL-based character display.
+// Command k270em is a frontend to the k270emlib K270 processor emulator, including a SDL-based
+// character display. It takes one command-ling argument, the program to load (which should be in
+// Intel Hex format).
 package main
 
 import (
@@ -14,12 +16,14 @@ import (
     "time"
 )
 
+// Function die panics with `err` if `err` is not nil.
 func die(err error) {
     if err != nil {
         panic(err)
     }
 }
 
+// Function main is the main entry point in the program.
 func main() {
     flag.Parse()
     
@@ -75,6 +79,7 @@ func main() {
     
     running := true
     stopRequest := make(chan bool)
+    vmem := em.GetVideoMemory()
     
     go em.Run()
     go func() {
@@ -91,7 +96,7 @@ func main() {
                     chars := make([]byte, 128)
                     
                     for x := 0; x < 128; x++ {
-                        c := em.VideoMemory[address].Char
+                        c := vmem[address].Char
                         if c == 0 {c = ' '}
                         chars[x] = c
                         address++

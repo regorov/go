@@ -6,23 +6,20 @@ import (
 
 // Interface Operand defines methods that the different types of operand should implement.
 type Operand interface {
-    // Function Load should load the value from the operand and return it.
-    Load(em *Emulator) (value uint16)
-    
-    // Function Store should store the value `value` to the operand.
-    Store(em *Emulator, value uint16)
-    
-    // Function String should return a string representation of the operand, preferably in the
-    //  format accepted by the assembler.
-    String() string
+    Load(em *Emulator) (value uint16)   // Function Load should load the value from the operand and
+                                        // return it.
+    Store(em *Emulator, value uint16)   // Function Store should store the value `value` to the
+                                        // operand.
+    String() string                     // Function String should return a string representation of
+                                        // the operand, preferably in the format accepted by the
+                                        // assembler.
 }
 
 // =================== LiteralOperand =====================
 
 // Type LiteralOperand represents a literal value.
 type LiteralOperand struct {
-    // The value that this LiteralOperand represents.
-    Value uint16
+    Value uint16    // The value that this LiteralOperand represents.
 }
 
 // Function NewLiteralOperand creates and returns a new LiteralOperand with the value `value`.
@@ -51,12 +48,11 @@ func (operand *LiteralOperand) String() (str string) {
 
 // Type RegisterOperand represents a value stored in a general-purpose register.
 type RegisterOperand struct {
-    // The number of the register.
-    Number uint8
+    Number uint8    // The number of the register.
 }
 
 // Function NewRegisterOperand creates and returns a new RegisterOperand with the number `number`.
-//  It will panic if the number is out of range (the range is 0 to 7, inclusive).
+// It will panic if the number is out of range (the range is 0 to 7, inclusive).
 func NewRegisterOperand(number uint8) (operand *RegisterOperand) {
     if number >= 8 {
         panic("Register index out of range")
@@ -86,8 +82,7 @@ func (operand *RegisterOperand) String() (str string) {
 
 // Type MemoryOperand represents a value stored in the Emulator's RAM.
 type MemoryOperand struct {
-    // The address in memory.
-    Address uint16
+    Address uint16  // The address in memory.
 }
 
 // Function NewMemoryOperand creates and returns a new MemoryOperand with the address `address`.
@@ -103,7 +98,7 @@ func (operand *MemoryOperand) Load(em *Emulator) (value uint16) {
 }
 
 // Function MemoryOperand.Store stores the value `value` into the Emulator's RAM at address
-//  `Address`.
+// `Address`.
 func (operand *MemoryOperand) Store(em *Emulator, value uint16) {
     em.MemoryStore(operand.Address, value )
 }
@@ -116,13 +111,13 @@ func (operand *MemoryOperand) String() (str string) {
 // =================== MiscOperand ========================
 
 // Type MiscOperand represents one of:
-//   * the stack pointer
-//   * the program counter
-//   * the overflow register
-//   * a value pushed onto the stack
-//   * a value popped off the stack
+//  * the stack pointer
+//  * the program counter
+//  * the overflow register
+//  * a value pushed onto the stack
+//  * a value popped off the stack
 type MiscOperand struct {
-    Type uint8
+    Type uint8 // A member of the MISC_* constants describing what this operand represents.
 }
 
 // Function NewSPOperand creates and returns a new MiscOperand referring to the stack pointer.
@@ -147,7 +142,7 @@ func NewOOperand() (operand *MiscOperand) {
 }
 
 // Function NewPushOperand creates and returns a new MiscOperand referring to a value pushed onto
-//  the stack.
+// the stack.
 func NewPushOperand() (operand *MiscOperand) {
     operand = new(MiscOperand)
     operand.Type = MISC_PUSH
@@ -155,7 +150,7 @@ func NewPushOperand() (operand *MiscOperand) {
 }
 
 // Function NewPopOperand creates and returns a new MiscOperand referring to a value popped off the
-//  stack.
+// stack.
 func NewPopOperand() (operand *MiscOperand) {
     operand = new(MiscOperand)
     operand.Type = MISC_POP

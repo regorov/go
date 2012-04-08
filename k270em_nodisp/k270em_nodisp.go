@@ -1,4 +1,6 @@
-// Command k270em_nodisp is a frontend to the k270emlib K270 processor emulator, without the SDL dependencies
+// Command k270em_nodisp is a frontend to the k270emlib K270 processor emulator, but without the SDL
+// dependencies. This removes the character display element (however, LDV and STV instructions will
+// still continue to work).
 package main
 
 import (
@@ -10,12 +12,14 @@ import (
     "os"
 )
 
+// Function die panics with `err` if `err` is not nil.
 func die(err error) {
     if err != nil {
         panic(err)
     }
 }
 
+// Function main is the main entry point in the program.
 func main() {
     flag.Parse()
     

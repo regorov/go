@@ -1,8 +1,8 @@
 // Command dcpuem is a frontend to the dcpuemlib DCPU-16 emulator. It takes one required argument,
-//  the filename of the program to load. The format of the input file can be either Intel Hex or
-//  raw binary and is determined by the file's extension (defaulting to raw binary if it is
-//  unrecognised). There is also one command-line option: -b. If this is present, the input file
-//  is parsed into words in a big-endian fashion rather than the default (little-endian).
+// the filename of the program to load. The format of the input file can be either Intel Hex or
+// raw binary and is determined by the file's extension (defaulting to raw binary if it is
+// unrecognised). There is also one command-line option: -b. If this is present, the input file
+// is parsed into words in a big-endian fashion rather than the default (little-endian).
 package main
 
 import (
@@ -27,7 +27,7 @@ func die(err error) {
 }
 
 // Function loadHex loads all the bytes from the file named `filename` in Intel Hex format and
-//  returns it.
+// returns it.
 func loadHex(filename string) (program []byte) {
     f, err := os.Open(filename); die(err)
     defer f.Close()
@@ -40,7 +40,7 @@ func loadHex(filename string) (program []byte) {
 }
 
 // Function loadBin loads all the bytes from the file named `filename` in raw binary format and
-//  returns it.
+// returns it.
 func loadBin(filename string) (program []byte) {
     st, err := os.Stat(filename); die(err)
     program = make([]byte, st.Size())

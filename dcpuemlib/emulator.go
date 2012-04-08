@@ -8,10 +8,11 @@
 //     em.DumpState()                     // Dump the registers to standard output
 // 
 // A word about RAM:
-//   Because the architecture requires a relatively large amount of RAM (128Kb to be exact),
-//    allocating this amount whenever the emulator is reset will result in a large memory footprint.
-//    To counter this, a dynamically expanding array is used, that starts at 1 Kb and expands if
-//    more is needed.
+// 
+// Because the architecture requires a relatively large amount of RAM (128Kb to be exact),
+// allocating this amount whenever the emulator is reset will result in a large memory footprint.
+// To counter this, a dynamically expanding array is used, that starts at 1 Kb and expands if
+// more is needed.
 package dcpuemlib
 
 import (
@@ -21,32 +22,15 @@ import (
 
 // Type Emulator represents the state of a DCPU-16 processor.
 type Emulator struct {
-    // The address of the last instruction executed.
-    LastPC uint16
-    
-    // The processor's general purpose registers (A, B, C, X, Y, Z, I, J).
-    Registers [8]uint16
-    
-    // The stack pointer.
-    SP uint16
-    
-    // The program counter.
-    PC uint16
-    
-    // The overflow register.
-    O uint16
-    
-    // The main memory.
-    RAM []uint16
-    
-    // Whether the next instruction will be skipped.
-    SkipNext bool
-    
-    // When this flag is set to false, Emulator.Run() will stop.
-    Running bool
-    
-    // A writer that a log of executed instructions will be written to.
-    TraceFile io.Writer
+    LastPC uint16       // The address of the last instruction executed.
+    Registers [8]uint16 // The processor's general purpose registers (A, B, C, X, Y, Z, I, J).
+    SP uint16           // The stack pointer.
+    PC uint16           // The program counter.
+    O uint16            // The overflow register.
+    RAM []uint16        // The main memory.
+    SkipNext bool       // Whether the next instruction will be skipped.
+    Running bool        // When this flag is set to false, Emulator.Run() will stop.
+    TraceFile io.Writer // A writer that a log of executed instructions will be written to.
 }
 
 // Function NewEmulator creates, resets and returns an Emulator.
@@ -78,7 +62,7 @@ func (em *Emulator) ResetMemory() {
 }
 
 // Function Emulator.GrowMemory requests that the underlying size of the RAM be increased to at
-//  least `newsize`.
+// least `newsize`.
 func (em *Emulator) GrowMemory(newsize int) {
     if newsize == 0 {
         newsize = (cap(em.RAM) + 1) * 2
@@ -94,7 +78,7 @@ func (em *Emulator) GrowMemory(newsize int) {
 }
 
 // Function Emulator.LoadProgram loads the slice of words `program` into the Emulator's RAM starting
-//  at address 0.
+// at address 0.
 func (em *Emulator) LoadProgram(program []uint16) {
     if len(em.RAM) < len(program) {
         em.GrowMemory(len(program))
@@ -104,7 +88,7 @@ func (em *Emulator) LoadProgram(program []uint16) {
 }
 
 // Function Emulator.LoadProgramBytesBE loads the slice of bytes `program` into the Emulator's RAM,
-//  interpreting each pair of bytes as a big-endian word.
+// interpreting each pair of bytes as a big-endian word.
 func (em *Emulator) LoadProgramBytesBE(program []byte) {
     if len(em.RAM) < (len(program) * 2) {
         em.GrowMemory(len(program) * 2)
@@ -118,7 +102,7 @@ func (em *Emulator) LoadProgramBytesBE(program []byte) {
 }
 
 // Function Emulator.LoadProgramBytesBE loads the slice of bytes `program` into the Emulator's RAM,
-//  interpreting each pair of bytes as a little-endian word.
+// interpreting each pair of bytes as a little-endian word.
 func (em *Emulator) LoadProgramBytesLE(program []byte) {
     if len(em.RAM) < (len(program) * 2) {
         em.GrowMemory(len(program) * 2)
@@ -132,7 +116,7 @@ func (em *Emulator) LoadProgramBytesLE(program []byte) {
 }
 
 // Function Emulator.MemoryLoad returns the value in the Emulator's RAM at address `address`, or 0
-//  if it is greater that the size of the underlying storage.
+// if it is greater that the size of the underlying storage.
 func (em *Emulator) MemoryLoad(address uint16) (value uint16) {
     if address >= uint16(len(em.RAM)) {
         return 0
@@ -144,7 +128,7 @@ func (em *Emulator) MemoryLoad(address uint16) (value uint16) {
 }
 
 // Function Emulator.MemoryStore stores `value` into the Emulator's RAM at address `address`,
-//  calling Emulator.GrowMemory if needed.
+// calling Emulator.GrowMemory if needed.
 func (em *Emulator) MemoryStore(address uint16, value uint16) {
     if int(address) >= len(em.RAM) {
         newsize := cap(em.RAM) + 1
@@ -160,14 +144,14 @@ func (em *Emulator) MemoryStore(address uint16, value uint16) {
 }
 
 // Function Emulator.Push stores the value `value` into the Emulator's RAM at the address specified
-//  by the stack pointer, then increments the stack pointer.
+// by the stack pointer, then increments the stack pointer.
 func (em *Emulator) Push(value uint16) {
     em.MemoryStore(em.SP, value)
     em.SP++
 }
 
 // Function Emulator.Pop decrements the stack pointer, the loads and returns the value in the
-//  Emulator's RAM at the address specified by the stack pointer.
+// Emulator's RAM at the address specified by the stack pointer.
 func (em *Emulator) Pop() (value uint16) {
     em.SP--
     return em.MemoryLoad(em.SP)
@@ -181,7 +165,7 @@ func (em *Emulator) FetchWord() (word uint16) {
 }
 
 // Function Emulator.DecodeOperand parses `n` as an operand specifier, and returns the decoded
-//  Operand.
+// Operand.
 func (em *Emulator) DecodeOperand(n uint8) (operand Operand) {
     if n < 0x08 { // register
         return NewRegisterOperand(n)
@@ -225,8 +209,7 @@ func (em *Emulator) DecodeOperand(n uint8) (operand Operand) {
 }
 
 // Function Emulator.DecodeInstruction parses `word` as an instruction, and returns the class of the
-//  instruction, the opcode within the class, the destination (a) Operand and the source (b)
-//  Operand.
+// instruction, the opcode within the class, the destination (a) Operand and the source (b) Operand.
 func (em *Emulator) DecodeInstruction(word uint16) (cls uint8, opcode uint8, dest Operand,
                         src Operand) {
     o := word & 0x000F
@@ -247,7 +230,7 @@ func (em *Emulator) DecodeInstruction(word uint16) (cls uint8, opcode uint8, des
 }
 
 // Function Emulator.LogInstruction calls fmt.Sprintf with `format` and `args`, and writes the
-//  result to the Emulator's TraceFile writer (if it is not nil).
+// result to the Emulator's TraceFile writer (if it is not nil).
 func (em *Emulator) LogInstruction(format string, args ...interface{}) {
     if em.TraceFile != nil {
         format = fmt.Sprintf(format, args...)
@@ -442,7 +425,7 @@ func (em *Emulator) RunOne() {
 }
 
 // Function Emulator.Run sets the Running flag to true, then repeatedly calls Emulator.RunOne until
-//  it is false (it may be set to false upon error, or if a halt-like instruction is detected).
+// it is false (it may be set to false upon error, or if a halt-like instruction is detected).
 func (em *Emulator) Run() {
     em.Running = true
     

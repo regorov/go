@@ -1,6 +1,6 @@
 // Package ihex reads and writes Intel Hex files. The Intel Hex format is used to store binary data
-//  in an ASCII (hexadecimal) format, and supports storing data at arbitrary addresses rather than
-//  in a linear form.
+// in an ASCII (hexadecimal) format, and supports storing data at arbitrary addresses rather than
+// in a linear form.
 // 
 // Example: reading a file
 //
@@ -49,11 +49,11 @@ import (
 
 // Type IHex represents an Intel Hex file.
 type IHex struct {
-    areas map[uint][]byte
+    areas map[uint][]byte   // A map of area addresses to byte slices.
 }
 
 // Function makeLine constructs an Intel Hex record, including the final newline, from the type `t`,
-//  address `addr` and content `data` of the record.
+// address `addr` and content `data` of the record.
 func makeLine(t uint, addr uint, data []byte) (line string) {
     lineBytes := make([]byte, 5 + len(data))
     lineBytes[0] = uint8(len(data))
@@ -64,7 +64,7 @@ func makeLine(t uint, addr uint, data []byte) (line string) {
     dataend := 4 + len(data)
     copy(lineBytes[4:dataend], data)
     
-    lineBytes[dataend] = calcChecksum(lineBytes[:dataend])
+    lineBytes[dataend] = CalcChecksum(lineBytes[:dataend])
     return fmt.Sprintf(":%x\n", lineBytes)
 }
 
@@ -83,8 +83,8 @@ func parseLine(rawline string) (t uint, addr uint, data []byte, err error) {
     t = uint(line[3])
     
     data = line[4:4 + length]
-    cs1 := uint(line[4 + length])
-    cs2 := calcChecksum(line[:4 + length])
+    cs1 := line[4 + length]
+    cs2 := CalcChecksum(line[:4 + length])
     
     if cs1 != cs2 {
         return 0, 0, nil, errors.New("Checksums do not match")
@@ -94,14 +94,14 @@ func parseLine(rawline string) (t uint, addr uint, data []byte, err error) {
 }
 
 // Function CalcChecksum calculates an Intel Hex checksum from the data `data`.
-func CalcChecksum(data []byte) (checksum uint) {
+func CalcChecksum(data []byte) (checksum uint8) {
     total := uint(0)
     
     for _, x := range data {
         total += uint(x)
     }
     
-    return (-total) & 0xFF
+    return uint8(-total)
 }
 
 // Function NewIHex creates and returns a new IHex object.
@@ -136,7 +136,7 @@ func ReadIHex(reader *bufio.Reader) (ix *IHex, err error) {
 }
 
 // Function IHex.getArea finds the address of the area that would contain the address `addr`. If a
-//  suitable area already exists, it returns its address and true. If not, it returns 0 and false.
+// suitable area already exists, it returns its address and true. If not, it returns 0 and false.
 func (ix *IHex) getArea(addr uint) (area uint, ok bool) {
     for start, data := range ix.areas {
         end := start + uint(len(data))
@@ -163,7 +163,7 @@ func (ix *IHex) GetSize() (size uint) {
 }
 
 // Function IHex.ExtractData copies data out of the IHex file, starting at the address `start` and
-//  ending at the address before `end`. It returns the copied data.
+// ending at the address before `end`. It returns the copied data.
 func (ix *IHex) ExtractData(start uint, end uint) (result []byte) {
     result = make([]byte, 0, end - start)
     
@@ -177,7 +177,7 @@ func (ix *IHex) ExtractData(start uint, end uint) (result []byte) {
 }
 
 // Function IHex.ExtractDataToEnd copies data out of the IHex file, starting at the address `start`
-//  and ending at the last address in the data.
+// and ending at the last address in the data.
 func (ix *IHex) ExtractDataToEnd(start uint) (result []byte) {
     end := uint(0)
     result = make([]byte, ix.GetSize() - start)
@@ -196,7 +196,7 @@ func (ix *IHex) ExtractDataToEnd(start uint) (result []byte) {
 }
 
 // Function IHex.InsertData inserts the data contained in `idata` into the IHex object, starting at
-//  address `istart`.
+// address `istart`.
 func (ix *IHex) InsertData(istart uint, idata []byte) {
     iend := istart + uint(len(idata))
     
@@ -234,14 +234,14 @@ func (ix *IHex) Write(wr *bufio.Writer) (err error) {
                 chunk = data[i:]
             }
             
-            _, err := wr.Write(makeLine(0x00, start, chunk))
+            _, err := wr.Write([]byte(makeLine(0x00, start, chunk)))
             if err != nil {return err}
             
             start += 16
         }
     }
     
-    _, err := wr.Write(makeLine(0x01, 0, ""))
+    _, err = wr.Write([]byte(makeLine(0x01, 0, []byte{})))
     if err != nil {return err}
     
     return nil
