@@ -1,3 +1,4 @@
+// Command dcpuem is a frontend to the dcpuemlib DCPU-16 emulator.
 package main
 
 import (

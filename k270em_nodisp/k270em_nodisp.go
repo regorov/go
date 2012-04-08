@@ -1,3 +1,4 @@
+// Command k270em_nodisp is a frontend to the k270emlib K270 processor emulator, without the SDL dependencies
 package main
 
 import (

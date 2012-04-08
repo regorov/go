@@ -1,3 +1,4 @@
+// Package k270emlib emulates a K270 processor.
 package k270emlib
 
 import (

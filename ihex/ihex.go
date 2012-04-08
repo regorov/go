@@ -1,3 +1,4 @@
+// Package ihex reads and writes Intel Hex files
 package ihex
 
 import (

@@ -1,3 +1,4 @@
+// Package dcpuemlib emulates a DCPU-16 processor.
 package dcpuemlib
 
 import (

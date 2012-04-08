@@ -1,3 +1,4 @@
+// Command k270em is a frontend to the k270emlib K270 processor emulator, including a SDL-based character display.
 package main
 
 import (
