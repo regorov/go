@@ -6,20 +6,37 @@ import (
     "io"
 )
 
+// Type Emulator represents the state of a DCPU-16 processor.
 type Emulator struct {
+    // The address of the last instruction executed.
     LastPC uint16
+    
+    // The processor's general purpose registers (A, B, C, X, Y, Z, I, J).
     Registers [8]uint16
+    
+    // The stack pointer.
     SP uint16
+    
+    // The program counter.
     PC uint16
+    
+    // The overflow register.
     O uint16
     
+    // The main memory.
     RAM []uint16
     
+    // Whether the next instruction will be skipped.
     SkipNext bool
+    
+    // When this flag is set to false, Emulator.Run() will stop.
     Running bool
+    
+    // A writer that a log of executed instructions will be written to.
     TraceFile io.Writer
 }
 
+// Function NewEmulator creates, resets and returns an Emulator.
 func NewEmulator() (em *Emulator) {
     em = new(Emulator)
     em.Reset()
@@ -30,7 +47,9 @@ func NewEmulator() (em *Emulator) {
     return em
 }
 
+// Function Emulator.Reset sets the values of the Emulator's registers to 0.
 func (em *Emulator) Reset() {
+    em.LastPC = 0
     em.SP = 0
     em.PC = 0
     em.O = 0
@@ -40,10 +59,12 @@ func (em *Emulator) Reset() {
     }
 }
 
+// Function Emulator.ResetMemory clear's the Emulator's RAM.
 func (em *Emulator) ResetMemory() {
     em.RAM = make([]uint16, 1024)
 }
 
+// Function Emulator.GrowMemory requests that the underlying size of the RAM be increased to at least `newsize`.
 func (em *Emulator) GrowMemory(newsize int) {
     if newsize == 0 {
         newsize = (cap(em.RAM) + 1) * 2
@@ -58,6 +79,7 @@ func (em *Emulator) GrowMemory(newsize int) {
     em.RAM = m
 }
 
+// Function Emulator.LoadProgram loads the slice of words `program` into the Emulator's RAM starting at address 0.
 func (em *Emulator) LoadProgram(program []uint16) {
     if len(em.RAM) < len(program) {
         em.GrowMemory(len(program))
@@ -66,6 +88,7 @@ func (em *Emulator) LoadProgram(program []uint16) {
     copy(em.RAM, program)
 }
 
+// Function Emulator.LoadProgramBytesBE loads the slice of bytes `program` into the Emulator's RAM, interpreting each pair of bytes as a big-endian word.
 func (em *Emulator) LoadProgramBytesBE(program []byte) {
     if len(em.RAM) < (len(program) * 2) {
         em.GrowMemory(len(program) * 2)
@@ -78,6 +101,7 @@ func (em *Emulator) LoadProgramBytesBE(program []byte) {
     }
 }
 
+// Function Emulator.LoadProgramBytesBE loads the slice of bytes `program` into the Emulator's RAM, interpreting each pair of bytes as a little-endian word.
 func (em *Emulator) LoadProgramBytesLE(program []byte) {
     if len(em.RAM) < (len(program) * 2) {
         em.GrowMemory(len(program) * 2)
@@ -90,6 +114,7 @@ func (em *Emulator) LoadProgramBytesLE(program []byte) {
     }
 }
 
+// Function Emulator.MemoryLoad returns the value in the Emulator's RAM at address `address`, or 0 if it is greater that the size of the underlying storage.
 func (em *Emulator) MemoryLoad(address uint16) (value uint16) {
     if address >= uint16(len(em.RAM)) {
         return 0
@@ -100,6 +125,7 @@ func (em *Emulator) MemoryLoad(address uint16) (value uint16) {
     return 0
 }
 
+// Function Emulator.MemoryStore stores `value` into the Emulator's RAM at address `address`, calling Emulator.GrowMemory if needed.
 func (em *Emulator) MemoryStore(address uint16, value uint16) {
     if int(address) >= len(em.RAM) {
         newsize := cap(em.RAM) + 1
@@ -114,22 +140,26 @@ func (em *Emulator) MemoryStore(address uint16, value uint16) {
     em.RAM[address] = value
 }
 
+// Function Emulator.Push stores the value `value` into the Emulator's RAM at the address specified by the stack pointer, then increments the stack pointer.
 func (em *Emulator) Push(value uint16) {
     em.MemoryStore(em.SP, value)
     em.SP++
 }
 
+// Function Emulator.Pop decrements the stack pointer, the loads and returns the value in the Emulator's RAM at the address specified by the stack pointer.
 func (em *Emulator) Pop() (value uint16) {
     em.SP--
     return em.MemoryLoad(em.SP)
 }
 
+// Function Emulator.FetchWord fetches the next program word from the Emulator's RAM.
 func (em *Emulator) FetchWord() (word uint16) {
     word = em.MemoryLoad(em.PC)
     em.PC++
     return word
 }
 
+// Function Emulator.DecodeOperand parses `n` as an operand specifier, and returns the decoded Operand.
 func (em *Emulator) DecodeOperand(n uint8) (operand Operand) {
     if n < 0x08 { // register
         return NewRegisterOperand(n)
@@ -172,7 +202,8 @@ func (em *Emulator) DecodeOperand(n uint8) (operand Operand) {
     return nil
 }
 
-func (em *Emulator) DecodeInstruction(word uint16) (fmt uint8, opcode uint8, dest Operand, src Operand) {
+// Function Emulator.DecodeInstruction parses `word` as an instruction, and returns the class of the instruction, the opcode within the class, the destination (a) Operand and the source (b) Operand.
+func (em *Emulator) DecodeInstruction(word uint16) (cls uint8, opcode uint8, dest Operand, src Operand) {
     o := word & 0x000F
     a := (word & 0x03F0) >> 4
     b := (word & 0xFC00) >> 10
@@ -190,6 +221,7 @@ func (em *Emulator) DecodeInstruction(word uint16) (fmt uint8, opcode uint8, des
     return 0, 0, nil, nil
 }
 
+// Function Emulator.LogInstruction calls fmt.Sprintf with `format` and `args`, and writes the result to the Emulator's TraceFile writer (if it is not nil).
 func (em *Emulator) LogInstruction(format string, args ...interface{}) {
     if em.TraceFile != nil {
         format = fmt.Sprintf(format, args...)
@@ -197,10 +229,11 @@ func (em *Emulator) LogInstruction(format string, args ...interface{}) {
     }
 }
 
+// Function Emulator.RunOne reads an instruction from the Emulator's RAM and executes it.
 func (em *Emulator) RunOne() {
     em.LastPC = em.PC
     word := em.FetchWord()
-    fmt, opcode, dest, src := em.DecodeInstruction(word)
+    cls, opcode, dest, src := em.DecodeInstruction(word)
     
     // Make sure operands have fetched extra program words before we skip
     if em.SkipNext {
@@ -208,7 +241,7 @@ func (em *Emulator) RunOne() {
         return
     }
     
-    switch fmt {
+    switch cls {
     case OP_BASIC:
         switch opcode {
         case 0x1: // SET
@@ -357,6 +390,7 @@ func (em *Emulator) RunOne() {
     }
 }
 
+// Function Emulator.Run sets the Running flag to true, then repeatedly calls Emulator.RunOne until it is false (it may be set to false upon error, or if a halt-like instruction is detected).
 func (em *Emulator) Run() {
     em.Running = true
     
@@ -365,6 +399,7 @@ func (em *Emulator) Run() {
     }
 }
 
+// Function Emulator.DumpState writes a dump of the Emulator's registers to os.Stdout.
 func (em *Emulator) DumpState() {
     fmt.Printf("A: 0x%04X   Y: 0x%04X\n", em.Registers[0], em.Registers[4])
     fmt.Printf("B: 0x%04X   Z: 0x%04X\n", em.Registers[1], em.Registers[5])

@@ -4,7 +4,7 @@ import (
     
 )
 
-// Misc operand constants
+// MiscOperand type constants.
 const (
     MISC_SP = iota  // SP
     MISC_PC         // PC
@@ -13,10 +13,11 @@ const (
     MISC_POP        // POP
 )
 
-// Opcode type constants
+// Opcode class constants.
 const (
     OP_BASIC = iota     // Basic opcodes
     OP_EXT              // Extended opcodes (o = 0)
 )
 
+// Maps register numbers to names.
 var RegisterNames = []string{"A", "B", "C", "X", "Y", "Z", "I", "J"}

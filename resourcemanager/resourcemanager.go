@@ -1,3 +1,4 @@
+// Package resourcemanager provides a simple way to load files relative to the installed package directory.
 package resourcemanager
 
 import (
