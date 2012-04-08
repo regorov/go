@@ -12,7 +12,8 @@ type Operand interface {
     // Function Store should store the value `value` to the operand.
     Store(em *Emulator, value uint16)
     
-    // Function String should return a string representation of the operand, preferably in the format accepted by the assembler.
+    // Function String should return a string representation of the operand, preferably in the
+    //  format accepted by the assembler.
     String() string
 }
 
@@ -54,7 +55,8 @@ type RegisterOperand struct {
     Number uint8
 }
 
-// Function NewRegisterOperand creates and returns a new RegisterOperand with the number `number`. It will panic if the number is out of range (the range is 0 to 7, inclusive).
+// Function NewRegisterOperand creates and returns a new RegisterOperand with the number `number`.
+//  It will panic if the number is out of range (the range is 0 to 7, inclusive).
 func NewRegisterOperand(number uint8) (operand *RegisterOperand) {
     if number >= 8 {
         panic("Register index out of range")
@@ -95,54 +97,72 @@ func NewMemoryOperand(address uint16) (operand *MemoryOperand) {
     return operand
 }
 
+// Function MemoryOperand.Load returns the value in the Emulator's RAM at address `Address`.
 func (operand *MemoryOperand) Load(em *Emulator) (value uint16) {
     return em.MemoryLoad(operand.Address)
 }
 
+// Function MemoryOperand.Store stores the value `value` into the Emulator's RAM at address
+//  `Address`.
 func (operand *MemoryOperand) Store(em *Emulator, value uint16) {
     em.MemoryStore(operand.Address, value )
 }
 
+// Function MemoryOperand.String returns a string representation of the operand.
 func (operand *MemoryOperand) String() (str string) {
     return fmt.Sprintf("[0x%04X]", operand.Address)
 }
 
 // =================== MiscOperand ========================
 
+// Type MiscOperand represents one of:
+//   * the stack pointer
+//   * the program counter
+//   * the overflow register
+//   * a value pushed onto the stack
+//   * a value popped off the stack
 type MiscOperand struct {
     Type uint8
 }
 
+// Function NewSPOperand creates and returns a new MiscOperand referring to the stack pointer.
 func NewSPOperand() (operand *MiscOperand) {
     operand = new(MiscOperand)
     operand.Type = MISC_SP
     return operand
 }
 
+// Function NewPCOperand creates and returns a new MiscOperand referring to the program counter.
 func NewPCOperand() (operand *MiscOperand) {
     operand = new(MiscOperand)
     operand.Type = MISC_PC
     return operand
 }
 
+// Function NewOOperand creates and returns a new MiscOperand referring to the overflow register.
 func NewOOperand() (operand *MiscOperand) {
     operand = new(MiscOperand)
     operand.Type = MISC_O
     return operand
 }
 
+// Function NewPushOperand creates and returns a new MiscOperand referring to a value pushed onto
+//  the stack.
 func NewPushOperand() (operand *MiscOperand) {
     operand = new(MiscOperand)
     operand.Type = MISC_PUSH
     return operand
 }
 
+// Function NewPopOperand creates and returns a new MiscOperand referring to a value popped off the
+//  stack.
 func NewPopOperand() (operand *MiscOperand) {
     operand = new(MiscOperand)
     operand.Type = MISC_POP
     return operand
 }
 
+// Function MiscOperand.Load loads the value from the operand.
 func (operand *MiscOperand) Load(em *Emulator) (value uint16) {
     switch operand.Type {
     case MISC_SP:
@@ -164,6 +184,7 @@ func (operand *MiscOperand) Load(em *Emulator) (value uint16) {
     panic("Invalid MISC type")
 }
 
+// Function MiscOperand.Store stores the value `value` to the operand.
 func (operand *MiscOperand) Store(em *Emulator, value uint16) {
     switch operand.Type {
     case MISC_SP:
@@ -192,6 +213,7 @@ func (operand *MiscOperand) Store(em *Emulator, value uint16) {
     }
 }
 
+// Function MiscOperand.String returns a string representation of the operand.
 func (operand *MiscOperand) String() (str string) {
     switch operand.Type {
     case MISC_SP:
