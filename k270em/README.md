@@ -1,7 +1,9 @@
 Command: k270em
 ===============
 
-Command k270em is a frontend to the k270emlib K270 processor emulator, including a SDL-based character display.
+Command k270em is a frontend to the k270emlib K270 processor emulator, including a SDL-based
+character display. It takes one command-ling argument, the program to load (which should be in
+Intel Hex format).
 
 Package Dependencies
 --------------------

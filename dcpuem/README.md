@@ -1,7 +1,11 @@
 Command: dcpuem
 ===============
 
-Command dcpuem is a frontend to the dcpuemlib DCPU-16 emulator.
+Command dcpuem is a frontend to the dcpuemlib DCPU-16 emulator. It takes one required argument,
+the filename of the program to load. The format of the input file can be either Intel Hex or
+raw binary and is determined by the file's extension (defaulting to raw binary if it is
+unrecognised). There is also one command-line option: -b. If this is present, the input file
+is parsed into words in a big-endian fashion rather than the default (little-endian).
 
 Package Dependencies
 --------------------
