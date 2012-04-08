@@ -62,27 +62,39 @@ func HandleIfbs(em *Emulator, a int, b int) {
 
 func HandleIfbcp(em *Emulator, a int, b int) {
     p := em.GetReg(a)
-    v := em.LoadIOPort(p)
-    bit := (v >> uint(b)) & 1
     
-    if bit == 0 {
-        em.LogInstruction("ifbc %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 0, executing next", RegisterNames[a], b, p, v, v, b)
+    if em.getPortAccess(p) {
+        v := em.LoadIOPort(p)
+        bit := (v >> uint(b)) & 1
+        
+        if bit == 0 {
+            em.LogInstruction("ifbc %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 0, executing next", RegisterNames[a], b, p, v, v, b)
+        } else {
+            em.pc += 2
+            em.LogInstruction("ifbc %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 1, skipping next", RegisterNames[a], b, p, v, v, b)
+        }
+    
     } else {
-        em.pc += 2
-        em.LogInstruction("ifbc %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 1, skipping next", RegisterNames[a], b, p, v, v, b)
+        em.LogInstruction("ifbc %s, %d -- not authorised", RegisterNames[a], b)
     }
 }
 
 func HandleIfbsp(em *Emulator, a int, b int) {
     p := em.GetReg(a)
-    v := em.LoadIOPort(p)
-    bit := (v >> uint(b)) & 1
     
-    if bit == 1 {
-        em.LogInstruction("ifbs %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 1, executing next", RegisterNames[a], b, p, v, v, b)
+    if em.getPortAccess(p) {
+        v := em.LoadIOPort(p)
+        bit := (v >> uint(b)) & 1
+        
+        if bit == 1 {
+            em.LogInstruction("ifbs %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 1, executing next", RegisterNames[a], b, p, v, v, b)
+        } else {
+            em.pc += 2
+            em.LogInstruction("ifbs %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 0, skipping next", RegisterNames[a], b, p, v, v, b)
+        }
+    
     } else {
-        em.pc += 2
-        em.LogInstruction("ifbs %s, %d -- ports[0x%02X] = 0x%02X, bit(0x%02X, %d) = 0, skipping next", RegisterNames[a], b, p, v, v, b)
+        em.LogInstruction("ifbs %s, %d -- not authorised", RegisterNames[a], b)
     }
 }
 

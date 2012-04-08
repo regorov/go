@@ -3,6 +3,7 @@ package k270emlib
 import (
     "fmt"
     "io"
+    "sync"
 )
 
 type Character struct {
@@ -12,7 +13,7 @@ type Character struct {
 
 type Emulator struct {
     memory []uint8
-    videoMemory []Character
+    VideoMemory []Character
     interruptRegistry []uint16
     ioports []uint8
     
@@ -32,10 +33,13 @@ type Emulator struct {
     interruptQueue chan uint8
     portHandlers map[uint8][](func(*Emulator, uint8, uint8))
     pinHandlers map[uint][](func(*Emulator, uint, bool))
+    
+    Mutex sync.Mutex
 }
 
 func NewEmulator() (em *Emulator) {
     em = new(Emulator)
+    
     em.traceFile = nil
     em.running = false
     em.interruptQueue = make(chan uint8, 16)
@@ -83,7 +87,7 @@ func (em *Emulator) Reset() {
 
 func (em *Emulator) ResetMemory() {
     em.memory = make([]uint8, 1024)
-    em.videoMemory = make([]Character, VMEM_SIZE)
+    em.VideoMemory = make([]Character, VMEM_SIZE)
     em.interruptRegistry = make([]uint16, 256)
     em.ioports = make([]uint8, 256)
 }
@@ -133,12 +137,12 @@ func (em *Emulator) VideoMemoryLoad(address uint16) (value uint8) {
         address = address & 0x7fff
         
         if address < VMEM_SIZE {
-            return em.videoMemory[address].Attr
+            return em.VideoMemory[address].Attr
         }
     
     } else {
         if address < VMEM_SIZE {
-            return em.videoMemory[address].Char
+            return em.VideoMemory[address].Char
         }
     }
     
@@ -150,12 +154,12 @@ func (em *Emulator) VideoMemoryStore(address uint16, value uint8) {
         address = address & 0x7fff
         
         if address < VMEM_SIZE {
-            em.videoMemory[address].Attr = value
+            em.VideoMemory[address].Attr = value
         }
     
     } else {
         if address < VMEM_SIZE {
-            em.videoMemory[address].Char = value
+            em.VideoMemory[address].Char = value
         }
     }
 }
@@ -316,8 +320,12 @@ func (em *Emulator) RunOne() {
 func (em *Emulator) Run() {
     em.running = true
     
+    // Repeated unlocking and locking of mutex is to allow external goroutines to access the object too
+    
     for em.running {
+        em.Mutex.Lock()
         em.RunOne()
+        em.Mutex.Unlock()
     }
 }
 
@@ -337,22 +345,26 @@ func (em *Emulator) SetRunning(running bool) {
 }
 
 func (em *Emulator) Interrupt(i uint8) {
-    fmt.Fprintf(em.traceFile, "Interrupt 0x%02X requested, ", i)
+    if em.traceFile != nil {fmt.Fprintf(em.traceFile, "Interrupt 0x%02X requested, ", i)}
     
     if em.GetInterruptsEnabled() {
         addr := em.InterruptRegistryLoad(i)
         if addr != 0 {
-            fmt.Fprintf(em.traceFile, "executing now (calling 0x%04X)\n", addr)
+            if em.traceFile != nil {fmt.Fprintf(em.traceFile, "executing now (calling 0x%04X)\n", addr)}
             em.SetInterruptsEnabled(false)
             em.PushWord(em.pc)
             em.pc = addr
+            
+            if i < 0x80 {
+                em.SetUserMode(false)
+            }
         
         } else {
-            fmt.Fprintf(em.traceFile, "discarding (interrupt not registered)\n")
+            if em.traceFile != nil {fmt.Fprintf(em.traceFile, "discarding (interrupt not registered)\n")}
         }
     
     } else {
-        fmt.Fprintf(em.traceFile, "queueing\n")
+        if em.traceFile != nil {fmt.Fprintf(em.traceFile, "queueing\n")}
         em.interruptQueue <- i
     }
 }
@@ -427,6 +439,19 @@ func (em *Emulator) triggerPinHandlers(pin uint, value bool) {
             handler(em, pin, value)
         }
     }
+}
+
+func (em *Emulator) getPortAccess(port uint8) (authorised bool) {
+    if port < 0x80 && em.GetUserMode() {
+        em.SetAuthorised(false)
+        return false
+    
+    } else {
+        em.SetAuthorised(true)
+        return true
+    }
+    
+    return false
 }
 
 func timerResetHandler(em *Emulator, port uint8, value uint8) {

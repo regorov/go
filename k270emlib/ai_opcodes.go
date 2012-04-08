@@ -38,8 +38,14 @@ func HandleNop(em *Emulator, a int, i int) {
 }
 
 func HandleRih(em *Emulator, a int, i int) {
-    em.InterruptRegistryStore(uint8(i), em.GetWordReg(a))
-    em.LogInstruction("rih 0x%02X, %s", i, RegisterNames[a])
+    if i < 0x80 && em.GetUserMode() {
+        em.SetAuthorised(false)
+    } else {
+        em.SetAuthorised(true)
+        em.InterruptRegistryStore(uint8(i), em.GetWordReg(a))
+    }
+    
+    em.LogInstruction("rih 0x%02X, %s -- A = %t", i, RegisterNames[a], em.GetAuthorised())
 }
 
 func HandleAdci(em *Emulator, a int, i int) {

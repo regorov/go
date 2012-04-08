@@ -19,8 +19,8 @@ var AOpcodes = [16]func(*Emulator, int){
     HandleCr,
     HandleLdsp,
     HandleStsp,
-    nil,
-    nil,
+    HandleRtl,
+    HandleRtr,
 }
 
 func HandleAOpcode(em *Emulator, a int, b int) {
@@ -62,6 +62,7 @@ func HandlePop(em *Emulator, a int) {
 func HandleShl(em *Emulator, a int) {
     before := em.GetReg(a)
     after := before << 1
+    em.SetCarry(before & 0x80 != 0)
     em.SetReg(a, after)
     em.LogInstruction("shl %s -- 0x%02X << 1 = 0x%02X", RegisterNames[a], before, after)
 }
@@ -69,6 +70,7 @@ func HandleShl(em *Emulator, a int) {
 func HandleAshr(em *Emulator, a int) {
     before := em.GetReg(a)
     after := (before >> 1) | (before & 0x80)
+    em.SetCarry(before & 1 != 0)
     em.SetReg(a, after)
     em.LogInstruction("ashr %s -- 0x%02X >> 1 = 0x%02X", RegisterNames[a], before, after)
 }
@@ -76,6 +78,7 @@ func HandleAshr(em *Emulator, a int) {
 func HandleLshr(em *Emulator, a int) {
     before := em.GetReg(a)
     after := before >> 1
+    em.SetCarry(before & 1 != 0)
     em.SetReg(a, after)
     em.LogInstruction("lshr %s -- 0x%02X >> 1 = 0x%02X", RegisterNames[a], before, after)
 }
@@ -86,6 +89,7 @@ func HandleShlc(em *Emulator, a int) {
     if em.GetCarry() {c = 1}
     
     after := (before << 1) | c
+    em.SetCarry(before & 0x80 != 0)
     em.SetReg(a, after)
     em.LogInstruction("shlc %s -- 0x%02X << 1 = 0x%02X", RegisterNames[a], before, after)
 }
@@ -96,27 +100,42 @@ func HandleShrc(em *Emulator, a int) {
     if em.GetCarry() {c = 1}
     
     after := (before >> 1) | (c << 7)
+    em.SetCarry(before & 1 != 0)
     em.SetReg(a, after)
     em.LogInstruction("shrc %s -- 0x%02X >> 1 = 0x%02X", RegisterNames[a], before, after)
 }
 
 func HandleJr(em *Emulator, a int) {
     em.pc = em.GetWordReg(a)
-    em.LogInstruction("jr %s -- 0x%04X", WordRegisterNames[a], em.pc)
+    em.LogInstruction("jr %s -- 0x%04X", WordRegisterNames[a >> 1], em.pc)
 }
 
 func HandleCr(em *Emulator, a int) {
     em.PushWord(em.pc)
     em.pc = em.GetWordReg(a)
-    em.LogInstruction("cr %s -- 0x%04X", WordRegisterNames[a], em.pc)
+    em.LogInstruction("cr %s -- 0x%04X", WordRegisterNames[a >> 1], em.pc)
 }
 
 func HandleLdsp(em *Emulator, a int) {
     em.SetWordReg(a, em.sp)
-    em.LogInstruction("ldsp %s -- 0x%04X", WordRegisterNames[a], em.sp)
+    em.LogInstruction("ldsp %s -- 0x%04X", WordRegisterNames[a >> 1], em.sp)
 }
 
 func HandleStsp(em *Emulator, a int) {
     em.sp = em.GetWordReg(a)
-    em.LogInstruction("stsp %s -- 0x%04X", WordRegisterNames[a], em.sp)
+    em.LogInstruction("stsp %s -- 0x%04X", WordRegisterNames[a >> 1], em.sp)
+}
+
+func HandleRtl(em *Emulator, a int) {
+    before := em.GetReg(a)
+    after := ((before << 1) & 0xFE) | (before >> 7)
+    em.SetReg(a, after)
+    em.LogInstruction("rtl %s -- 0x%02X <<< 1 = 0x%02X", RegisterNames[a], before, after)
+}
+
+func HandleRtr(em *Emulator, a int) {
+    before := em.GetReg(a)
+    after := (before >> 1) | ((before << 7) & 0x01)
+    em.SetReg(a, after)
+    em.LogInstruction("rtr %s -- 0x%02X >>> 1 = 0x%02X", RegisterNames[a], before, after)
 }

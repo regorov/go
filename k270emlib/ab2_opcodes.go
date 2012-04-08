@@ -53,41 +53,65 @@ func HandleStv(em *Emulator, a int, b int) {
 func HandlePand(em *Emulator, a int, b int) {
     i := em.GetReg(a)
     port := em.GetReg(b)
-    before := em.LoadIOPort(port)
-    after := before & uint8(i)
-    em.StoreIOPort(port, after)
     
-    em.LogInstruction("pand %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X & 0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    if em.getPortAccess(port) {
+        before := em.LoadIOPort(port)
+        after := before & uint8(i)
+        em.StoreIOPort(port, after)
+        
+        em.LogInstruction("pand %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X & 0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    
+    } else {
+        em.LogInstruction("pand %s, %s -- not authorised", RegisterNames[b], RegisterNames[a])
+    }
 }
 
 func HandlePor(em *Emulator, a int, b int) {
     i := em.GetReg(a)
     port := em.GetReg(b)
-    before := em.LoadIOPort(port)
-    after := before | uint8(i)
-    em.StoreIOPort(port, after)
     
-    em.LogInstruction("por %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X | 0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    if em.getPortAccess(port) {
+        before := em.LoadIOPort(port)
+        after := before | uint8(i)
+        em.StoreIOPort(port, after)
+        
+        em.LogInstruction("por %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X | 0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    
+    } else {
+        em.LogInstruction("pand %s, %s -- not authorised", RegisterNames[b], RegisterNames[a])
+    }
 }
 
 func HandlePxor(em *Emulator, a int, b int) {
     i := em.GetReg(a)
     port := em.GetReg(b)
-    before := em.LoadIOPort(port)
-    after := before ^ uint8(i)
-    em.StoreIOPort(port, after)
     
-    em.LogInstruction("pxor %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X ^ 0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    if em.getPortAccess(port) {
+        before := em.LoadIOPort(port)
+        after := before ^ uint8(i)
+        em.StoreIOPort(port, after)
+        
+        em.LogInstruction("pxor %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X ^ 0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    
+    } else {
+        em.LogInstruction("pand %s, %s -- not authorised", RegisterNames[b], RegisterNames[a])
+    }
 }
 
 func HandlePclr(em *Emulator, a int, b int) {
     i := em.GetReg(a)
     port := em.GetReg(b)
-    before := em.LoadIOPort(port)
-    after := before & (^uint8(i))
-    em.StoreIOPort(port, after)
     
-    em.LogInstruction("pclr %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X & ~0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    if em.getPortAccess(port) {
+        before := em.LoadIOPort(port)
+        after := before & (^uint8(i))
+        em.StoreIOPort(port, after)
+        
+        em.LogInstruction("pclr %s, %s -- ports[0x%02X] = 0x%02X, 0x%02X & ~0x%02X = 0x%02X", RegisterNames[b], RegisterNames[a], port, before, before, i, after)
+    
+    } else {
+        em.LogInstruction("pand %s, %s -- not authorised", RegisterNames[b], RegisterNames[a])
+    }
 }
 
 func HandleLd(em *Emulator, a int, b int) {
@@ -115,9 +139,15 @@ func HandleLdDec(em *Emulator, a int, b int) {
 
 func HandleIn(em *Emulator, a int, b int) {
     addr := em.GetReg(b)
-    data := em.LoadIOPort(addr)
-    em.SetReg(a, data)
-    em.LogInstruction("in %s, %s -- ports[0x%02X] = 0x%02X", RegisterNames[a], RegisterNames[b], addr, data)
+    
+    if em.getPortAccess(addr) {
+        data := em.LoadIOPort(addr)
+        em.SetReg(a, data)
+        em.LogInstruction("in %s, %s -- ports[0x%02X] = 0x%02X", RegisterNames[a], RegisterNames[b], addr, data)
+    
+    } else {
+        em.LogInstruction("in %s, %s -- not authorised", RegisterNames[a], RegisterNames[b])
+    }
 }
 
 func HandleSt(em *Emulator, a int, b int) {
@@ -146,6 +176,12 @@ func HandleStDec(em *Emulator, a int, b int) {
 func HandleOut(em *Emulator, a int, b int) {
     data := em.GetReg(a)
     addr := em.GetReg(b)
-    em.StoreIOPort(addr, data)
-    em.LogInstruction("out %s, %s -- ports[0x%02X] = 0x%02X", RegisterNames[b >> 1], RegisterNames[a], addr, data)
+    
+    if em.getPortAccess(addr) {
+        em.StoreIOPort(addr, data)
+        em.LogInstruction("out %s, %s -- ports[0x%02X] = 0x%02X", RegisterNames[b], RegisterNames[a], addr, data)
+    
+    } else {
+        em.LogInstruction("out %s, %s -- not authorised", RegisterNames[b], RegisterNames[a])
+    }
 }

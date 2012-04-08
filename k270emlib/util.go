@@ -32,14 +32,16 @@ const (
     E_INCORRECT_MODE
 )
 
-const VMEM_SIZE = 6144
+const VMEM_HEIGHT = 48
+const VMEM_WIDTH = 128
+const VMEM_SIZE = VMEM_HEIGHT * VMEM_WIDTH
 
 var RegisterNames = []string{
     "z",  "q",  "k0", "k1", "a0", "a1", "a2", "a3",
     "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7",
 }
 
-var WordRegisterNames = []string {
+var WordRegisterNames = []string{
     "z:q",   "k0:k1", "a0:a1", "a2:a3",
     "v0:v1", "v2:v3", "v4:v5", "v6:v7",
 }
@@ -54,4 +56,8 @@ func NewError(id int, message string) (err *Error) {
     err.ID = id
     err.Message = message
     return err
+}
+
+func (err *Error) Error() (str string) {
+    return err.Message
 }

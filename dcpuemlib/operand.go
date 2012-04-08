@@ -149,7 +149,13 @@ func (operand *MiscOperand) Store(em *Emulator, value uint16) {
         em.SP = value
     
     case MISC_PC:
-        em.PC = value
+        if value == em.LastPC {
+            em.LogInstruction("'Crash loop' detected, halting execution")
+            em.Running = false
+        
+        } else {
+            em.PC = value
+        }
     
     case MISC_O:
         em.O = value
@@ -159,9 +165,10 @@ func (operand *MiscOperand) Store(em *Emulator, value uint16) {
     
     case MISC_POP:
         panic("Can't store to POP")
-    }
     
-    panic("Invalid MISC type")
+    default:
+        panic("Invalid MISC type")
+    }
 }
 
 func (operand *MiscOperand) String() (str string) {

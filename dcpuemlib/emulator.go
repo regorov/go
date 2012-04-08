@@ -65,7 +65,7 @@ func (em *Emulator) LoadProgram(program []uint16) {
     copy(em.RAM, program)
 }
 
-func (em *Emulator) LoadProgramBytes(program []byte) {
+func (em *Emulator) LoadProgramBytesBE(program []byte) {
     if len(em.RAM) < (len(program) * 2) {
         em.GrowMemory(len(program) * 2)
     }
@@ -73,6 +73,18 @@ func (em *Emulator) LoadProgramBytes(program []byte) {
     for i := 0; i < len(program) / 2; i++ {
         high := uint16(program[i * 2])
         low := uint16(program[(i * 2) + 1])
+        em.RAM[i] = (high << 8) | low
+    }
+}
+
+func (em *Emulator) LoadProgramBytesLE(program []byte) {
+    if len(em.RAM) < (len(program) * 2) {
+        em.GrowMemory(len(program) * 2)
+    }
+    
+    for i := 0; i < len(program) / 2; i++ {
+        low := uint16(program[i * 2])
+        high := uint16(program[(i * 2) + 1])
         em.RAM[i] = (high << 8) | low
     }
 }
@@ -350,4 +362,12 @@ func (em *Emulator) Run() {
     for em.Running {
         em.RunOne()
     }
+}
+
+func (em *Emulator) DumpState() {
+    fmt.Printf("A: 0x%04X   Y: 0x%04X\n", em.Registers[0], em.Registers[4])
+    fmt.Printf("B: 0x%04X   Z: 0x%04X\n", em.Registers[1], em.Registers[5])
+    fmt.Printf("C: 0x%04X   I: 0x%04X\n", em.Registers[2], em.Registers[6])
+    fmt.Printf("X: 0x%04X   J: 0x%04X\n", em.Registers[3], em.Registers[7])
+    fmt.Printf("SP: 0x%04X\nPC: 0x%04X\nO: 0x%04X\n", em.SP, em.PC, em.O)
 }
