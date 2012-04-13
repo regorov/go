@@ -7,10 +7,10 @@ import (
 // Variable AIOpcodes is an array of functions that handle opcodes in the AI class. Indexing into
 // this array with a 4-bit number returns a function that will handle that opcode.
 var AIOpcodes = [16]func(*Emulator, int, int){
-    HandleNop,       // 0000 0
+    HandleAJOpcode,  // 0000 0
     HandleIOpcode,   // 0001 1
     HandleRih,       // 0010 2
-    nil,             // 0011 3
+    HandleIfeqi,     // 0011 3
     HandleAB1Opcode, // 0100 4
     HandleAB2Opcode, // 0101 5
     HandleAdci,      // 0110 6
@@ -37,11 +37,6 @@ func HandleAIOpcode(em *Emulator, o int, a int, i int) {
     }
 }
 
-// Function HandleNop handles a NOP instruction.
-func HandleNop(em *Emulator, a int, i int) {
-    em.LogInstruction("nop")
-}
-
 // Function HandleRih handles a RIH instruction.
 func HandleRih(em *Emulator, a int, i int) {
     if i < 0x80 && em.GetUserMode() {
@@ -52,6 +47,21 @@ func HandleRih(em *Emulator, a int, i int) {
     }
     
     em.LogInstruction("rih 0x%02X, %s -- A = %t", i, RegisterNames[a], em.GetAuthorised())
+}
+
+// Function HandleIfeqi handles an IFEQI instruction.
+func HandleIfeqi(em *Emulator, a int, i int) {
+    a_value := em.GetReg(a)
+    
+    if a_value == uint8(i) {
+        em.LogInstruction("ifeq %s, 0x%02X -- 0x%02X == 0x%02X, executing next", RegisterNames[a],
+            i, a_value, i)
+    
+    } else {
+        em.pc += 2
+        em.LogInstruction("ifeq %s, 0x%02X -- 0x%02X != 0x%02X, skipping next", RegisterNames[a], i,
+            a_value, i)
+    }
 }
 
 // Function HandleAdci handles an ADCI instruction.

@@ -169,7 +169,7 @@ func (ix *IHex) ExtractData(start uint, end uint) (result []byte) {
     
     for addr, data := range ix.areas {
         if addr >= start && addr < end {
-            copy(result[start:end], data[start-addr:end-addr])
+            copy(result[addr:], data)
         }
     }
     
@@ -188,7 +188,7 @@ func (ix *IHex) ExtractDataToEnd(start uint) (result []byte) {
                 end = addr + uint(len(data))
             }
             
-            copy(result[start:end], data[start-addr:end-addr])
+            copy(result[addr:], data)
         }
     }
     

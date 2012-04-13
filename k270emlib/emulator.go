@@ -48,6 +48,9 @@ type Emulator struct {
                                                                 // functions.
     pinHandlers map[uint][](func(*Emulator, uint, bool))        // A map of pin numbers to handler
                                                                 // functions.
+    getKey func() byte                                          // Returns a character from the
+                                                                // keyboard if input is requested
+                                                                // (from reading the KBDK I/O port)
     
     Mutex sync.Mutex    // The global mutex. This is locked during RunOne(). Run() temporarily
                         // unlocks it after every instruction, to allow other goroutines to modify
@@ -223,6 +226,11 @@ func (em *Emulator) InterruptRegistryStore(number uint8, value uint16) {
 
 // Function Emulator.LoadIOPort returns the value at the I/O port numbered `number`.
 func (em *Emulator) LoadIOPort(number uint8) (value uint8) {
+    // The keyboard is a special case
+    if number == P_KBDK {
+        return em.getKey()
+    }
+    
     return em.ioports[number]
 }
 
@@ -454,9 +462,9 @@ func (em *Emulator) SetRunning(running bool) {
 func (em *Emulator) Interrupt(i uint8) {
     if em.traceFile != nil {fmt.Fprintf(em.traceFile, "Interrupt 0x%02X requested, ", i)}
     
-    if em.GetInterruptsEnabled() {
-        addr := em.InterruptRegistryLoad(i)
-        if addr != 0 {
+    addr := em.InterruptRegistryLoad(i)
+    if addr != 0 {
+        if em.GetInterruptsEnabled() {
             if em.traceFile != nil {fmt.Fprintf(em.traceFile, "executing now (calling 0x%04X)\n",
                 addr)}
             
@@ -469,16 +477,16 @@ func (em *Emulator) Interrupt(i uint8) {
             }
         
         } else {
-            if em.traceFile != nil {fmt.Fprintf(em.traceFile,
-                "discarding (interrupt not registered)\n")}
-            
-            em.SetInterruptsEnabled(true) // This triggers the emulator to execute another interrupt
-                                          // off the queue.
+            if em.traceFile != nil {fmt.Fprintf(em.traceFile, "queueing\n")}
+            em.interruptQueue <- i
         }
     
     } else {
-        if em.traceFile != nil {fmt.Fprintf(em.traceFile, "queueing\n")}
-        em.interruptQueue <- i
+        if em.traceFile != nil {fmt.Fprintf(em.traceFile,
+            "discarding (interrupt not registered)\n")}
+        
+        em.SetInterruptsEnabled(true) // This triggers the emulator to execute another interrupt
+                                      // off the queue.
     }
 }
 
@@ -539,6 +547,13 @@ func (em *Emulator) SetDigitalInput(pin uint, value bool, triggerHandlers bool) 
     } else {
         panic(NewError(E_INCORRECT_MODE, "Pin is not currently defined as an input"))
     }
+}
+
+// Function Emulator.SetGetKey sets up the emulator so that `getKey` is called if input is
+// requested (i.e. port KBDK is read). `getKey` should return a single byte, which will be used as
+// the read character.
+func (em *Emulator) SetGetKey(getKey func() byte) {
+    em.getKey = getKey
 }
 
 // Function Emulator.triggerPortHandlers triggers any handlers associated with I/O port `port`. The

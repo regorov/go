@@ -27,6 +27,9 @@ const (
     P_DMODE1 = 0x29 // DMODE1 - Digital pin mode
     P_DMODE2 = 0x2A // DMODE2 - Digital pin mode
     P_DMODE3 = 0x2B // DMODE3 - Digital pin mode
+    
+    P_KBDK = 0x90   // KBDK - Keyboard key
+    P_KBDM = 0x91   // KBDM - Keyboard modifier byte
 )
 
 // Error ID constants
