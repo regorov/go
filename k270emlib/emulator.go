@@ -57,6 +57,21 @@ type Emulator struct {
                         // the emulator's properties.
 }
 
+// Function Emulator.DumpState dumps the registers of the processor.
+func (em *Emulator) DumpState() {
+    c := 0; if em.c {c = 1}
+    a := 0; if em.a {a = 1}
+    i := 0; if em.i {i = 1}
+    u := 0; if em.u {u = 1}
+    
+    fmt.Printf("z:  0x%02X   a0: 0x%02X   v0: 0x%02X   v4: 0x%02X\n", em.regs[0], em.regs[4], em.regs[8],  em.regs[12])
+    fmt.Printf("q:  0x%02X   a1: 0x%02X   v1: 0x%02X   v5: 0x%02X\n", em.regs[1], em.regs[5], em.regs[9],  em.regs[13])
+    fmt.Printf("k0: 0x%02X   a2: 0x%02X   v2: 0x%02X   v6: 0x%02X\n", em.regs[2], em.regs[6], em.regs[10], em.regs[14])
+    fmt.Printf("k1: 0x%02X   a3: 0x%02X   v3: 0x%02X   v7: 0x%02X\n", em.regs[3], em.regs[7], em.regs[11], em.regs[15])
+    fmt.Printf("c:  %d      a:  %d      i:  %d      u:  %d\n", c, a, i, u)
+    fmt.Printf("sp: 0x%04X            pc: 0x%04X\n", em.sp, em.pc)
+}
+
 // Function NewEmulator creates, initialises and returns a new Emulator.
 func NewEmulator() (em *Emulator) {
     em = new(Emulator)

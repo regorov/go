@@ -10,7 +10,7 @@ var AIOpcodes = [16]func(*Emulator, int, int){
     HandleAJOpcode,  // 0000 0
     HandleIOpcode,   // 0001 1
     HandleRih,       // 0010 2
-    HandleIfeqi,     // 0011 3
+    nil,             // 0011 3
     HandleAB1Opcode, // 0100 4
     HandleAB2Opcode, // 0101 5
     HandleAdci,      // 0110 6
@@ -21,8 +21,8 @@ var AIOpcodes = [16]func(*Emulator, int, int){
     HandleOri,       // 1011 11
     HandleXori,      // 1100 12
     HandleLdi,       // 1101 13
-    HandleLdd,       // 1110 14
-    HandleStd,       // 1111 15
+    HandleIfeqi,     // 1110 14
+    HandleIfnei,     // 1111 15
 }
 
 // Function HandleAIOpcode distributes the handling of an AI opcode to the appropriate opcode
@@ -47,21 +47,6 @@ func HandleRih(em *Emulator, a int, i int) {
     }
     
     em.LogInstruction("rih 0x%02X, %s -- A = %t", i, RegisterNames[a], em.GetAuthorised())
-}
-
-// Function HandleIfeqi handles an IFEQI instruction.
-func HandleIfeqi(em *Emulator, a int, i int) {
-    a_value := em.GetReg(a)
-    
-    if a_value == uint8(i) {
-        em.LogInstruction("ifeq %s, 0x%02X -- 0x%02X == 0x%02X, executing next", RegisterNames[a],
-            i, a_value, i)
-    
-    } else {
-        em.pc += 2
-        em.LogInstruction("ifeq %s, 0x%02X -- 0x%02X != 0x%02X, skipping next", RegisterNames[a], i,
-            a_value, i)
-    }
 }
 
 // Function HandleAdci handles an ADCI instruction.
@@ -159,4 +144,34 @@ func HandleStd(em *Emulator, a int, i int) {
     v := em.GetReg(a)
     em.MemoryStore(uint16(i), v)
     em.LogInstruction("std 0x%02X, %s -- [0x%04X] = 0x%02X", i, RegisterNames[a], i, v)
+}
+
+// Function HandleIfeqi handles an IFEQI instruction.
+func HandleIfeqi(em *Emulator, a int, i int) {
+    a_value := em.GetReg(a)
+    
+    if a_value == uint8(i) {
+        em.LogInstruction("ifeqi %s, 0x%02X -- 0x%02X == 0x%02X, executing next", RegisterNames[a],
+            i, a_value, i)
+    
+    } else {
+        em.pc += 2
+        em.LogInstruction("ifeqi %s, 0x%02X -- 0x%02X != 0x%02X, skipping next", RegisterNames[a],
+            i, a_value, i)
+    }
+}
+
+// Function HandleIfnei handles an IFNEI instruction.
+func HandleIfnei(em *Emulator, a int, i int) {
+    a_value := em.GetReg(a)
+    
+    if a_value != uint8(i) {
+        em.LogInstruction("ifnei %s, 0x%02X -- 0x%02X == 0x%02X, executing next", RegisterNames[a],
+            i, a_value, i)
+    
+    } else {
+        em.pc += 2
+        em.LogInstruction("ifnei %s, 0x%02X -- 0x%02X != 0x%02X, skipping next", RegisterNames[a],
+            i, a_value, i)
+    }
 }

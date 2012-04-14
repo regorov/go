@@ -70,6 +70,8 @@ func main() {
     em.SetTraceFile(os.Stdout)
     
     em.Run()
+    fmt.Println("")
+    em.DumpState()
     
     if *screenDump != "" {
         sf, err := os.Create(*screenDump); die(err)
