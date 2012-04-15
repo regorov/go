@@ -19,6 +19,12 @@ func NewSource(power int) (c *Source) {
     return c
 }
 
+// Function GetPower returns the source's power.
+func (c *Source) GetPower() (power int) {return c.power}
+
+// Function SetPower sets the source's power.
+func (c *Source) SetPower(power int) {c.power = power}
+
 // Function GetOutput returns the component currently attached to this source's output.
 func (c *Source) GetOutput() (output Receiver) {return c.output}
 

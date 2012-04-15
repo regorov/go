@@ -33,11 +33,14 @@ func (c *Pipe) GetQuantity() (quantity int) {return c.quantity}
 // Function SetQuantity sets the amount of fluid currently in the pipe.
 func (c *Pipe) SetQuantity(quantity int) {c.quantity = imin(quantity, c.capacity)}
 
-// Function AddQuantity adds the argument to the amountt of fluid currently in the pipe.
+// Function AddQuantity adds the argument to the amount of fluid currently in the pipe.
 func (c *Pipe) AddQuantity(quantity int) {c.quantity = imin(c.quantity + quantity, c.capacity)}
 
 // Function GetCapacity returns the maximum capacity of the pipe.
 func (c *Pipe) GetCapacity() (capacity int) {return c.capacity}
+
+// Function SetCapacity sets the maxiumum capacity of the pipe.
+func (c *Pipe) SetCapacity(capacity int) {c.capacity = capacity}
 
 // Function Flow runs one cycle of the pipe's simulation.
 func (c *Pipe) Flow() {
@@ -49,4 +52,3 @@ func (c *Pipe) Flow() {
         c.output.SetQuantity(outputQuantity)
     }
 }
-

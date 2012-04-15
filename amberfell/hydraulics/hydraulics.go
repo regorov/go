@@ -15,7 +15,6 @@ func balance(a int, b int) (x int, y int) {
     return tot - avg, avg
 }
 
-
 // Function balanceYLimited works exactly like balance, except that it places a maximum limit on the
 // second return value.
 func balanceYLimited(a int, b int, yLimit int) (x int, y int) {
@@ -28,6 +27,34 @@ func balanceYLimited(a int, b int, yLimit int) (x int, y int) {
     return tot - avg, avg
 }
 
+// Function balance3ZLimited works exactly like balanceYLimited, except that it processes 3
+// arguments instead of two.
+func balance3ZLimited(a int, b int, c int, zLimit int) (x int, y int, z int) {
+    tot := a + b + c
+    avg := tot / 3
+    rem := tot % 3
+    
+    if avg <= zLimit {
+        if rem == 0 {
+            return avg, avg, avg
+        } else if rem == 1 {
+            return avg + 1, avg, avg
+        } else {
+            return avg, avg + 1, avg + 1
+        }
+    }
+    
+    x = zLimit
+    y = zLimit
+    z = zLimit
+    tot -= zLimit
+    
+    x_extra, y_extra := balance(tot, 0)
+    return x + x_extra, y + y_extra, z
+}
+
+// Function balane3YZLimited works exactly like balance3ZLimited, except two of the results have
+// limits rather than just one.
 func balance3YZLimited(a int, b int, c int, yLimit int, zLimit int) (x int, y int, z int) {
     tot := a + b + c
     avg := tot / 3
@@ -62,7 +89,7 @@ func balance3YZLimited(a int, b int, c int, yLimit int, zLimit int) (x int, y in
     return x + x_extra, y + y_extra, z
 }
 
-// Function imin is just like imin, except that it works with ints.
+// Function imin is just like math.Min, except that it works with ints.
 func imin(a int, b int) (x int) {
     if a < b {
         return a
@@ -73,22 +100,22 @@ func imin(a int, b int) (x int) {
     return 0
 }
 
-// Interface Component represents any hydraulic component.
+// Interface Component represents any simulatable hydraulic component.
 type Component interface {
-    
+    Flow()
 }
 
-/*
-// Interface Producer represents any hydraulic component that can provide fluid to others.
+// Interface Producer represents any simulatable hydraulic component that can provide fluid to
+// others.
 type Producer interface {
     Component
     
     GetOutput() Receiver
     SetOutput(Receiver)
 }
-*/
 
-// Interface Receiver represents any hydraulic component that can accept fluid from others.
+// Interface Receiver represents any simulatable hydraulic component that can accept fluid from
+// others.
 type Receiver interface {
     Component
     
@@ -97,5 +124,5 @@ type Receiver interface {
     AddQuantity(int)
     
     GetCapacity() (int)
+    SetCapacity(int)
 }
-

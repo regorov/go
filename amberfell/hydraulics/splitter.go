@@ -47,6 +47,9 @@ func (c *Splitter) AddQuantity(quantity int) {c.quantity = imin(c.quantity + qua
 // Function GetCapacity returns the maximum capacity of the splitter.
 func (c *Splitter) GetCapacity() (capacity int) {return c.capacity}
 
+// Function SetCapacity sets the maximum capacity of the splitter.
+func (c *Splitter) SetCapacity(capacity int) {c.capacity = capacity}
+
 // Function Flow runs one cycle of the splitter's simulation.
 func (c *Splitter) Flow() {
     if c.output1 != nil {

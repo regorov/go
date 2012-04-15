@@ -7,32 +7,54 @@ import (
     "time"
 )
 
-func main() {
-    source := hydraulics.NewSource(100)
-    splitter := hydraulics.NewSplitter(500)
-    pipe1 := hydraulics.NewPipe(200)
-    pipe2 := hydraulics.NewPipe(200)
-    pipe3 := hydraulics.NewPipe(200)
-    lightBulb1 := hydraulics.NewLightBulb(500, 60)
-    lightBulb2 := hydraulics.NewLightBulb(500, 60)
+/*  General guidelines for capacities & thresholds:
     
-    source.SetOutput(splitter)
-    splitter.SetOutput1(lightBulb1)
-    splitter.SetOutput2(pipe1)
+    * Medium-power Sources should have a power of 100.
+    * All components with a capacity should have it at 200, except for outputs and splitters which have 500.
+    * All components with a threshold should have it at 100.
+*/
+
+const (
+    MEDIUM_POWER = 100
+    CAPACITY = 200
+    OUTPUT_CAPACITY = 500
+    THRESHOLD = 100
+)
+
+func main() {
+    source1 := hydraulics.NewSource(MEDIUM_POWER)
+    source2 := hydraulics.NewSource(MEDIUM_POWER)
+    pipe1 := hydraulics.NewPipe(CAPACITY)
+    pipe2 := hydraulics.NewPipe(CAPACITY)
+    gate := hydraulics.NewANDGate(CAPACITY, THRESHOLD)
+    lightBulb := hydraulics.NewLightBulb(OUTPUT_CAPACITY, THRESHOLD)
+    
+    // Chain the components
+    source1.SetOutput(gate.GetFeeder1())
+    
+    source2.SetOutput(pipe1)
     pipe1.SetOutput(pipe2)
-    pipe2.SetOutput(pipe3)
-    pipe3.SetOutput(lightBulb2)
+    pipe2.SetOutput(gate.GetFeeder2())
+    
+    gate.SetOutput(lightBulb)
     
     for {
-        source.Flow()
-        splitter.Flow()
-        lightBulb1.Flow()
+        source1.Flow()
+        source2.Flow()
         pipe1.Flow()
         pipe2.Flow()
-        pipe3.Flow()
-        lightBulb2.Flow()
+        gate.Flow()
+        lightBulb.Flow()
         
-        fmt.Printf("S: %d  L1: %d  P1: %d  P2: %d  P3: %d  L2: %d\n", splitter.GetQuantity(), lightBulb1.GetQuantity(), pipe1.GetQuantity(), pipe2.GetQuantity(), pipe3.GetQuantity(), lightBulb2.GetQuantity())
+        fmt.Printf("G.1: %d  P1: %d  P2: %d  G.2: %d  L: %d  G: %t  L: %t\n",
+            gate.GetFeeder1().GetQuantity(),
+            pipe1.GetQuantity(),
+            pipe2.GetQuantity(),
+            gate.GetFeeder2().GetQuantity(),
+            lightBulb.GetQuantity(),
+            gate.GetState(),
+            lightBulb.GetState())
+    
         time.Sleep(time.Second)
     }
 }
