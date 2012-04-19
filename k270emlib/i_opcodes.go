@@ -55,24 +55,32 @@ func jumprel(em *Emulator, i int, opname string) {
 // Function HandleJmp handles a JMP instruction.
 func HandleJmp(em *Emulator, i int) {
     jumprel(em, i, "jmp")
+    
+    em.timer += 5;
 }
 
 // Function HandleCall handles a CALL instruction.
 func HandleCall(em *Emulator, i int) {
     em.PushWord(em.pc)
     jumprel(em, i, "call")
+    
+    em.timer += 6;
 }
 
 // Function HandleInt handles an INT instruction.
 func HandleInt(em *Emulator, i int) {
     em.Interrupt(uint8(i))
     em.LogInstruction("int 0x%02X", i)
+    
+    em.timer += 6;
 }
 
 // Function HandlePushi handles a PUSHI instruction.
 func HandlePushi(em *Emulator, i int) {
     em.Push(uint8(i))
     em.LogInstruction("pushi 0x%02X", i)
+    
+    em.timer += 5;
 }
 
 // Function HandleAdsp handles an ADSP instruction.
@@ -80,6 +88,8 @@ func HandleAdsp(em *Emulator, i int) {
     sp := em.sp
     em.sp = sp + uint16(i)
     em.LogInstruction("adsp 0x%02X -- 0x%04X + 0x%02X = 0x%04X", i, sp, i, em.sp)
+    
+    em.timer += 5;
 }
 
 // Function HandleSbsp handles an SBSP instruction.
@@ -87,4 +97,6 @@ func HandleSbsp(em *Emulator, i int) {
     sp := em.sp
     em.sp = sp - uint16(i)
     em.LogInstruction("sbsp 0x%02X -- 0x%04X - 0x%02X = 0x%04X", i, sp, i, em.sp)
+    
+    em.timer += 5;
 }

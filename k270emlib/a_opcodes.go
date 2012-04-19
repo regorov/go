@@ -42,6 +42,8 @@ func HandleNot(em *Emulator, a int) {
     after := ^before
     em.SetReg(a, after)
     em.LogInstruction("not %s -- ~0x%02X = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandleNeg handles a NEG instruction.
@@ -50,6 +52,8 @@ func HandleNeg(em *Emulator, a int) {
     after := -before
     em.SetReg(a, after)
     em.LogInstruction("neg %s -- -0x%02X = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandlePush handles a PUSH instruction.
@@ -57,6 +61,8 @@ func HandlePush(em *Emulator, a int) {
     v := em.GetReg(a)
     em.Push(v)
     em.LogInstruction("push %s -- value transferred was 0x%02X", RegisterNames[a], v)
+    
+    em.timer += 5;
 }
 
 // Function HandlePop handles a POP instruction.
@@ -64,6 +70,8 @@ func HandlePop(em *Emulator, a int) {
     v := em.Pop()
     em.SetReg(a, v)
     em.LogInstruction("pop %s -- value transferred was 0x%02X", RegisterNames[a], v)
+    
+    em.timer += 6;
 }
 
 // Function HandleShl handles a SHL instruction.
@@ -73,6 +81,8 @@ func HandleShl(em *Emulator, a int) {
     em.SetCarry(before & 0x80 != 0)
     em.SetReg(a, after)
     em.LogInstruction("shl %s -- 0x%02X << 1 = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandleAshr handles an ASHR instruction.
@@ -82,6 +92,8 @@ func HandleAshr(em *Emulator, a int) {
     em.SetCarry(before & 1 != 0)
     em.SetReg(a, after)
     em.LogInstruction("ashr %s -- 0x%02X >> 1 = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandleLshr handles a LSHR instruction.
@@ -91,6 +103,8 @@ func HandleLshr(em *Emulator, a int) {
     em.SetCarry(before & 1 != 0)
     em.SetReg(a, after)
     em.LogInstruction("lshr %s -- 0x%02X >> 1 = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandleShlc handles a SHLC instruction.
@@ -103,6 +117,8 @@ func HandleShlc(em *Emulator, a int) {
     em.SetCarry(before & 0x80 != 0)
     em.SetReg(a, after)
     em.LogInstruction("shlc %s -- 0x%02X << 1 = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandleShrc handles a SHRC instruction.
@@ -115,12 +131,16 @@ func HandleShrc(em *Emulator, a int) {
     em.SetCarry(before & 1 != 0)
     em.SetReg(a, after)
     em.LogInstruction("shrc %s -- 0x%02X >> 1 = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandleJr handles a JR instruction.
 func HandleJr(em *Emulator, a int) {
     em.pc = em.GetWordReg(a)
     em.LogInstruction("jr %s -- 0x%04X", WordRegisterNames[a >> 1], em.pc)
+    
+    em.timer += 5;
 }
 
 // Function HandleCr handles a CR instruction.
@@ -128,18 +148,24 @@ func HandleCr(em *Emulator, a int) {
     em.PushWord(em.pc)
     em.pc = em.GetWordReg(a)
     em.LogInstruction("cr %s -- 0x%04X", WordRegisterNames[a >> 1], em.pc)
+    
+    em.timer += 6;
 }
 
 // Function HandleLdsp handles a LDSP instruction.
 func HandleLdsp(em *Emulator, a int) {
     em.SetWordReg(a, em.sp)
     em.LogInstruction("ldsp %s -- 0x%04X", WordRegisterNames[a >> 1], em.sp)
+    
+    em.timer += 5;
 }
 
 // Function HandleStsp handles a STSP instruction.
 func HandleStsp(em *Emulator, a int) {
     em.sp = em.GetWordReg(a)
     em.LogInstruction("stsp %s -- 0x%04X", WordRegisterNames[a >> 1], em.sp)
+    
+    em.timer += 5;
 }
 
 // Function HandleRtl handles a RTL instruction.
@@ -148,6 +174,8 @@ func HandleRtl(em *Emulator, a int) {
     after := ((before << 1) & 0xFE) | (before >> 7)
     em.SetReg(a, after)
     em.LogInstruction("rtl %s -- 0x%02X <<< 1 = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }
 
 // Function HandleRtr handles a RTR instruction.
@@ -156,4 +184,6 @@ func HandleRtr(em *Emulator, a int) {
     after := (before >> 1) | ((before << 7) & 0x01)
     em.SetReg(a, after)
     em.LogInstruction("rtr %s -- 0x%02X >>> 1 = 0x%02X", RegisterNames[a], before, after)
+    
+    em.timer += 5;
 }

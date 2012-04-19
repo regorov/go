@@ -40,6 +40,8 @@ func HandleVOpcode(em *Emulator, a int) {
 func HandleRet(em *Emulator) {
     em.pc = em.PopWord()
     em.LogInstruction("ret")
+    
+    em.timer += 7;
 }
 
 // Function HandleReti handles a RETI instruction.
@@ -47,6 +49,8 @@ func HandleReti(em *Emulator) {
     em.pc = em.PopWord()
     em.SetInterruptsEnabled(true)
     em.LogInstruction("reti")
+    
+    em.timer += 7;
 }
 
 // Function HandlePusha handles a PUSHA instruction.
@@ -55,6 +59,8 @@ func HandlePusha(em *Emulator) {
     em.Push(em.GetReg(int(em.sc)))
     em.SetCarry(em.sc == 0)
     em.LogInstruction("pusha -- %s", RegisterNames[em.sc])
+    
+    em.timer += 5;
 }
 
 // Function HandlePopa handles a POPA instruction.
@@ -63,30 +69,40 @@ func HandlePopa(em *Emulator) {
     em.sc = (em.sc + 1) & 0xF
     em.SetCarry(em.sc == 0)
     em.LogInstruction("popa -- %s", RegisterNames[em.sc])
+    
+    em.timer += 6;
 }
 
 // Function HandleTgc handles a TGC instruction.
 func HandleTgc(em *Emulator) {
     em.SetCarry(!em.GetCarry())
     em.LogInstruction("tgc -- C now = %t", em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleTgi handles a TGI instruction.
 func HandleTgi(em *Emulator) {
     em.SetInterruptsEnabled(!em.GetInterruptsEnabled())
     em.LogInstruction("tgi -- I now = %t", em.GetInterruptsEnabled())
+    
+    em.timer += 5;
 }
 
 // Function HandleSwu handles a SWU instruction.
 func HandleSwu(em *Emulator) {
     em.SetUserMode(true)
     em.LogInstruction("swu")
+    
+    em.timer += 5;
 }
 
 // Function HandleHlt handles a HLT instruction.
 func HandleHlt(em *Emulator) {
     em.SetRunning(false)
     em.LogInstruction("hlt")
+    
+    //em.timer += 5;
 }
 
 // Function HandleIfc handles an IFC instruction.
@@ -97,6 +113,8 @@ func HandleIfc(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifc -- skipping next")
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfa handles an IFA instruction.
@@ -107,6 +125,8 @@ func HandleIfa(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifa -- skipping next")
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfi handles an IFI instruction.
@@ -117,6 +137,8 @@ func HandleIfi(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifi -- skipping next")
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfu handles an IFU instruction.
@@ -127,6 +149,8 @@ func HandleIfu(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifu -- skipping next")
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfnc handles an IFNC instruction.
@@ -137,6 +161,8 @@ func HandleIfnc(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifnc -- skipping next")
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfna handles an IFNA instruction.
@@ -147,6 +173,8 @@ func HandleIfna(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifna -- skipping next")
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfni handles an IFNI instruction.
@@ -157,6 +185,8 @@ func HandleIfni(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifni -- skipping next")
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfnu handles an IFNU instruction.
@@ -167,4 +197,6 @@ func HandleIfnu(em *Emulator) {
         em.pc += 2
         em.LogInstruction("ifnu -- skipping next")
     }
+    
+    em.timer += 5;
 }

@@ -53,6 +53,8 @@ func HandleIfbc(em *Emulator, a int, b int) {
         em.LogInstruction("ifbc %s, %d -- bit(0x%02X, %d) = 1, skipping next", RegisterNames[a], b,
             v, b)
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfbs handles an IFBS instruction.
@@ -68,6 +70,8 @@ func HandleIfbs(em *Emulator, a int, b int) {
         em.LogInstruction("ifbs %s, %d -- bit(0x%02X, %d) = 0, skipping next", RegisterNames[a], b,
             v, b)
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfbcp handles an IFBCP instruction.
@@ -93,6 +97,8 @@ func HandleIfbcp(em *Emulator, a int, b int) {
     } else {
         em.LogInstruction("ifbc %s, %d -- not authorised", RegisterNames[a], b)
     }
+    
+    em.timer += 6;
 }
 
 // Function HandleIfbsp handles an IFBSP instruction.
@@ -118,6 +124,8 @@ func HandleIfbsp(em *Emulator, a int, b int) {
     } else {
         em.LogInstruction("ifbs %s, %d -- not authorised", RegisterNames[a], b)
     }
+    
+    em.timer += 6;
 }
 
 // Function HandleIfeq handles an IFEQ instruction.
@@ -134,6 +142,8 @@ func HandleIfeq(em *Emulator, a int, b int) {
         em.LogInstruction("ifeq %s, %s -- 0x%02X != 0x%02X, skipping next", RegisterNames[a],
             RegisterNames[b], a_value, b_value)
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfne handles an IFNE instruction.
@@ -150,6 +160,8 @@ func HandleIfne(em *Emulator, a int, b int) {
         em.LogInstruction("ifne %s, %s -- 0x%02X == 0x%02X, skipping next", RegisterNames[a],
             RegisterNames[b], a_value, b_value)
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIflt handles an IFLT instruction.
@@ -166,6 +178,8 @@ func HandleIflt(em *Emulator, a int, b int) {
         em.LogInstruction("iflt %s, %s -- 0x%02X >= 0x%02X, skipping next", RegisterNames[a],
             RegisterNames[b], a_value, b_value)
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfge handles an IFGE instruction.
@@ -182,6 +196,8 @@ func HandleIfge(em *Emulator, a int, b int) {
         em.LogInstruction("ifge %s, %s -- 0x%02X < 0x%02X, skipping next", RegisterNames[a],
             RegisterNames[b], a_value, b_value)
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleAdd handles an ADD instruction.
@@ -194,6 +210,8 @@ func HandleAdd(em *Emulator, a int, b int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("add %s, %s -- 0x%02X + 0x%02X = 0x%02X, carry = %t", RegisterNames[a],
         RegisterNames[b], a_value, b_value, r, em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleSub handles a SUB instruction.
@@ -206,6 +224,8 @@ func HandleSub(em *Emulator, a int, b int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("sub %s, %s -- 0x%02X - 0x%02X = 0x%02X, carry = %t", RegisterNames[a],
         RegisterNames[b], a_value, b_value, r, em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleAnd handles an AND instruction.
@@ -216,6 +236,8 @@ func HandleAnd(em *Emulator, a int, b int) {
     em.SetReg(a, r)
     em.LogInstruction("and %s, %s -- 0x%02X & 0x%02X = 0x%02X", RegisterNames[a], RegisterNames[b],
         a_value, b_value, r)
+    
+    em.timer += 5;
 }
 
 // Function HandleOr handles an OR instruction.
@@ -226,6 +248,8 @@ func HandleOr(em *Emulator, a int, b int) {
     em.SetReg(a, r)
     em.LogInstruction("or %s, %s -- 0x%02X | 0x%02X = 0x%02X", RegisterNames[a], RegisterNames[b],
         a_value, b_value, r)
+    
+    em.timer += 5;
 }
 
 // Function HandleXor handles an XOR instruction.
@@ -236,6 +260,8 @@ func HandleXor(em *Emulator, a int, b int) {
     em.SetReg(a, r)
     em.LogInstruction("xor %s, %s -- 0x%02X ^ 0x%02X = 0x%02X", RegisterNames[a], RegisterNames[b],
         a_value, b_value, r)
+    
+    em.timer += 5;
 }
 
 // Function HandleMov handles a MOV instruction.
@@ -244,6 +270,8 @@ func HandleMov(em *Emulator, a int, b int) {
     em.SetReg(a, v)
     em.LogInstruction("mov %s, %s -- value transferred was 0x%02X", RegisterNames[a],
         RegisterNames[b], v)
+    
+    em.timer += 5;
 }
 
 // Function HandleAdc handles an ADC instruction.
@@ -259,6 +287,8 @@ func HandleAdc(em *Emulator, a int, b int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("adc %s, %s -- 0x%02X + 0x%02X + %d = 0x%02X, carry = %t", RegisterNames[a],
         RegisterNames[b], a_value, b_value, c, r, em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleSbc handles an SBC instruction.
@@ -274,4 +304,6 @@ func HandleSbc(em *Emulator, a int, b int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("sbc %s, %s -- 0x%02X - 0x%02X - %d = 0x%02X, carry = %t", RegisterNames[a],
         RegisterNames[b], a_value, b_value, c, r, em.GetCarry())
+    
+    em.timer += 5;
 }

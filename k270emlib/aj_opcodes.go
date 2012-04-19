@@ -31,6 +31,8 @@ func HandleAJOpcode(em *Emulator, a int, i int) {
 // Function HandleNop handles a NOP instruction.
 func HandleNop(em *Emulator, a int, j int) {
     em.LogInstruction("nop")
+    
+    em.timer += 4;
 }
 
 // Function HandleLds handles a LDS instruction.
@@ -39,6 +41,8 @@ func HandleLds(em *Emulator, a int, j int) {
     data := em.MemoryLoad(addr)
     em.SetReg(a, data)
     em.LogInstruction("lds %s, 0x%02X -- [0x%04X] = 0x%02X", RegisterNames[a], j, addr, data)
+    
+    em.timer += 6;
 }
 
 // Function HandleSts handles a STS instruction.
@@ -47,4 +51,6 @@ func HandleSts(em *Emulator, a int, j int) {
     data := em.GetReg(a)
     em.MemoryStore(addr, data)
     em.LogInstruction("sts 0x%02X, %s -- [0x%04X] = 0x%02X", j, RegisterNames[a], addr, data)
+    
+    em.timer += 5;
 }

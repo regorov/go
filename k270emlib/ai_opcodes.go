@@ -47,6 +47,8 @@ func HandleRih(em *Emulator, a int, i int) {
     }
     
     em.LogInstruction("rih 0x%02X, %s -- A = %t", i, RegisterNames[a], em.GetAuthorised())
+    
+    em.timer += 5;
 }
 
 // Function HandleAdci handles an ADCI instruction.
@@ -61,6 +63,8 @@ func HandleAdci(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("adci %s, 0x%02X -- 0x%02X + 0x%02X + %d = 0x%02X, carry = %t",
         RegisterNames[a], i, a_value, i, c, r, em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleSbci handles an SBCI instruction.
@@ -75,6 +79,8 @@ func HandleSbci(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("sbci %s, 0x%02X -- 0x%02X - 0x%02X - %d = 0x%02X, carry = %t",
         RegisterNames[a], i, a_value, i, c, r, em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleAddi handles an ADDI instruction.
@@ -86,6 +92,8 @@ func HandleAddi(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("addi %s, 0x%02X -- 0x%02X + 0x%02X = 0x%02X, carry = %t", RegisterNames[a],
         i, a_value, i, r, em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleSubi handles a SUBI instruction.
@@ -97,6 +105,8 @@ func HandleSubi(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("subi %s, 0x%02X -- 0x%02X - 0x%02X = 0x%02X, carry = %t", RegisterNames[a],
         i, a_value, i, r, em.GetCarry())
+    
+    em.timer += 5;
 }
 
 // Function HandleAndi handles an ANDI instruction.
@@ -106,6 +116,8 @@ func HandleAndi(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("andi %s, 0x%02X -- 0x%02X & 0x%02X = 0x%02X", RegisterNames[a], i, a_value,
         i, r)
+    
+    em.timer += 5;
 }
 
 // Function HandleOri handles an ORI instruction.
@@ -115,6 +127,8 @@ func HandleOri(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("ori %s, 0x%02X -- 0x%02X | 0x%02X = 0x%02X", RegisterNames[a], i, a_value, i,
         r)
+    
+    em.timer += 5;
 }
 
 // Function HandleXori handles an XORI instruction.
@@ -124,26 +138,34 @@ func HandleXori(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(r))
     em.LogInstruction("xori %s, 0x%02X -- 0x%02X ^ 0x%02X = 0x%02X", RegisterNames[a], i, a_value,
         i, r)
+    
+    em.timer += 5;
 }
 
 // Function HandleLdi handles a LDI instruction.
 func HandleLdi(em *Emulator, a int, i int) {
     em.SetReg(a, uint8(i))
     em.LogInstruction("ldi %s, 0x%02X", RegisterNames[a], i)
+    
+    em.timer += 5;
 }
 
-// Function HandleLdd handles a LDD instruction.
+// Function HandleLdd handles a LDD instruction (obsolete).
 func HandleLdd(em *Emulator, a int, i int) {
     v := em.MemoryLoad(uint16(i))
     em.SetReg(a, v)
     em.LogInstruction("ldd %s, 0x%02X -- [0x%04X] = 0x%02X", RegisterNames[a], i, i, v)
+    
+    em.timer += 6;
 }
 
-// Function HandleStd handles a STD instruction.
+// Function HandleStd handles a STD instruction (obsolete).
 func HandleStd(em *Emulator, a int, i int) {
     v := em.GetReg(a)
     em.MemoryStore(uint16(i), v)
     em.LogInstruction("std 0x%02X, %s -- [0x%04X] = 0x%02X", i, RegisterNames[a], i, v)
+    
+    em.timer += 5;
 }
 
 // Function HandleIfeqi handles an IFEQI instruction.
@@ -159,6 +181,8 @@ func HandleIfeqi(em *Emulator, a int, i int) {
         em.LogInstruction("ifeqi %s, 0x%02X -- 0x%02X != 0x%02X, skipping next", RegisterNames[a],
             i, a_value, i)
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleIfnei handles an IFNEI instruction.
@@ -174,4 +198,6 @@ func HandleIfnei(em *Emulator, a int, i int) {
         em.LogInstruction("ifnei %s, 0x%02X -- 0x%02X != 0x%02X, skipping next", RegisterNames[a],
             i, a_value, i)
     }
+    
+    em.timer += 5;
 }

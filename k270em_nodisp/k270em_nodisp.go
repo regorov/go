@@ -18,6 +18,7 @@ var inputBuffer = make([]byte, 0)
 
 var (
     screenDump = flag.String("d", "", "Write a screen dump to the specified file.")
+    trace = flag.Bool("t", false, "Trace executed instructions to stdout.")
 )
 
 // Function die panics with `err` if `err` is not nil.
@@ -67,7 +68,10 @@ func main() {
     em := k270emlib.NewEmulator()
     em.SetGetKey(getKey)
     em.SetMemory(program)
-    em.SetTraceFile(os.Stdout)
+    
+    if *trace {
+        em.SetTraceFile(os.Stdout)
+    }
     
     em.Run()
     fmt.Println("")

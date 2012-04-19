@@ -47,6 +47,8 @@ func HandleLdv(em *Emulator, a int, b int) {
     em.SetReg(a, data)
     em.LogInstruction("ldv %s, %s -- VMEM[0x%04X] = 0x%02X", RegisterNames[a],
         WordRegisterNames[b >> 1], addr, data)
+    
+    em.timer += 7;
 }
 
 // Function HandleStv handles a STV instruction.
@@ -56,6 +58,8 @@ func HandleStv(em *Emulator, a int, b int) {
     em.VideoMemoryStore(addr, data)
     em.LogInstruction("stv %s, %s -- VMEM[0x%04X] = 0x%02X", WordRegisterNames[b >> 1],
         RegisterNames[a], addr, data)
+    
+    em.timer += 7;
 }
 
 // Function HandlePand handles a PAND instruction (obsolete).
@@ -143,6 +147,8 @@ func HandleIn(em *Emulator, a int, b int) {
     } else {
         em.LogInstruction("in %s, %s -- not authorised", RegisterNames[a], RegisterNames[b])
     }
+    
+    em.timer += 6;
 }
 
 // Function HandleOut handles an OUT instruction.
@@ -158,6 +164,8 @@ func HandleOut(em *Emulator, a int, b int) {
     } else {
         em.LogInstruction("out %s, %s -- not authorised", RegisterNames[b], RegisterNames[a])
     }
+    
+    em.timer += 5;
 }
 
 // Function HandleLd handles a LD instruction.
@@ -167,6 +175,8 @@ func HandleLd(em *Emulator, a int, b int) {
     em.SetReg(a, data)
     em.LogInstruction("ld %s, %s -- [0x%04X] = 0x%02X", RegisterNames[a], WordRegisterNames[b >> 1],
         addr, data)
+    
+    em.timer += 6;
 }
 
 // Function HandleLdInc handles a LD+ instruction.
@@ -177,6 +187,8 @@ func HandleLdInc(em *Emulator, a int, b int) {
     em.SetWordReg(b, addr + 1)
     em.LogInstruction("ld %s, %s+ -- [0x%04X] = 0x%02X", RegisterNames[a],
         WordRegisterNames[b >> 1], addr, data)
+    
+    em.timer += 6;
 }
 
 // Function HandleLdDec handles a -LD instruction.
@@ -187,6 +199,8 @@ func HandleLdDec(em *Emulator, a int, b int) {
     em.SetWordReg(b, addr)
     em.LogInstruction("ld %s, -%s -- [0x%04X] = 0x%02X", RegisterNames[a],
         WordRegisterNames[b >> 1], addr, data)
+    
+    em.timer += 6;
 }
 
 // Function HandleLdOne handles a LD+1 instruction.
@@ -196,6 +210,8 @@ func HandleLdOne(em *Emulator, a int, b int) {
     em.SetReg(a, data)
     em.LogInstruction("ld %s, %s+1 -- [0x%04X] = 0x%02X", RegisterNames[a],
         WordRegisterNames[b >> 1], addr, data)
+    
+    em.timer += 6;
 }
 
 // Function HandleSt handles a ST instruction.
@@ -205,6 +221,8 @@ func HandleSt(em *Emulator, a int, b int) {
     em.MemoryStore(addr, data)
     em.LogInstruction("st %s, %s -- [0x%04X] = 0x%02X", WordRegisterNames[b >> 1], RegisterNames[a],
         addr, data)
+    
+    em.timer += 5;
 }
 
 // Function HandleStInc handles a ST+ instruction.
@@ -215,6 +233,8 @@ func HandleStInc(em *Emulator, a int, b int) {
     em.SetWordReg(b, addr + 1)
     em.LogInstruction("st %s+, %s -- [0x%04X] = 0x%02X", WordRegisterNames[b >> 1],
         RegisterNames[a], addr, data)
+    
+    em.timer += 5;
 }
 
 // Function HandleStDec handles a -ST instruction.
@@ -225,6 +245,8 @@ func HandleStDec(em *Emulator, a int, b int) {
     em.SetWordReg(b, addr)
     em.LogInstruction("st -%s, %s -- [0x%04X] = 0x%02X", WordRegisterNames[b >> 1],
         RegisterNames[a], addr, data)
+    
+    em.timer += 5;
 }
 
 // Function HandleStOne handles a ST+1 instruction.
@@ -234,4 +256,6 @@ func HandleStOne(em *Emulator, a int, b int) {
     em.MemoryStore(addr, data)
     em.LogInstruction("st %s+1, %s -- [0x%04X] = 0x%02X", WordRegisterNames[b >> 1],
         RegisterNames[a], addr, data)
+    
+    em.timer += 5;
 }

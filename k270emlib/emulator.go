@@ -69,7 +69,7 @@ func (em *Emulator) DumpState() {
     fmt.Printf("k0: 0x%02X   a2: 0x%02X   v2: 0x%02X   v6: 0x%02X\n", em.regs[2], em.regs[6], em.regs[10], em.regs[14])
     fmt.Printf("k1: 0x%02X   a3: 0x%02X   v3: 0x%02X   v7: 0x%02X\n", em.regs[3], em.regs[7], em.regs[11], em.regs[15])
     fmt.Printf("c:  %d      a:  %d      i:  %d      u:  %d\n", c, a, i, u)
-    fmt.Printf("sp: 0x%04X            pc: 0x%04X\n", em.sp, em.pc)
+    fmt.Printf("sp: 0x%04X pc: 0x%04X timer: 0x%08X\n", em.sp, em.pc, em.timer)
 }
 
 // Function NewEmulator creates, initialises and returns a new Emulator.
@@ -422,7 +422,6 @@ func (em *Emulator) FetchWord() (word uint16) {
 // HandleAIOpcode). It locks the mutex during the execution of this function.
 func (em *Emulator) RunOne() {
     em.Mutex.Lock()
-    em.timer += 4
     em.CheckTimer()
     
     word := em.FetchWord()
