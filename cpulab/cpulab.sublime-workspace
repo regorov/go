@@ -1,0 +1,616 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"the",
+				"them"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "cpulab.go",
+			"settings":
+			{
+				"buffer_size": 4314,
+				"line_ending": "Unix",
+				"name": "package main"
+			}
+		},
+		{
+			"contents": "Structure\n    Registers\n        Register\n        Register\n        Register\n        ...\n    \n    \n\nInstruction set\n    Instruction\n        Microinstructions\n            Microinstruction -> Structure::*\n            Microinstruction\n            Microinstruction\n            ...\n        \n        Assembly syntax\n            Mnemonic\n            \n            Operands\n                Operand\n                    Type (register? immediate? memory?)\n                    Range\n                    Processor (relative jump? register index?)\n                    Field mapping (e.g. operand 1 -> field 'b')\n                \n                Operand\n                Operand\n                ...\n        \n        Format\n            Field\n                Constant? (e.g. opcode field)\n            \n            Field\n            Field\n            ...\n    \n    Instruction\n    Instruction\n    ...",
+			"settings":
+			{
+				"buffer_size": 878,
+				"line_ending": "Unix",
+				"name": "Structure"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 375.0,
+		"selected_items":
+		[
+			[
+				"Package Control: i",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"z:AAAPackageDev: New .JSON-tmLanguage from Buffer"
+			],
+			[
+				"AAApackagedev: new .J",
+				"z:AAAPackageDev: New .JSON-tmLanguage from Buffer"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 435.0
+	},
+	"console":
+	{
+		"height": 129.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/Default (Linux).sublime-keymap",
+		"/home/kier/.config/sublime-text-2/Packages/User/GoSublime.sublime-settings",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/examples/Go build.sublime-build.example",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/GoSublime.sublime-settings",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/examples/Go-Gb.sublime-build.example",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/examples/Goinstall.sublime-build.example",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/gsfmt.py",
+		"/home/kier/gocode/test_gogtk/test_gogtk.go",
+		"/home/kier/gocode/amberfell/mm3dmodel/mm3dmodel.sublime-workspace",
+		"/home/kier/web/kierdavis.com/ghrepos.py",
+		"/home/kier/web/kierdavis.com/templates/index.html",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/github.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/services/repos/__init__.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/services/base.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/requests/base.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/requests/repos/__init__.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/__init__.py",
+		"/home/kier/gocode/resourcemanager/README.md",
+		"/home/kier/gocode/resourcemanager/resourcemanager.go",
+		"/home/kier/tmp/hydraulics-async.go",
+		"/home/kier/gocode/amberfell/hydraulics/hydraulics.go",
+		"/home/kier/gocode/amberfell/hydraulics/lightbulb.go",
+		"/home/kier/gocode/amberfell/hydraulics/feeder.go",
+		"/home/kier/gocode/amberfell/hydraulics/pipe.go",
+		"/home/kier/gocode/amberfell/hydraulics/source.go",
+		"/home/kier/altera/projects/k270/uart.v",
+		"/home/kier/gocode/amberfell/hydraulics/andgate.go",
+		"/home/kier/gocode/amberfell/hydraulics/hydrotest/hydrotest.go",
+		"/home/kier/gocode/k270emlib/emulator.go",
+		"/home/kier/gocode/k270emlib/v_opcodes.go",
+		"/home/kier/altera/projects/k270/programs/buzz-a.asm",
+		"/home/kier/tmp/freqs.py",
+		"/home/kier/altera/projects/k270/programs/notes.asm",
+		"/home/kier/altera/projects/k270/programs/scale.asm",
+		"/home/kier/altera/projects/k270/programs/song.asm",
+		"/home/kier/altera/projects/k270/programs/blink.asm",
+		"/home/kier/altera/projects/k270/programs/uart-tx.asm",
+		"/home/kier/altera/projects/k270/ram.asm",
+		"/home/kier/projects/active/k270/include/rcq208/set_tube_bits.k270.asm",
+		"/home/kier/projects/active/k270/include/rcq208/set_tube_digit.k270.asm",
+		"/home/kier/projects/active/k270/include/rcq208/tube_digits_data.k270.asm",
+		"/home/kier/projects/active/k270/include/rcq208/set_tube_digits.k270.asm",
+		"/home/kier/altera/projects/k270/programs/counter.asm",
+		"/home/kier/bin/sercomm.py",
+		"/home/kier/projects/active/k270/include/stdlib/inc.k270.asm",
+		"/home/kier/gocode/amberfell/hydraulics/splitter.go",
+		"/home/kier/gocode/k270em_nodisp/k270em_nodisp.go",
+		"/home/kier/projects/active/k270/k270asm/macproc.py",
+		"/home/kier/altera/projects/k270/programs/async_interval.asm",
+		"/home/kier/altera/projects/k270/programs/tube.asm",
+		"/home/kier/altera/pins.txt",
+		"/home/kier/projects/active/k270/k270asm/lexer.py",
+		"/home/kier/projects/active/k270/k270asm/ast.py",
+		"/home/kier/projects/active/k270/k270asm/parser.py",
+		"/home/kier/projects/active/k270/k270asm/passes.py",
+		"/home/kier/altera/projects/counter/Timer.v",
+		"/home/kier/projects/active/k270/k270asm/encoder.py",
+		"/home/kier/projects/active/k270/k270asm/k270asm.py",
+		"/home/kier/pythonlib/base_ast.py",
+		"/home/kier/altera/projects/k270/K270_onehot.v",
+		"/home/kier/altera/projects/k270/programs/delay.asm",
+		"/home/kier/web/kierdavis.com/templates/base.html",
+		"/home/kier/altera/projects/k270/K270_RCQ208_frontend.v",
+		"/home/kier/altera/projects/k270/K270_test.v",
+		"/home/kier/projects/active/n1/oldn5/n5.txt",
+		"/home/kier/projects/active/n1/nu/nu.txt",
+		"/home/kier/projects/active/n1/n2/n2.txt",
+		"/home/kier/projects/active/n1/n3/instructions.txt",
+		"/home/kier/projects/active/n1/n4/n4-draft.txt",
+		"/home/kier/projects/active/k680/doc/instructions.txt",
+		"/home/kier/projects/active/k680/doc/instructions.yaml",
+		"/home/kier/projects/active/k680/k680.txt",
+		"/home/kier/altera/projects/k270/K270.v",
+		"/home/kier/altera/projects/k680/K680.v",
+		"/home/kier/misc/hunger-games-scores.txt",
+		"/home/kier/projects/active/k270/k270.txt",
+		"/home/kier/projects/active/k680/os/src/malloc.k680asm",
+		"/home/kier/projects/active/n1/n1/n1.txt",
+		"/home/kier/projects/active/n1/n1/instructions.txt",
+		"/home/kier/altera/projects/k270/K270_nononehot.v",
+		"/home/kier/altera/projects/k270/single_port_ram_initialized.v",
+		"/home/kier/gocode/k270emlib/i_opcodes.go",
+		"/home/kier/gocode/k270emlib/a_opcodes.go",
+		"/home/kier/gocode/k270emlib/aj_opcodes.go",
+		"/home/kier/gocode/k270emlib/ai_opcodes.go",
+		"/home/kier/gocode/k270emlib/ab2_opcodes.go",
+		"/home/kier/gocode/k270emlib/ab1_opcodes.go",
+		"/home/kier/altera/projects/k270/single_port_ram_initialised_2.vhd",
+		"/home/kier/altera/projects/dcpu16/RAM.v",
+		"/home/kier/altera/projects/dcpu16/DCPU16.v",
+		"/home/kier/altera/projects/counter/Counter.v",
+		"/home/kier/downloads/jtag/tap/rtl/verilog/tap_top.v",
+		"/home/kier/downloads/jtag",
+		"/home/kier/altera/projects/k270/FIFO.v",
+		"/home/kier/altera/projects/k270/K270_timer.v",
+		"/home/kier/altera/projects/k270/single_port_ram.v",
+		"/home/kier/.config/sublime-text-2/Packages/Verilog/verilog.tmLanguage",
+		"/home/kier/.bashrc",
+		"/home/kier/.bash_vars",
+		"/home/kier/projects/active/k270/include/pico/pico_data.k270.asm",
+		"/home/kier/projects/active/n1/n3/pyn3/n3asm.py",
+		"/home/kier/pythonlib/base_pp.py",
+		"/home/kier/gocode/k270emlib/util.go",
+		"/home/kier/projects/active/k270/include/stdlib/print_buffer.k270.asm",
+		"/home/kier/projects/active/k270/include/stdlib/print_string.k270.asm",
+		"/home/kier/projects/active/k270/include/stdlib/printer_data.k270.asm",
+		"/home/kier/projects/active/k270/include/stdlib/readchar.k270.asm",
+		"/home/kier/projects/active/k270/include/stdlib/divmod.k270.asm",
+		"/home/kier/projects/active/n1/n3/forth/jonesforth_n3.asm",
+		"/home/kier/projects/active/k270/include/stdlib/multiply.k270.asm",
+		"/home/kier/projects/active/k270/include/pico/pico_init.k270.asm",
+		"/home/kier/misc/Pneumatics for Amberfell.txt",
+		"/home/kier/gocode/ihex/ihex.go",
+		"/home/kier/projects/active/k270/include/pico/pico_inc.k270.asm",
+		"/home/kier/projects/active/picofs/picofs.txt",
+		"/home/kier/projects/active/ihex/ihex.py",
+		"/home/kier/projects/active/picofs/picofs.py",
+		"/home/kier/pythonlib/bytebuilder.py",
+		"/home/kier/projects/active/k680/doc/arch.txt",
+		"/home/kier/projects/active/k270/forth.k270.asm",
+		"/home/kier/tmp/extract_ps2_keys.py",
+		"/home/kier/pythonlib/ihex.py",
+		"/home/kier/projects/active/k270/picofs.k270.asm",
+		"/home/kier/projects/active/k270/include/pico/my_pico_fs_header.k270.asm",
+		"/home/kier/projects/active/k270/include/pico/my_pico_fs_footer.k270.asm",
+		"/home/kier/composition/gd/core/core.cpp",
+		"/home/kier/.config/sublime-text-2/Packages/C++/C++.tmLanguage",
+		"/usr/lib/python2.6/csv.py"
+	],
+	"find":
+	{
+		"height": 33.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"b",
+			"MM3DModel",
+			"8",
+			"i",
+			"sp",
+			"sp_minus_four",
+			"sp_plus_four",
+			"pc_plus_four",
+			"_",
+			" = ",
+			"68",
+			"ST_RETI:",
+			"resume",
+			"(?<![<=])=(?!=)",
+			"(?<![<=])=",
+			"(?<!<)=",
+			"(?!<)=",
+			"i <=",
+			"sp[",
+			"or",
+			"pipe",
+			"Pipe",
+			"math.Min",
+			"Reciever",
+			"pipe",
+			"Source",
+			"source",
+			"regs_buffer",
+			"ram",
+			"ireq",
+			"ifne",
+			"self.data",
+			"bb",
+			"DirectoryEntry",
+			"HIDDEN",
+			"v7",
+			"v6",
+			"r6",
+			"r0",
+			"code_INTERPRET_",
+			"r5",
+			"r4",
+			"r3",
+			"r2",
+			"r1",
+			"%edi",
+			"%ecx",
+			"//",
+			".split(\",\")",
+			"WORD",
+			".+:",
+			":.+",
+			"print ",
+			"jmp",
+			"-",
+			"+",
+			"str",
+			"@word",
+			"link",
+			"@word",
+			"inf.name",
+			"RSP_L",
+			"RSP_H",
+			"RSP",
+			"NXT_L",
+			"NXT_H",
+			"NXT",
+			"macros",
+			"82",
+			"DCPU16",
+			"0.0, ",
+			"1.0, ",
+			"ram_a",
+			"memory",
+			"memory\\[(.+)\\] <=",
+			"<= memory",
+			"memory",
+			"ST_LOADB",
+			"ST_LOADA",
+			"operand_a",
+			"ST_DECODE",
+			"E_INCORRECT_MODE",
+			"VideoMemory",
+			"type",
+			"calcChecksum",
+			"//  ",
+			"GetArea",
+			"io",
+			"xxxxx",
+			"offset",
+			"lineno",
+			"PLUS",
+			"errors.error",
+			"ast.",
+			"#",
+			"BS_CLEAR",
+			"#",
+			"shift_up",
+			"shift_down",
+			"videoMemory",
+			"ports",
+			"writeln",
+			"//",
+			"SIZE",
+			"push",
+			"pop",
+			"pc",
+			"bor",
+			"sub",
+			"and",
+			"jsr",
+			"ifg",
+			"ife",
+			"add",
+			"set",
+			"z",
+			"y",
+			"x",
+			"c",
+			"b",
+			"a",
+			"TMP",
+			"REMCHUNK",
+			"BLOCKSIZE",
+			"HEADER",
+			"CHUNK",
+			"//",
+			"SIZE"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"br",
+			"Model",
+			"64",
+			"32",
+			"16",
+			"64",
+			"32",
+			"interrupts",
+			"regs[R_SP]",
+			"sp - 32'd4",
+			"sp + 32'd4",
+			"pc + 32'd4",
+			"",
+			"50",
+			"ext_int_ready",
+			"splitter",
+			"Splitter",
+			"imin",
+			"Receiver",
+			"lightBulb",
+			"Pipe",
+			"pipe",
+			"ireg",
+			"ifnei",
+			"vbb",
+			"Directory",
+			"a1",
+			"a0",
+			"v6",
+			"v0",
+			".",
+			"v5",
+			"v4",
+			"v3",
+			"v2",
+			"v1",
+			"v2:v3",
+			"v1",
+			";",
+			"",
+			"print >> f, ",
+			"@u16",
+			"LINK",
+			"@u16",
+			"v7",
+			"v6",
+			"v6:v7",
+			"v5",
+			"v4",
+			"v4:v5",
+			"defs",
+			"K270",
+			"  ",
+			"XX",
+			"memory[\\1] =",
+			"= memory",
+			"ST_LOADA",
+			"ST_LOADAREF",
+			"operand_b",
+			"ST_LOADB",
+			"videoMemory",
+			"CalcChecksum",
+			"// ",
+			"getArea",
+			"offset",
+			"lineno",
+			"xxxxx",
+			"ADD",
+			"@",
+			"shift_left",
+			"shift_right",
+			"VideoMemory",
+			";",
+			"A",
+			"PUSH",
+			"POP",
+			"PC",
+			"BOR",
+			"SUB",
+			"AND",
+			"JSR",
+			"IFG",
+			"IFE",
+			"ADD",
+			"SET",
+			"Z",
+			"Y",
+			"X",
+			"C",
+			"B",
+			"A",
+			"z",
+			"y",
+			"x",
+			"c",
+			"b",
+			";",
+			"a",
+			"",
+			"nil",
+			"register",
+			"\\1",
+			"dest.Store(em, ",
+			".Load(em",
+			".Load(em, ",
+			"InputShield",
+			"InputShieldClass",
+			"InputShield",
+			"InputShieldClass",
+			"tail",
+			"head->",
+			"func(*Emulator, ",
+			"0x%0",
+			"a_value",
+			"uint8",
+			"em.memory",
+			"value",
+			"",
+			"directive",
+			"",
+			"*ar",
+			"*AR",
+			"sar",
+			"SAR",
+			"time.Now().UnixNano",
+			"src/ksim_comp/",
+			"time.Now().UnixNano()",
+			"ksim"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "cpulab.go",
+					"settings":
+					{
+						"buffer_size": 4314,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4216,
+								4216
+							]
+						],
+						"settings":
+						{
+							"auto_name": "package main",
+							"syntax": "Packages/Go/Go.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1874.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 878,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								748,
+								748
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Structure",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 42.0
+	},
+	"input":
+	{
+		"height": 32.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 110.0
+	},
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/home/kier/mininggame/mininggame.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

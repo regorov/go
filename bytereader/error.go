@@ -1,0 +1,26 @@
+package bytereader
+
+import (
+    "fmt"
+)
+
+const (
+    E_INVALID_ENDIANNESS = iota
+)
+
+type Error struct {
+    id int
+    msg string
+}
+
+func NewError(id int, msg string) (e *Error) {
+    return &Error{id: id, msg: msg}
+}
+
+func (e *Error) ID() (id int) {
+    return e.id
+}
+
+func (e *Error) Error() (str string) {
+    return fmt.Sprintf("[github.com/kierdavis/bytereader] %s", e.msg)
+}
