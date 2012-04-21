@@ -72,15 +72,15 @@ func Read(reader io.ReadSeeker) (model *Model, err error) {
         //case 0x0321: ParseFrameAnimationsSegment             (model, dataFlags, dataElements)
         //case 0x0326: ParseFrameAnimationPointsSegment        (model, dataFlags, dataElements)
         case 0x8001: ParseVerticesSegment                    (model, dataFlags, dataElements)
-        //case 0x8021: ParseTrianglesSegment                   (model, dataFlags, dataElements)
-        //case 0x8026: ParseTriangleNormalsSegment             (model, dataFlags, dataElements)
+        case 0x8021: ParseTrianglesSegment                   (model, dataFlags, dataElements)
+        case 0x8026: ParseTriangleNormalsSegment             (model, dataFlags, dataElements)
         //case 0x8041: ParseJointsSegment                      (model, dataFlags, dataElements)
         //case 0x8046: ParseJointVerticesSegment               (model, dataFlags, dataElements)
         //case 0x8061: ParsePointsSegment                      (model, dataFlags, dataElements)
         //case 0x8106: ParseSmoothnessAnglesSegment            (model, dataFlags, dataElements)
         //case 0x8146: ParseWeightedInfluencesSegment          (model, dataFlags, dataElements)
         //case 0x8168: ParseTextureProjectionsSegment          (model, dataFlags, dataElements)
-        //case 0x8121: ParseTextureCoordinatesSegment          (model, dataFlags, dataElements)
+        case 0x8121: ParseTextureCoordinatesSegment          (model, dataFlags, dataElements)
         
         default:
             model.dirtySegments = append(model.dirtySegments, &DirtySegment{offsetType: offsetType, flags: dataFlags, elements: dataElements})
