@@ -1,0 +1,63 @@
+Structure
+    Registers
+        Register
+            Name
+            Width
+        
+        Register
+        Register
+        ...
+    
+    Register banks
+        Register bank
+            Name
+            Width
+            Depth
+        
+        Register bank
+        Register bank
+        ...
+    
+    RAMs
+        RAM
+            Name
+            Width
+            Depth
+        
+        RAM
+        RAM
+        ...
+
+Instruction set
+    Instruction
+        Microinstructions
+            Microinstruction -> Structure::*
+            Microinstruction
+            Microinstruction
+            ...
+        
+        Assembly syntax
+            Mnemonic
+            
+            Operands
+                Operand
+                    Type (register? immediate? memory?)
+                    Range
+                    Processor (relative jump? register index?)
+                    Field mapping (e.g. operand 1 -> field 'b')
+                
+                Operand
+                Operand
+                ...
+        
+        Encoding
+            Field
+                Constant? (e.g. opcode field)
+            
+            Field
+            Field
+            ...
+    
+    Instruction
+    Instruction
+    ...

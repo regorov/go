@@ -1,6 +1,7 @@
 package termdialog
 
 import (
+    "fmt"
     "github.com/nsf/termbox-go"
 )
 
@@ -18,7 +19,7 @@ const (
     BOX_CROSS     rune = 0x253C
 )
 
-func drawBox(x int, y int, width int, height int, fg termbox.Attribute, bg termbox.Attribute) {
+func DrawBox(x int, y int, width int, height int, fg termbox.Attribute, bg termbox.Attribute) {
     xmax := x + width - 1
     ymax := y + height - 1
 
@@ -38,7 +39,7 @@ func drawBox(x int, y int, width int, height int, fg termbox.Attribute, bg termb
     }
 }
 
-func drawString(x int, y int, str string, fg termbox.Attribute, bg termbox.Attribute) {
+func DrawString(x int, y int, str string, fg termbox.Attribute, bg termbox.Attribute) {
     startX := x
 
     for _, c := range str {
@@ -53,7 +54,7 @@ func drawString(x int, y int, str string, fg termbox.Attribute, bg termbox.Attri
     }
 }
 
-func fill(x int, y int, width int, height int, ch rune, fg termbox.Attribute, bg termbox.Attribute) {
+func Fill(x int, y int, width int, height int, ch rune, fg termbox.Attribute, bg termbox.Attribute) {
     for i := 0; i < width; i++ {
         for j := 0; j < height; j++ {
             termbox.SetCell(x+i, y+j, ch, fg, bg)
@@ -61,11 +62,6 @@ func fill(x int, y int, width int, height int, ch rune, fg termbox.Attribute, bg
     }
 }
 
-type Dialog interface {
-    GetTitle() string
-    SetTitle(string)
-    CalcMetrics()
-    Open()
-    Close()
-    HandleEvent() (bool, bool)
+func Debug(y int, s string, args ...interface{}) {
+    DrawString(0, y, fmt.Sprintf("D: "+s, args...), 0, 0)
 }

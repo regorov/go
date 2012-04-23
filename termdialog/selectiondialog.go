@@ -6,77 +6,62 @@ import (
 )
 
 /*
-  +------------+
-  |            |
-  |  Title     |
-  |            |
-  |  00 - xxx  |
-  |  01 - yyy  |
-  |  02 - zzz  |
-  |            |
-  +------------+
+  +---------+
+  |         |
+  |  Title  |
+  |         |
+  |  xxx    |
+  |  yyy    |
+  |  zzz    |
+  |         |
+  +---------+
 */
 
 type Option struct {
     Text     string
-    Callback func(Option)
+    Callback func(*Option) bool
+    Data     interface{}
 }
 
 type SelectionDialog struct {
-    title         string
-    options       []Option
-    metricsDirty  bool
-    width         int
-    height        int
-    x             int
-    y             int
+    BaseDialog
+    options       []*Option
     selectedIndex int
-    theme         *Theme
 }
 
-func NewSelectionDialog(title string, options []Option) (dialog *SelectionDialog) {
+func NewSelectionDialog(title string, options []*Option) (dialog *SelectionDialog) {
     if options == nil {
-        options = make([]Option, 0)
+        options = make([]*Option, 0)
     }
 
-    return &SelectionDialog{
-        title:         title,
+    dialog = &SelectionDialog{
         options:       options,
-        metricsDirty:  true,
-        width:         0,
-        height:        0,
-        x:             0,
-        y:             0,
         selectedIndex: 0,
-        theme:         DefaultTheme,
     }
-}
 
-func (dialog *SelectionDialog) GetTitle() (title string) {
-    return dialog.title
-}
-
-func (dialog *SelectionDialog) SetTitle(title string) {
-    dialog.title = title
-    dialog.metricsDirty = true
+    dialog.BaseDialog.title = title
+    dialog.BaseDialog.metricsDirty = true
+    dialog.BaseDialog.theme = DefaultTheme
+    return dialog
 }
 
 func (dialog *SelectionDialog) NOptions() (num int) {
     return len(dialog.options)
 }
 
-func (dialog *SelectionDialog) GetOption(n int) (option Option) {
+func (dialog *SelectionDialog) GetOption(n int) (option *Option) {
     return dialog.options[n]
 }
 
-func (dialog *SelectionDialog) SetOption(n int, option Option) {
+func (dialog *SelectionDialog) SetOption(n int, option *Option) {
     dialog.options[n] = option
     dialog.metricsDirty = true
 }
 
-func (dialog *SelectionDialog) AddOption(option Option) {
+func (dialog *SelectionDialog) AddOption(option *Option) (theSameOption *Option) {
     dialog.options = append(dialog.options, option)
     dialog.metricsDirty = true
+    return option
 }
 
 func (dialog *SelectionDialog) RemoveOption(n int) {
@@ -84,24 +69,9 @@ func (dialog *SelectionDialog) RemoveOption(n int) {
     dialog.metricsDirty = true
 }
 
-func (dialog *SelectionDialog) GetMetricsDirty() (dirty bool) {
-    return dialog.metricsDirty
-}
-
-func (dialog *SelectionDialog) GetWidth() (width int) {
-    return dialog.width
-}
-
-func (dialog *SelectionDialog) GetHeight() (height int) {
-    return dialog.height
-}
-
-func (dialog *SelectionDialog) GetX() (x int) {
-    return dialog.x
-}
-
-func (dialog *SelectionDialog) GetY() (y int) {
-    return dialog.y
+func (dialog *SelectionDialog) ClearOptions() {
+    dialog.options = make([]*Option, 0)
+    dialog.metricsDirty = true
 }
 
 func (dialog *SelectionDialog) GetSelectedIndex() (selectedIndex int) {
@@ -110,14 +80,6 @@ func (dialog *SelectionDialog) GetSelectedIndex() (selectedIndex int) {
 
 func (dialog *SelectionDialog) SetSelectedIndex(selectedIndex int) {
     dialog.selectedIndex = selectedIndex
-}
-
-func (dialog *SelectionDialog) GetTheme() (theme *Theme) {
-    return dialog.theme
-}
-
-func (dialog *SelectionDialog) SetTheme(theme *Theme) {
-    dialog.theme = theme
 }
 
 func (dialog *SelectionDialog) CalcMetrics() {
@@ -130,7 +92,7 @@ func (dialog *SelectionDialog) CalcMetrics() {
         }
     }
 
-    maxWidth += 5 // Add the "00 - "
+    maxWidth += 2 // Add the "* "
     if len(dialog.title) > maxWidth {
         maxWidth = len(dialog.title)
     }
@@ -145,39 +107,28 @@ func (dialog *SelectionDialog) CalcMetrics() {
 }
 
 func (dialog *SelectionDialog) Open() {
-    if dialog.metricsDirty {
-        dialog.CalcMetrics()
-    }
-
-    drawBox(dialog.x, dialog.y, dialog.width, dialog.height, dialog.theme.Border.FG, dialog.theme.Border.BG)
-    fill(dialog.x+1, dialog.y+1, dialog.width-2, dialog.height-2, ' ', dialog.theme.Dialog.FG, dialog.theme.Dialog.BG)
-
-    drawString(dialog.x+3, dialog.y+2, dialog.title, dialog.theme.Title.FG, dialog.theme.Title.BG)
+    baseDialogOpen(dialog)
 
     for i, option := range dialog.options {
         if i == dialog.selectedIndex {
-            drawString(dialog.x+3, dialog.y+4+i, fmt.Sprintf("%2d - %s", i+1, option.Text), dialog.theme.ActiveItem.FG, dialog.theme.ActiveItem.BG)
+            DrawString(dialog.x+3, dialog.y+4+i, fmt.Sprintf("* %s", option.Text), dialog.theme.ActiveItem.FG, dialog.theme.ActiveItem.BG)
         } else {
-            drawString(dialog.x+3, dialog.y+4+i, fmt.Sprintf("%2d - %s", i+1, option.Text), dialog.theme.InactiveItem.FG, dialog.theme.InactiveItem.BG)
+            DrawString(dialog.x+3, dialog.y+4+i, fmt.Sprintf("* %s", option.Text), dialog.theme.InactiveItem.FG, dialog.theme.InactiveItem.BG)
         }
     }
 }
 
-func (dialog *SelectionDialog) Close() {
-    if dialog.metricsDirty {
-        dialog.CalcMetrics()
+func (dialog *SelectionDialog) HandleEvent(event termbox.Event) (handled bool, close bool) {
+    handled, close = baseDialogHandleEvent(dialog, event)
+    if handled {
+        return
     }
 
-    fill(dialog.x, dialog.y, dialog.width, dialog.height, ' ', dialog.theme.Screen.FG, dialog.theme.Screen.BG)
-}
+    maxOption := len(dialog.options) - 1
 
-func (dialog *SelectionDialog) HandleEvent(event termbox.Event) (handled bool, close bool) {
     switch event.Type {
     case termbox.EventKey:
         switch event.Key {
-        case termbox.KeyEsc:
-            return true, true
-
         case termbox.KeyArrowUp:
             if dialog.selectedIndex > 0 {
                 dialog.selectedIndex--
@@ -191,7 +142,6 @@ func (dialog *SelectionDialog) HandleEvent(event termbox.Event) (handled bool, c
             if dialog.selectedIndex < maxOption {
                 dialog.selectedIndex++
                 dialog.Open()
-                termbox.Flush()
             }
 
             return true, false
@@ -199,24 +149,23 @@ func (dialog *SelectionDialog) HandleEvent(event termbox.Event) (handled bool, c
         case termbox.KeyHome:
             dialog.selectedIndex = 0
             dialog.Open()
-            termbox.Flush()
 
             return true, false
 
         case termbox.KeyEnd:
             dialog.selectedIndex = maxOption
             dialog.Open()
-            termbox.Flush()
 
             return true, false
 
         case termbox.KeyEnter, termbox.KeySpace:
             option := dialog.options[dialog.selectedIndex]
+            close = true
             if option.Callback != nil {
-                option.Callback(option)
+                close = option.Callback(option)
             }
 
-            return true, true
+            return true, close
         }
     }
 
