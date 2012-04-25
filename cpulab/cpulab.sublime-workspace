@@ -12,21 +12,132 @@
 	"buffers":
 	[
 		{
-			"file": "cpulab.go",
+			"file": "_structure.txt",
 			"settings":
 			{
-				"buffer_size": 4314,
+				"buffer_size": 1202,
 				"line_ending": "Unix",
-				"name": "package main"
+				"name": "Structure"
 			}
 		},
 		{
-			"contents": "Structure\n    Registers\n        Register\n        Register\n        Register\n        ...\n    \n    \n\nInstruction set\n    Instruction\n        Microinstructions\n            Microinstruction -> Structure::*\n            Microinstruction\n            Microinstruction\n            ...\n        \n        Assembly syntax\n            Mnemonic\n            \n            Operands\n                Operand\n                    Type (register? immediate? memory?)\n                    Range\n                    Processor (relative jump? register index?)\n                    Field mapping (e.g. operand 1 -> field 'b')\n                \n                Operand\n                Operand\n                ...\n        \n        Format\n            Field\n                Constant? (e.g. opcode field)\n            \n            Field\n            Field\n            ...\n    \n    Instruction\n    Instruction\n    ...",
+			"file": "cpulab.go",
 			"settings":
 			{
-				"buffer_size": 878,
-				"line_ending": "Unix",
-				"name": "Structure"
+				"buffer_size": 14072,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "registergui.go",
+			"settings":
+			{
+				"buffer_size": 3224,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "instructiongui.go",
+			"settings":
+			{
+				"buffer_size": 2329,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "microinstructiongui.go",
+			"settings":
+			{
+				"buffer_size": 2366,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "registerbankgui.go",
+			"settings":
+			{
+				"buffer_size": 4545,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ramgui.go",
+			"settings":
+			{
+				"buffer_size": 3235,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cpu.go",
+			"settings":
+			{
+				"buffer_size": 5106,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/dialogstack.go",
+			"settings":
+			{
+				"buffer_size": 1614,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/selectiondialog.go",
+			"settings":
+			{
+				"buffer_size": 4294,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/inputdialog.go",
+			"settings":
+			{
+				"buffer_size": 3811,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/messagedialog.go",
+			"settings":
+			{
+				"buffer_size": 1768,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/dialog.go",
+			"settings":
+			{
+				"buffer_size": 2986,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/help.go",
+			"settings":
+			{
+				"buffer_size": 704,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/termdialog.go",
+			"settings":
+			{
+				"buffer_size": 1761,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/style.go",
+			"settings":
+			{
+				"buffer_size": 966,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -70,10 +181,15 @@
 	},
 	"file_history":
 	[
+		"/home/kier/misc/10s-emails.txt",
+		"/home/kier/bin/gobdump.py",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/GoSublime.sublime-settings",
+		"/home/kier/gocode/cpulab/verilogwriter.go",
+		"/home/kier/gocode/k270em/k270em.go",
+		"/home/kier/gocode/cpulab/cpulab.go",
 		"/home/kier/.config/sublime-text-2/Packages/GoSublime/Default (Linux).sublime-keymap",
 		"/home/kier/.config/sublime-text-2/Packages/User/GoSublime.sublime-settings",
 		"/home/kier/.config/sublime-text-2/Packages/GoSublime/examples/Go build.sublime-build.example",
-		"/home/kier/.config/sublime-text-2/Packages/GoSublime/GoSublime.sublime-settings",
 		"/home/kier/.config/sublime-text-2/Packages/GoSublime/examples/Go-Gb.sublime-build.example",
 		"/home/kier/.config/sublime-text-2/Packages/GoSublime/examples/Goinstall.sublime-build.example",
 		"/home/kier/.config/sublime-text-2/Packages/GoSublime/gsfmt.py",
@@ -192,12 +308,7 @@
 		"/home/kier/projects/active/k270/forth.k270.asm",
 		"/home/kier/tmp/extract_ps2_keys.py",
 		"/home/kier/pythonlib/ihex.py",
-		"/home/kier/projects/active/k270/picofs.k270.asm",
-		"/home/kier/projects/active/k270/include/pico/my_pico_fs_header.k270.asm",
-		"/home/kier/projects/active/k270/include/pico/my_pico_fs_footer.k270.asm",
-		"/home/kier/composition/gd/core/core.cpp",
-		"/home/kier/.config/sublime-text-2/Packages/C++/C++.tmLanguage",
-		"/usr/lib/python2.6/csv.py"
+		"/home/kier/projects/active/k270/picofs.k270.asm"
 	],
 	"find":
 	{
@@ -215,6 +326,17 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"panic",
+			"showError",
+			"panic",
+			"%X",
+			"InputDialog",
+			"egisterBank",
+			"Option",
+			"width",
+			"Option",
+			"order",
+			"SelectedIndex",
 			"b",
 			"MM3DModel",
 			"8",
@@ -331,18 +453,7 @@
 			"add",
 			"set",
 			"z",
-			"y",
-			"x",
-			"c",
-			"b",
-			"a",
-			"TMP",
-			"REMCHUNK",
-			"BLOCKSIZE",
-			"HEADER",
-			"CHUNK",
-			"//",
-			"SIZE"
+			"y"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -350,6 +461,12 @@
 		"regex": false,
 		"replace_history":
 		[
+			"%Xh",
+			"am",
+			"*Option",
+			"termdialog.Option",
+			"ackground",
+			"selectedIndex",
 			"br",
 			"Model",
 			"64",
@@ -471,72 +588,457 @@
 			"directive",
 			"",
 			"*ar",
-			"*AR",
-			"sar",
-			"SAR",
-			"time.Now().UnixNano",
-			"src/ksim_comp/",
-			"time.Now().UnixNano()",
-			"ksim"
+			"*AR"
 		],
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": true,
+		"whole_word": false,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 13,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "cpulab.go",
+					"file": "_structure.txt",
 					"settings":
 					{
-						"buffer_size": 4314,
+						"buffer_size": 1202,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4216,
-								4216
+								958,
+								958
 							]
 						],
 						"settings":
 						{
-							"auto_name": "package main",
-							"syntax": "Packages/Go/Go.tmLanguage"
+							"auto_name": "Structure",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1874.0,
+						"translation.y": 34.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "cpulab.go",
 					"settings":
 					{
-						"buffer_size": 878,
+						"buffer_size": 14072,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								748,
-								748
+								3754,
+								3620
 							]
 						],
 						"settings":
 						{
-							"auto_name": "Structure",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1737.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "registergui.go",
+					"settings":
+					{
+						"buffer_size": 3224,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2659,
+								2668
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1055.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "instructiongui.go",
+					"settings":
+					{
+						"buffer_size": 2329,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1621,
+								1621
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 306.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "microinstructiongui.go",
+					"settings":
+					{
+						"buffer_size": 2366,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								329,
+								361
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "registerbankgui.go",
+					"settings":
+					{
+						"buffer_size": 4545,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3953,
+								3953
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1497.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "ramgui.go",
+					"settings":
+					{
+						"buffer_size": 3235,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								837,
+								837
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 204.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "cpu.go",
+					"settings":
+					{
+						"buffer_size": 5106,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5106,
+								5106
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3233.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/kier/gocode/termdialog/dialogstack.go",
+					"settings":
+					{
+						"buffer_size": 1614,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								432,
+								432
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 51.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/kier/gocode/termdialog/selectiondialog.go",
+					"settings":
+					{
+						"buffer_size": 4294,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/home/kier/gocode/termdialog/inputdialog.go",
+					"settings":
+					{
+						"buffer_size": 3811,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								252,
+								252
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/kier/gocode/termdialog/messagedialog.go",
+					"settings":
+					{
+						"buffer_size": 1768,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/kier/gocode/termdialog/dialog.go",
+					"settings":
+					{
+						"buffer_size": 2986,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2986,
+								2986
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 887.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "/home/kier/gocode/termdialog/help.go",
+					"settings":
+					{
+						"buffer_size": 704,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								521,
+								521
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "/home/kier/gocode/termdialog/termdialog.go",
+					"settings":
+					{
+						"buffer_size": 1761,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1294,
+								1294
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 513.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "/home/kier/gocode/termdialog/style.go",
+					"settings":
+					{
+						"buffer_size": 966,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								964,
+								964
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -578,10 +1080,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 110.0
-	},
 	"replace":
 	{
 		"height": 62.0

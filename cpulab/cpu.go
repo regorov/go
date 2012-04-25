@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"github.com/kierdavis/go/termdialog"
 	"io"
@@ -120,7 +121,7 @@ func (self *RamOperationMicroInstruction) ToVerilog(writer io.Writer, ind string
 	} else if self.Operation == RamWrite {
 		fmt.Fprintf(writer, "%sram_write <= 1'd1;\n")
 	} else {
-		panic("Invalid value for Operation field")
+		showError(errors.New("Invalid value for Operation field"))
 	}
 }
 
@@ -130,7 +131,7 @@ func (self *RamOperationMicroInstruction) String() (str string) {
 	} else if self.Operation == RamWrite {
 		str = fmt.Sprintf("{Write %s}", self.Ram.Name)
 	} else {
-		panic("Invalid value for Operation field")
+		showError(errors.New("Invalid value for Operation field"))
 	}
 
 	return str
@@ -150,10 +151,11 @@ func (self *MicroRegisterBankIndexed) ToVerilogExpr() (str string) {
 
 func (self *MicroRegisterBankIndexed) String() (str string) {
 	if self.Index == nil {
-		return fmt.Sprintf("%s[...]", self.RegisterBank.Name)
+		str = fmt.Sprintf("%s[...]", self.RegisterBank.Name)
 	} else {
-		return fmt.Sprintf("%s[%s]", self.RegisterBank.Name, self.Index.String())
+		str = fmt.Sprintf("%s[%s]", self.RegisterBank.Name, self.Index.String())
 	}
+	return str
 }
 
 func (self *MicroRamAddr) ToVerilogExpr() (str string) {

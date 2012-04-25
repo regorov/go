@@ -80,6 +80,8 @@ var (
 	addInstructionDialog        *termdialog.InputDialog
 	editInstructionNameDialog   *termdialog.InputDialog
 
+	errorDialog *termdialog.MessageDialog
+
 	// Future FileChooserDialogs
 	openDialog *termdialog.InputDialog
 	saveDialog *termdialog.InputDialog
@@ -110,7 +112,8 @@ func openCallback(filename string, arg interface{}) (close bool) {
 	filename = filepath.Join(SavesDir, filename)
 	f, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 	defer f.Close()
 
@@ -119,7 +122,8 @@ func openCallback(filename string, arg interface{}) (close bool) {
 	decoder := gob.NewDecoder(f)
 	err = decoder.Decode(&cpu)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	refreshGUI()
@@ -137,8 +141,15 @@ func openCallback(filename string, arg interface{}) (close bool) {
 	}
 
 	for _, instruction := range cpu.Instructions {
+		currentlyEditingInstruction = instruction
 		addInstructionToGui(instruction)
+
+		for _, mi := range instruction.MicroInstructions {
+			addMicroInstructionToGui(mi)
+		}
 	}
+
+	currentlyEditingInstruction = nil
 
 	return true
 }
@@ -148,19 +159,22 @@ func saveCallback(filename string, arg interface{}) (close bool) {
 	dir := filepath.Dir(filename)
 	err := os.MkdirAll(dir, os.ModeDir|0755)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	f, err := os.Create(filename)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 	defer f.Close()
 
 	encoder := gob.NewEncoder(f)
 	err = encoder.Encode(cpu)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	return true
@@ -194,6 +208,11 @@ func refreshGUI() {
 
 	addMoveMicroInstructionDestinationDialog.AddOption(&termdialog.Option{"Edit registers", openDialogCallback, registersDialog})
 	addMoveMicroInstructionDestinationDialog.AddOption(&termdialog.Option{"Close", nil, nil})
+}
+
+func showError(err error) {
+	errorDialog.SetMessage(err.Error())
+	dialogStack.Open(errorDialog)
 }
 
 func init() {
@@ -234,6 +253,8 @@ func init() {
 	editRamDepthDialog = termdialog.NewInputDialog("Edit RAM", "Depth:", 8, "", editRamDepthCallback, nil)
 	addInstructionDialog = termdialog.NewInputDialog("Add Instruction", "Mnemonic:", 12, "", addInstructionCallback, nil)
 	editInstructionNameDialog = termdialog.NewInputDialog("Edit Instruction", "Mnemonic:", 12, "", editInstructionNameCallback, nil)
+
+	errorDialog = termdialog.NewMessageDialog("Error", "")
 
 	openDialog = termdialog.NewInputDialog("Open from "+SavesDir, "Filename:", 20, "", openCallback, nil)
 	saveDialog = termdialog.NewInputDialog("Save to "+SavesDir, "Filename:", 20, "", saveCallback, nil)

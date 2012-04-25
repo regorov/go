@@ -17,7 +17,8 @@ func addRamDepthCallback(widthStr string, arg interface{}) (close bool) {
 	name := arg.(string)
 	width64, err := strconv.ParseUint(widthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	width := uint(width64)
@@ -33,7 +34,8 @@ func addRamCallback(depthStr string, arg interface{}) (close bool) {
 
 	depth64, err := strconv.ParseUint(depthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	depth := uint(depth64)
@@ -87,7 +89,8 @@ func editRamNameCallback(name string, arg interface{}) (close bool) {
 func editRamWidthCallback(widthStr string, arg interface{}) (close bool) {
 	width64, err := strconv.ParseUint(widthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	currentlyEditingRam.Width = uint(width64)
@@ -98,7 +101,8 @@ func editRamWidthCallback(widthStr string, arg interface{}) (close bool) {
 func editRamDepthCallback(depthStr string, arg interface{}) (close bool) {
 	depth64, err := strconv.ParseUint(depthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	currentlyEditingRam.Depth = uint(depth64)

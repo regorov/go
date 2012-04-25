@@ -16,6 +16,7 @@ func NewDialogStack() (dialogStack *DialogStack) {
 
 func (dialogStack *DialogStack) Open(dialog Dialog) {
     dialog.Open()
+    dialog.SetLastDialogStack(dialogStack)
     dialogStack.dialogs = append(dialogStack.dialogs, dialog)
     //return dialog
 }
@@ -39,7 +40,9 @@ func (dialogStack *DialogStack) CloseTop() {
 
 func (dialogStack *DialogStack) Run() {
     windowWidth, windowHeight := termbox.Size()
+
     Fill(0, 0, windowWidth, windowHeight, ' ', DefaultTheme.Screen.FG, DefaultTheme.Screen.BG)
+    DrawString(0, windowHeight-1, "Ctrl+H: Show help", DefaultTheme.InactiveItem.FG, DefaultTheme.InactiveItem.BG)
 
     for len(dialogStack.dialogs) > 0 {
         for _, dialog := range dialogStack.dialogs {

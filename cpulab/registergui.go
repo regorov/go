@@ -17,7 +17,8 @@ func addRegisterCallback(widthStr string, arg interface{}) (close bool) {
 	name := arg.(string)
 	width64, err := strconv.ParseUint(widthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	width := uint(width64)
@@ -39,7 +40,6 @@ func addRegisterToGui(register *Register) {
 
 	asMicroRegister := &MicroRegister{
 		Register: register,
-		Index:    nil,
 	}
 
 	asMicroSource := IMicroSource(asMicroRegister)
@@ -78,7 +78,8 @@ func editRegisterNameCallback(name string, arg interface{}) (close bool) {
 func editRegisterWidthCallback(widthStr string, arg interface{}) (close bool) {
 	width64, err := strconv.ParseUint(widthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	currentlyEditingRegister.Width = uint(width64)

@@ -17,7 +17,8 @@ func addRegisterBankDepthCallback(widthStr string, arg interface{}) (close bool)
 	name := arg.(string)
 	width64, err := strconv.ParseUint(widthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	width := uint(width64)
@@ -33,7 +34,8 @@ func addRegisterBankCallback(depthStr string, arg interface{}) (close bool) {
 
 	depth64, err := strconv.ParseUint(depthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	depth := uint(depth64)
@@ -54,8 +56,8 @@ func addRegisterBankToGui(registerBank *RegisterBank) {
 	registerBank.editOption = registerBanksDialog.AddOption(&termdialog.Option{"Edit " + registerBank.Name, editRegisterBankOpenCallback, registerBank})
 
 	asMicroRegisterBankIndexed := &MicroRegisterBankIndexed{
-		Register: register,
-		Index:    nil,
+		RegisterBank: registerBank,
+		Index:        nil,
 	}
 
 	asMicroSource := IMicroSource(asMicroRegisterBankIndexed)
@@ -98,7 +100,8 @@ func editRegisterBankNameCallback(name string, arg interface{}) (close bool) {
 func editRegisterBankWidthCallback(widthStr string, arg interface{}) (close bool) {
 	width64, err := strconv.ParseUint(widthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	currentlyEditingRegisterBank.Width = uint(width64)
@@ -109,7 +112,8 @@ func editRegisterBankWidthCallback(widthStr string, arg interface{}) (close bool
 func editRegisterBankDepthCallback(depthStr string, arg interface{}) (close bool) {
 	depth64, err := strconv.ParseUint(depthStr, 10, 0)
 	if err != nil {
-		panic(err)
+		showError(err)
+		return false
 	}
 
 	currentlyEditingRegisterBank.Depth = uint(depth64)

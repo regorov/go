@@ -14,6 +14,8 @@ type Dialog interface {
     GetY() int
     GetTheme() *Theme
     SetTheme(*Theme)
+    GetLastDialogStack() *DialogStack
+    SetLastDialogStack(*DialogStack)
 
     CalcMetrics()
     Open()
@@ -22,13 +24,14 @@ type Dialog interface {
 }
 
 type BaseDialog struct {
-    title        string
-    metricsDirty bool
-    width        int
-    height       int
-    x            int
-    y            int
-    theme        *Theme
+    title           string
+    metricsDirty    bool
+    width           int
+    height          int
+    x               int
+    y               int
+    theme           *Theme
+    lastDialogStack *DialogStack
 }
 
 func (dialog *BaseDialog) GetTitle() (title string) {
@@ -68,6 +71,14 @@ func (dialog *BaseDialog) SetTheme(theme *Theme) {
     dialog.theme = theme
 }
 
+func (dialog *BaseDialog) GetLastDialogStack() (lastDialogStack *DialogStack) {
+    return dialog.lastDialogStack
+}
+
+func (dialog *BaseDialog) SetLastDialogStack(lastDialogStack *DialogStack) {
+    dialog.lastDialogStack = lastDialogStack
+}
+
 func (dialog *BaseDialog) Close() {
     if dialog.metricsDirty {
         dialog.CalcMetrics()
@@ -105,9 +116,17 @@ func baseDialogOpen(dialog Dialog) {
 func baseDialogHandleEvent(dialog Dialog, event termbox.Event) (handled bool, close bool) {
     switch event.Type {
     case termbox.EventKey:
-        switch event.Key {
-        case termbox.KeyEsc:
-            return true, true
+        if event.Ch == 0 {
+            switch event.Key {
+            case termbox.KeyEsc:
+                return true, true
+
+            case termbox.KeyCtrlH:
+                dialog.GetLastDialogStack().Open(HelpDialog)
+            }
+
+        } else {
+
         }
     }
 
