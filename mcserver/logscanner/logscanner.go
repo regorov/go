@@ -20,13 +20,26 @@ var (
     StartingServerAddress        = regexp.MustCompile("^Starting Minecraft server on (.+)$")
     FailedToLoadFile             = regexp.MustCompile("^Failed to load (.+): (.+): (.+)$")
     PreparingLevel               = regexp.MustCompile("^Preparing level \"(.+)\"$")
-    DefaultGameType              = regexp.MustCompile("^Default game type: (\\d+)$")
-    PreparingStartRegion         = regexp.MustCompile("^Preparing start region for level (\\d+)$")
+    DefaultGameMode              = regexp.MustCompile("^Default game type: (\\d+)$")
+    PreparingStartRegion         = regexp.MustCompile("^Preparing start region for level (\\d+)(?: \\(Seed: ([-0-9]+)\\))?$")
     PreparingSpawnAreaProgress   = regexp.MustCompile("^Preparing spawn area: (\\d+)%$")
     InitializationDone           = regexp.MustCompile("^Done \\(([0-9.]+)s\\)! For help, type \"help\" or \"\\?\"$")
     TickSyncMessage              = regexp.MustCompile("^Can't keep up! Did the system time change, or is the server overloaded\\?$")
     ServerStopIssued             = regexp.MustCompile("^(.+): Stopping the server..$")
     ServerStopping               = regexp.MustCompile("^Stopping server$")
+    SavingChunks                 = regexp.MustCompile("^Saving chunks$")
+    PlayerConnect                = regexp.MustCompile("^(.+) \\[/([0-9.:]+)\\] logged in with entity id (\\d+) at \\((?:\\[(.+)\\] )?([-0-9.]+), ([-0-9.]+), ([-0-9.]+)\\)$")
+    GameModeChanged              = regexp.MustCompile("^(.+): Setting (.+) to game mode (\\d+)$")
+    PlayerOpped                  = regexp.MustCompile("^(.+): Opping (.+)$")
+    PlayerDeOpped                = regexp.MustCompile("^(.+): De-opping (.+)$")
+    PlayerIssuedCommand          = regexp.MustCompile("^(.+) issued server command: (.+)$")
+    PlayerOldChat                = regexp.MustCompile("^<(.+)> (.+)$")
+    PlayerDisconnect             = regexp.MustCompile("^(.+) lost connection(?:: disconnect\\.(.+))?$")
+    PlayerTeleport               = regexp.MustCompile("^(.+): Teleporting (.+) to (.+).")
+    CraftBukkitVersionInfo       = regexp.MustCompile("^This server is running CraftBukkit version (.+) \\(MC: (.+)\\) \\(Implementing API version (.+)\\)$")
+    PluginMessage                = regexp.MustCompile("^\\[(.+)\\] (.+)$")
+    FolderMigrationBegan         = regexp.MustCompile("^---- Migration of old (.+) folder required ----$")
+    FolderMigrationComplete      = regexp.MustCompile("^---- Migration of old (.+) folder complete ----$")
 )
 
 // Errors
@@ -34,12 +47,15 @@ var (
     LineNotMatched               = bettererrors.New("The following line could not be interpreted:\n%s")
     UnrecognisedLogLevel         = bettererrors.New("The log level '%s' was not recognised.")
     UnrecognisedFailedToLoadFile = bettererrors.New("The term '%s' was not recognised.")
+    UnrecognisedDisconnectReason = bettererrors.New("The disconnect reason '%s' was not recognised.")
 )
 
 // Type LogScanner represents a log scanner.
 type LogScanner struct {
-    source   *bufio.Reader
-    timezone *time.Location
+    source    *bufio.Reader
+    timezone  *time.Location
+    lastLevel LogLevel
+    lastDate  time.Time
 }
 
 // Function NewLogScanner creates and returns a new log scanner.
@@ -82,7 +98,15 @@ func (ls *LogScanner) ReadLogMessage() (msg *LogMessage, err error) {
 
     parts := LogLine.FindStringSubmatch(line)
     if parts == nil {
-        return nil, LineNotMatched.Format(line)
+        //return nil, LineNotMatched.Format(line)
+        // We can recover.
+
+        return &LogMessage{
+            message: line,
+            level:   ls.lastLevel,
+            date:    ls.lastDate,
+        }, nil
+
     }
 
     year, err := strconv.ParseInt(parts[1], 10, 0)
@@ -131,6 +155,9 @@ func (ls *LogScanner) ReadLogMessage() (msg *LogMessage, err error) {
     }
 
     message := parts[8]
+
+    ls.lastLevel = level
+    ls.lastDate = date
 
     return &LogMessage{
         message: message,
@@ -184,24 +211,33 @@ func (ls *LogScanner) ReadEvent() (event Event, err error) {
     } else if match := PreparingLevel.FindStringSubmatch(message); match != nil {
         event = &PreparingLevelEvent{baseEvent{msg.date}, match[1]}
 
-    } else if match := DefaultGameType.FindStringSubmatch(message); match != nil {
-        gameType, err := strconv.ParseUint(match[1], 10, 0)
+    } else if match := DefaultGameMode.FindStringSubmatch(message); match != nil {
+        gameMode, err := strconv.ParseInt(match[1], 10, 0)
         if err != nil {
             return nil, err
         }
 
-        event = &DefaultGameTypeEvent{baseEvent{msg.date}, int(gameType)}
+        event = &DefaultGameModeEvent{baseEvent{msg.date}, int(gameMode)}
 
     } else if match := PreparingStartRegion.FindStringSubmatch(message); match != nil {
-        levelNumber, err := strconv.ParseUint(match[1], 10, 0)
+        levelNumber, err := strconv.ParseInt(match[1], 10, 0)
         if err != nil {
             return nil, err
         }
 
-        event = &PreparingStartRegionEvent{baseEvent{msg.date}, int(levelNumber)}
+        var seed int64
+
+        if match[2] != "" {
+            seed, err = strconv.ParseInt(match[2], 10, 64)
+            if err != nil {
+                return nil, err
+            }
+        }
+
+        event = &PreparingStartRegionEvent{baseEvent{msg.date}, int(levelNumber), seed}
 
     } else if match := PreparingSpawnAreaProgress.FindStringSubmatch(message); match != nil {
-        progress, err := strconv.ParseUint(match[1], 10, 0)
+        progress, err := strconv.ParseInt(match[1], 10, 0)
         if err != nil {
             return nil, err
         }
@@ -225,8 +261,98 @@ func (ls *LogScanner) ReadEvent() (event Event, err error) {
     } else if match := ServerStopping.FindStringSubmatch(message); match != nil {
         event = &ServerStoppingEvent{baseEvent{msg.date}}
 
+    } else if match := SavingChunks.FindStringSubmatch(message); match != nil {
+        event = &SavingChunksEvent{baseEvent{msg.date}}
+
+    } else if match := PlayerConnect.FindStringSubmatch(message); match != nil {
+        eid, err := strconv.ParseInt(match[3], 10, 0)
+        if err != nil {
+            return nil, err
+        }
+
+        x, err := strconv.ParseFloat(match[5], 32)
+        if err != nil {
+            return nil, err
+        }
+
+        y, err := strconv.ParseFloat(match[6], 32)
+        if err != nil {
+            return nil, err
+        }
+
+        z, err := strconv.ParseFloat(match[7], 32)
+        if err != nil {
+            return nil, err
+        }
+
+        event = &PlayerConnectEvent{baseEvent{msg.date}, match[1], match[2], int(eid), match[4], float32(x), float32(y), float32(z)}
+
+    } else if match := GameModeChanged.FindStringSubmatch(message); match != nil {
+        gameMode, err := strconv.ParseInt(match[3], 10, 0)
+        if err != nil {
+            return nil, err
+        }
+
+        event = &GameModeChangedEvent{baseEvent{msg.date}, match[1], match[2], int(gameMode)}
+
+    } else if match := PlayerOpped.FindStringSubmatch(message); match != nil {
+        event = &PlayerOppedEvent{baseEvent{msg.date}, match[1], match[2]}
+
+    } else if match := PlayerDeOpped.FindStringSubmatch(message); match != nil {
+        event = &PlayerDeOppedEvent{baseEvent{msg.date}, match[1], match[2]}
+
+    } else if match := PlayerIssuedCommand.FindStringSubmatch(message); match != nil {
+        event = &PlayerIssuedCommandEvent{baseEvent{msg.date}, match[1], match[2]}
+
+    } else if match := PlayerOldChat.FindStringSubmatch(message); match != nil {
+        event = &PlayerChatEvent{baseEvent{msg.date}, match[1], match[2]}
+
+    } else if match := PlayerDisconnect.FindStringSubmatch(message); match != nil {
+        var reason DisconnectReason
+
+        switch match[2] {
+        case "genericReason", "":
+            reason = GenericReason
+        case "endOfStream":
+            reason = EndOfStream
+        case "quitting":
+            reason = Quitting
+        default:
+            return nil, UnrecognisedDisconnectReason.Format(match[2])
+        }
+
+        event = &PlayerDisconnectEvent{baseEvent{msg.date}, match[1], reason}
+
+    } else if match := PlayerTeleport.FindStringSubmatch(message); match != nil {
+        event = &PlayerTeleportEvent{baseEvent{msg.date}, match[1], match[2], match[3]}
+
+    } else if match := CraftBukkitVersionInfo.FindStringSubmatch(message); match != nil {
+        event = &CraftBukkitVersionInfoEvent{baseEvent{msg.date}, match[1], match[2], match[3]}
+
+    } else if match := PluginMessage.FindStringSubmatch(message); match != nil {
+        event = &PluginMessageEvent{baseEvent{msg.date}, match[1], match[2]}
+
+    } else if match := FolderMigrationBegan.FindStringSubmatch(message); match != nil {
+        for {
+            msg, err := ls.ReadLogMessage()
+            if err != nil {
+                return nil, err
+            }
+
+            matchString := FolderMigrationComplete.FindString(msg.message)
+            if matchString != "" {
+                break
+            }
+        }
+
+        event, err = ls.ReadEvent()
+        if err != nil {
+            return nil, err
+        }
+
     } else {
-        return nil, LineNotMatched.Format(message)
+        //return nil, LineNotMatched.Format(message)
+        event = &MiscEvent{baseEvent{msg.date}, message}
     }
 
     return event, nil

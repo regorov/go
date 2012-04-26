@@ -2,6 +2,7 @@ package main
 
 import (
     "bufio"
+    "encoding/csv"
     "flag"
     "fmt"
     "github.com/kierdavis/go/mcserver/logscanner"
@@ -33,6 +34,8 @@ func main() {
     reader := bufio.NewReader(f)
     scanner := logscanner.NewLogScanner(reader, time.Local)
 
+    mostRecentDates := make(map[string]int64)
+
     for {
         event, err := scanner.ReadEvent()
 
@@ -42,6 +45,26 @@ func main() {
             error(err.Error())
         }
 
-        fmt.Printf("%d %+v\n", event.Type(), event)
+        if event.Type() == logscanner.PlayerConnectEventType {
+            player := event.(*logscanner.PlayerConnectEvent).Player()
+            secs := event.Date().Unix()
+            if secs > mostRecentDates[player] {
+                mostRecentDates[player] = secs
+            }
+        }
     }
+
+    aWeekAgo := time.Now().Add(-time.Hour * 24 * 7).Unix()
+
+    out := csv.NewWriter(os.Stdout)
+
+    for player, secs := range mostRecentDates {
+        if secs < aWeekAgo {
+            delete(mostRecentDates, player)
+        } else {
+            out.Write([]string{player, time.Unix(secs, 0).String()})
+        }
+    }
+
+    out.Flush()
 }
