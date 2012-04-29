@@ -1,3 +1,5 @@
+// Command test_cellulose shows a demonstration of Cellulose. It uses SDL for sound output and
+// termbox for display.
 package main
 
 import (

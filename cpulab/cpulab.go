@@ -1,3 +1,4 @@
+// Command cpulab is a CPU design tool. More info coming soon!
 package main
 
 import (

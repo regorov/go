@@ -2,22 +2,33 @@
 // http://www.earslap.com/projectslab/otomata
 package cellulose
 
-import ()
-
 const (
-    NORTH = iota
-    EAST
-    SOUTH
-    WEST
+    NORTH = iota // The value of a cell that is heading north.
+    EAST         // The value of a cell that is heading east.
+    SOUTH        // The value of a cell that is heading south.
+    WEST         // The value of a cell that is heading west.
 )
 
-// 1st dimension is X coord
-// 2nd dimension is Y coord
-// 3rd dimension is index of entity within the cell
+// Type Grid represents a grid of cells. The 1st dimension is the X coordinate, the 2nd dimension is
+// the Y coordinate and the 3rd dimension is the index of the cell within this grid location (each
+// location can contain multiple cells).
 type Grid [][][]uint8
 
+// Function NewGrid creates and returns a new grid.
+func NewGrid(width int, height int) (grid Grid) {
+    grid = make(Grid, width)
+    for x := 0; x < width; x++ {
+        grid[x] = make([][]uint8, height)
+    }
+
+    return grid
+}
+
+// Type NoteHandler represents a function that is called when a cell bounces off an edge. The first
+// parameter is the X coordinate and the second is the Y coordinate.
 type NoteHandler func(int, int)
 
+// Type Sequencer represents a sequencer.
 type Sequencer struct {
     Grid           Grid
     GridWidth      int
@@ -26,9 +37,11 @@ type Sequencer struct {
     ColNoteHandler NoteHandler
 }
 
-func NewSequencer(gridWidth, gridHeight int, rowNoteHandler, colNoteHandler NoteHandler) (seq *Sequencer) {
+// Function NewSequencer creates and returns a new sequencer, given the specified grid size and
+// row/column bounce handlers.
+func NewSequencer(gridWidth int, gridHeight int, rowNoteHandler NoteHandler, colNoteHandler NoteHandler) (seq *Sequencer) {
     seq = new(Sequencer)
-    seq.Grid = MakeGrid(gridWidth, gridHeight)
+    seq.Grid = NewGrid(gridWidth, gridHeight)
     seq.GridWidth = gridWidth
     seq.GridHeight = gridHeight
     seq.RowNoteHandler = rowNoteHandler
@@ -36,11 +49,13 @@ func NewSequencer(gridWidth, gridHeight int, rowNoteHandler, colNoteHandler Note
     return seq
 }
 
+// Function Iterate runs an iteration of the simulation, moving all cells as dictated by their
+// direction.
 func (seq *Sequencer) Iterate() {
     gridWidth := seq.GridWidth
     gridHeight := seq.GridHeight
     grid := seq.Grid
-    newGrid := MakeGrid(gridWidth, gridHeight)
+    newGrid := NewGrid(gridWidth, gridHeight)
 
     for x := 0; x < gridWidth; x++ {
         for y := 0; y < gridHeight; y++ {
@@ -98,6 +113,7 @@ func (seq *Sequencer) Iterate() {
     seq.Grid = newGrid
 }
 
+// Function InsertCell inserts a cell into a grid at the specified coordinates.
 func InsertCell(grid Grid, x int, y int, cell uint8) {
     s := grid[x][y]
     if s == nil {
@@ -105,13 +121,4 @@ func InsertCell(grid Grid, x int, y int, cell uint8) {
     }
 
     grid[x][y] = append(s, cell)
-}
-
-func MakeGrid(width int, height int) (grid Grid) {
-    grid = make(Grid, width)
-    for x := 0; x < width; x++ {
-        grid[x] = make([][]uint8, height)
-    }
-
-    return grid
 }

@@ -17,18 +17,22 @@ import (
   +---------+
 */
 
+// Type Option represents an option in a selection dialog.
 type Option struct {
-    Text     string
-    Callback func(*Option) bool
-    Data     interface{}
+    Text     string             // The text of the option.
+    Callback func(*Option) bool // The callback.
+    Data     interface{}        // Arbitary associated data that can be accessed by the callback.
 }
 
+// Type SelectionDialog represents a dialog with a number of selectable options.
 type SelectionDialog struct {
     BaseDialog
     options       []*Option
     selectedIndex int
 }
 
+// Function NewSelectionDialog creates and returns a new selection dialog. The options argument can
+// be nil, and an empty slice will be created (options can be added later with AddOption).
 func NewSelectionDialog(title string, options []*Option) (dialog *SelectionDialog) {
     if options == nil {
         options = make([]*Option, 0)
@@ -45,6 +49,7 @@ func NewSelectionDialog(title string, options []*Option) (dialog *SelectionDialo
     return dialog
 }
 
+// Function NOptions returns the number of options attached to this dialog.
 func (dialog *SelectionDialog) NOptions() (num int) {
     return len(dialog.options)
 }

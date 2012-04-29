@@ -1,3 +1,4 @@
+// Package termdialog provides a dialog-based GUI system based on Termbox.
 package termdialog
 
 import (
@@ -6,19 +7,20 @@ import (
 )
 
 const (
-    BOX_HOZ       rune = 0x2500
-    BOX_VERT      rune = 0x2502
-    BOX_CORNER_TL rune = 0x250C
-    BOX_CORNER_TR rune = 0x2510
-    BOX_CORNER_BL rune = 0x2514
-    BOX_CORNER_BR rune = 0x2518
-    BOX_TEE_L     rune = 0x251C
-    BOX_TEE_R     rune = 0x2524
-    BOX_TEE_T     rune = 0x252C
-    BOX_TEE_B     rune = 0x2534
-    BOX_CROSS     rune = 0x253C
+    BOX_HOZ       rune = 0x2500 // Horizontal line
+    BOX_VERT      rune = 0x2502 // Vertical line
+    BOX_CORNER_TL rune = 0x250C // Top-left corner
+    BOX_CORNER_TR rune = 0x2510 // Top-right corner
+    BOX_CORNER_BL rune = 0x2514 // Bottom-left corner
+    BOX_CORNER_BR rune = 0x2518 // Bottom-right corner
+    BOX_TEE_L     rune = 0x251C // Left tee (i.e. on the left side of a box)
+    BOX_TEE_R     rune = 0x2524 // Right tee
+    BOX_TEE_T     rune = 0x252C // Top tee
+    BOX_TEE_B     rune = 0x2534 // Bottom tee
+    BOX_CROSS     rune = 0x253C // Cross
 )
 
+// Function DrawBox draws a box on the screen.
 func DrawBox(x int, y int, width int, height int, fg termbox.Attribute, bg termbox.Attribute) {
     xmax := x + width - 1
     ymax := y + height - 1
@@ -39,6 +41,7 @@ func DrawBox(x int, y int, width int, height int, fg termbox.Attribute, bg termb
     }
 }
 
+// Function DrawString draws the specified text onto the screen.
 func DrawString(x int, y int, str string, fg termbox.Attribute, bg termbox.Attribute) {
     startX := x
 
@@ -54,6 +57,7 @@ func DrawString(x int, y int, str string, fg termbox.Attribute, bg termbox.Attri
     }
 }
 
+// Function Fill fills a region of the screen with the specified character and attribute.
 func Fill(x int, y int, width int, height int, ch rune, fg termbox.Attribute, bg termbox.Attribute) {
     for i := 0; i < width; i++ {
         for j := 0; j < height; j++ {

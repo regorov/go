@@ -2,7 +2,6 @@
 package logscanner
 
 import (
-    "bufio"
     "github.com/kierdavis/go/bettererrors"
     "regexp"
     "strconv"
@@ -50,20 +49,45 @@ var (
     UnrecognisedDisconnectReason = bettererrors.New("The disconnect reason '%s' was not recognised.")
 )
 
+// Interface LineReader represents a reader that has a ReadLine method, such as a bufio.Reader.
+type LineReader interface {
+    ReadLine() ([]byte, bool, error)
+}
+
 // Type LogScanner represents a log scanner.
 type LogScanner struct {
-    source    *bufio.Reader
+    source    LineReader
     timezone  *time.Location
     lastLevel LogLevel
     lastDate  time.Time
 }
 
 // Function NewLogScanner creates and returns a new log scanner.
-func NewLogScanner(source *bufio.Reader, timezone *time.Location) (ls *LogScanner) {
+func NewLogScanner(source LineReader, timezone *time.Location) (ls *LogScanner) {
     return &LogScanner{
         source:   source,
         timezone: timezone,
     }
+}
+
+// Function Source returns the log scanner's source.
+func (ls *LogScanner) Source() (source LineReader) {
+    return ls.source
+}
+
+// Function SetSource sets the source of the log scanner.
+func (ls *LogScanner) SetSource(source LineReader) {
+    ls.source = source
+}
+
+// Function Timezone returns the log scanner's timezone.
+func (ls *LogScanner) Timezone() (timezone *time.Location) {
+    return ls.timezone
+}
+
+// Function SetTimezone sets the log scanner's timezone.
+func (ls *LogScanner) SetTimezone(timezone *time.Location) {
+    ls.timezone = timezone
 }
 
 // Function ReadLine reads and returns a complete line from the source.
