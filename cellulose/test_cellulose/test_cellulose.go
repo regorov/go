@@ -6,7 +6,7 @@ import (
     "github.com/banthar/Go-SDL/mixer"
     "github.com/banthar/Go-SDL/sdl"
     "github.com/kierdavis/go/cellulose"
-    "github.com/kierdavis/go/musical"
+    //"github.com/kierdavis/go/musical"
     "github.com/kierdavis/go/resourcemanager"
     "github.com/nsf/termbox-go"
     "math/rand"
