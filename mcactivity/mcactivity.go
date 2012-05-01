@@ -5,7 +5,7 @@ import (
     "encoding/csv"
     "flag"
     "fmt"
-    "github.com/kierdavis/go/mcserver/logscanner"
+    "github.com/kierdavis/go/mclogscanner"
     "io"
     "os"
     "time"

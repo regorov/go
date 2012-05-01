@@ -17,6 +17,7 @@ type Model struct {
     triangles          []*Triangle
     triangleNormals    []*TriangleNormals
     textureCoordinates []*TextureCoordinates
+    smoothnessAngles   []*SmoothnessAngle
 }
 
 // Function MajorVersion returns the major version number of the file's encoding.

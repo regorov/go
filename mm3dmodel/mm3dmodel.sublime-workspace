@@ -15,7 +15,7 @@
 			"file": "mm3ddump/mm3ddump.go",
 			"settings":
 			{
-				"buffer_size": 3370,
+				"buffer_size": 3306,
 				"line_ending": "Unix"
 			}
 		},
@@ -23,7 +23,7 @@
 			"file": "mm3dmodel.go",
 			"settings":
 			{
-				"buffer_size": 6216,
+				"buffer_size": 6226,
 				"line_ending": "Unix",
 				"name": "package mm"
 			}
@@ -32,7 +32,7 @@
 			"file": "model.go",
 			"settings":
 			{
-				"buffer_size": 4433,
+				"buffer_size": 4475,
 				"line_ending": "Unix"
 			}
 		},
@@ -40,7 +40,39 @@
 			"file": "segments.go",
 			"settings":
 			{
-				"buffer_size": 7635,
+				"buffer_size": 8731,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "smoothnessangle.go",
+			"settings":
+			{
+				"buffer_size": 1352,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/golib/src/github.com/iand/amberfell/functions.go",
+			"settings":
+			{
+				"buffer_size": 1914,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/golib/src/github.com/iand/amberfell/amberfell.go",
+			"settings":
+			{
+				"buffer_size": 3632,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/golib/src/github.com/banthar/Go-SDL/ttf/ttf.go",
+			"settings":
+			{
+				"buffer_size": 9051,
 				"line_ending": "Unix"
 			}
 		},
@@ -48,7 +80,7 @@
 			"file": "group.go",
 			"settings":
 			{
-				"buffer_size": 985,
+				"buffer_size": 1022,
 				"line_ending": "Unix",
 				"name": "package mm3dmodel"
 			}
@@ -144,6 +176,10 @@
 	},
 	"file_history":
 	[
+		"/home/kier/golib/build",
+		"/home/kier/gocode/mcactivity/mcactivity.go",
+		"/home/kier/gocode/hydraulics/hydrotest/hydrotest.go",
+		"/home/kier/golib/src/github.com/iand/amberfell/world.go",
 		"/home/kier/gocode/bytereader/bytereader.go",
 		"/home/kier/gocode/bytereader/error.go",
 		"/home/kier/gocode/amberfell/mm3dmodel/error.go",
@@ -267,11 +303,7 @@
 		"/home/kier/projects/active/picofs/picofs.txt",
 		"/home/kier/projects/active/ihex/ihex.py",
 		"/home/kier/projects/active/picofs/picofs.py",
-		"/home/kier/pythonlib/bytebuilder.py",
-		"/home/kier/projects/active/k680/doc/arch.txt",
-		"/home/kier/projects/active/k270/forth.k270.asm",
-		"/home/kier/tmp/extract_ps2_keys.py",
-		"/home/kier/pythonlib/ihex.py"
+		"/home/kier/pythonlib/bytebuilder.py"
 	],
 	"find":
 	{
@@ -289,6 +321,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"triangleNormals",
+			"TriangleNormals",
 			"v1",
 			"angle",
 			"vertices",
@@ -414,9 +448,7 @@
 			"z",
 			"y",
 			"x",
-			"c",
-			"b",
-			"a"
+			"c"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -424,6 +456,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"smoothnessAngle",
+			"SmoothnessAngle",
 			"v",
 			"angleNormal",
 			"triangles",
@@ -549,9 +583,7 @@
 			"em.memory",
 			"value",
 			"",
-			"directive",
-			"",
-			"*ar"
+			"directive"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -562,7 +594,7 @@
 	"groups":
 	[
 		{
-			"selected": 9,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -570,15 +602,15 @@
 					"file": "mm3ddump/mm3ddump.go",
 					"settings":
 					{
-						"buffer_size": 3370,
+						"buffer_size": 3306,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								2855,
+								2855
 							]
 						],
 						"settings":
@@ -588,7 +620,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1530.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -598,15 +630,15 @@
 					"file": "mm3dmodel.go",
 					"settings":
 					{
-						"buffer_size": 6216,
+						"buffer_size": 6226,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4064,
-								4082
+								6226,
+								6226
 							]
 						],
 						"settings":
@@ -617,7 +649,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2265.0,
+						"translation.y": 497.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -627,15 +659,15 @@
 					"file": "model.go",
 					"settings":
 					{
-						"buffer_size": 4433,
+						"buffer_size": 4475,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								454,
-								454
+								496,
+								496
 							]
 						],
 						"settings":
@@ -655,15 +687,15 @@
 					"file": "segments.go",
 					"settings":
 					{
-						"buffer_size": 7635,
+						"buffer_size": 8731,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2864,
-								2864
+								8729,
+								8729
 							]
 						],
 						"settings":
@@ -673,25 +705,134 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 850.0,
+						"translation.y": 4169.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "group.go",
+					"file": "smoothnessangle.go",
 					"settings":
 					{
-						"buffer_size": 985,
+						"buffer_size": 1352,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								985,
-								985
+								1350,
+								1350
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 38.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/home/kier/golib/src/github.com/iand/amberfell/functions.go",
+					"settings":
+					{
+						"buffer_size": 1914,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								983,
+								983
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/kier/golib/src/github.com/iand/amberfell/amberfell.go",
+					"settings":
+					{
+						"buffer_size": 3632,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								354,
+								354
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/home/kier/golib/src/github.com/banthar/Go-SDL/ttf/ttf.go",
+					"settings":
+					{
+						"buffer_size": 9051,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5870,
+								5870
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2601.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "group.go",
+					"settings":
+					{
+						"buffer_size": 1022,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								388,
+								388
 							]
 						],
 						"settings":
@@ -708,7 +849,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 9,
 					"file": "trianglenormals.go",
 					"settings":
 					{
@@ -719,8 +860,8 @@
 						"selection":
 						[
 							[
-								2529,
-								2529
+								2273,
+								2139
 							]
 						],
 						"settings":
@@ -736,7 +877,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 10,
 					"file": "texturecoordinates.go",
 					"settings":
 					{
@@ -747,8 +888,8 @@
 						"selection":
 						[
 							[
-								1579,
-								1579
+								1329,
+								1329
 							]
 						],
 						"settings":
@@ -764,7 +905,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 11,
 					"file": "triangle.go",
 					"settings":
 					{
@@ -775,8 +916,8 @@
 						"selection":
 						[
 							[
-								608,
-								608
+								0,
+								1839
 							]
 						],
 						"settings":
@@ -792,7 +933,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 12,
 					"file": "vertex.go",
 					"settings":
 					{
@@ -819,7 +960,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 13,
 					"file": "dirtysegment.go",
 					"settings":
 					{
@@ -845,7 +986,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 14,
 					"settings":
 					{
 						"buffer_size": 396,

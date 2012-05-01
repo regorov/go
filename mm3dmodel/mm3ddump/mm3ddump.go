@@ -4,7 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/kierdavis/go/amberfell/mm3dmodel"
+	"github.com/kierdavis/go/mm3dmodel"
 	"os"
 )
 
@@ -33,7 +33,7 @@ func printVertices(model *mm3dmodel.Model) {
 	for i := 0; i < model.NVertices(); i++ {
 		vertex := model.Vertex(i)
 		fmt.Printf("  %4d: Flags: 0x%04X  (%.3f, %.3f, %.3f)\n", i, vertex.Flags(), vertex.X(),
-            vertex.Y(), vertex.Z())
+			vertex.Y(), vertex.Z())
 	}
 
 	if model.NVertices() == 0 {
@@ -48,7 +48,7 @@ func printTriangles(model *mm3dmodel.Model) {
 	for i := 0; i < model.NTriangles(); i++ {
 		triangle := model.Triangle(i)
 		fmt.Printf("  %4d: Flags: 0x%04X  (%d, %d, %d)\n", i, triangle.Flags(),
-            triangle.VertexIndex1(), triangle.VertexIndex2(), triangle.VertexIndex3())
+			triangle.VertexIndex1(), triangle.VertexIndex2(), triangle.VertexIndex3())
 	}
 
 	if model.NTriangles() == 0 {
@@ -66,8 +66,8 @@ func printTriangleNormals(model *mm3dmodel.Model) {
 		v2x, v2y, v2z := triangleNormals.Vertex2Normal()
 		v3x, v3y, v3z := triangleNormals.Vertex3Normal()
 		fmt.Printf("  %4d: Flags: 0x%04X [of triangle %d] (%.3f, %.3f, %.3f), (%.3f, %.3f, %.3f), (%.3f, %.3f, %.3f)\n",
-            i, triangleNormals.Flags(), triangleNormals.TriangleIndex(), v1x, v1y, v1z, v2x, v2y,
-            v2z, v3x, v3y, v3z)
+			i, triangleNormals.Flags(), triangleNormals.TriangleIndex(), v1x, v1y, v1z, v2x, v2y,
+			v2z, v3x, v3y, v3z)
 	}
 
 	if model.NTriangleNormals() == 0 {
@@ -85,8 +85,8 @@ func printTextureCoordinates(model *mm3dmodel.Model) {
 		s2, t2 := textureCoordinates.Vertex2Coord()
 		s3, t3 := textureCoordinates.Vertex3Coord()
 		fmt.Printf("  %4d: Flags: 0x%04X [of triangle %d] (%.3f, %.3f), (%.3f, %.3f), (%.3f, %.3f)\n",
-            i, textureCoordinates.Flags(), textureCoordinates.TriangleIndex(), s1, t1, s2, t2,
-            s3, t3)
+			i, textureCoordinates.Flags(), textureCoordinates.TriangleIndex(), s1, t1, s2, t2,
+			s3, t3)
 	}
 
 	if model.NTextureCoordinates() == 0 {

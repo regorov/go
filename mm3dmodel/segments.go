@@ -6,6 +6,8 @@ import (
     "encoding/binary"
 )
 
+//import "fmt"
+
 // Function ParseMetadataSegment parses the supplied metadata segment data and adds it to the model.
 func ParseMetadataSegment(model *Model, dataFlags uint16, dataElements [][]byte) (err error) {
     if model.metadata == nil {
@@ -48,9 +50,9 @@ type parsedGroupFooter struct {
 
 // Function ParseGroupsSegment parses the supplied group segment data and adds it to the model.
 func ParseGroupsSegment(model *Model, dataFlags uint16, dataElements [][]byte) (err error) {
-    var p16 *parsedGroup16
-    var p32 *parsedGroup32
-    var footer *parsedGroupFooter
+    p16 := new(parsedGroup16)
+    p32 := new(parsedGroup32)
+    footer := new(parsedGroupFooter)
 
     if model.groups == nil {
         model.groups = make([]*Group, 0, len(dataElements))
@@ -69,7 +71,7 @@ func ParseGroupsSegment(model *Model, dataFlags uint16, dataElements [][]byte) (
         if err != nil {
             return err
         }
-        name = name[:-1]
+        name = name[:len(name)-1]
 
         err = binary.Read(reader, binary.LittleEndian, p32)
         if err != nil {
@@ -117,12 +119,13 @@ type parsedVertex struct {
 
 // Function ParseVerticesSegment parses the supplied vertices segment data and adds it to the model.
 func ParseVerticesSegment(model *Model, dataFlags uint16, dataElements [][]byte) (err error) {
+    p := new(parsedVertex)
+
     if model.vertices == nil {
         model.vertices = make([]*Vertex, 0, len(dataElements))
     }
 
     for i, element := range dataElements {
-        p := &parsedVertex{}
         err = binary.Read(bytes.NewReader(element), binary.LittleEndian, p)
         if err != nil {
             return err
@@ -153,12 +156,13 @@ type parsedTriangle struct {
 // Function ParseTrianglesSegment parses the supplied triangles segment data and adds it to the
 // model.
 func ParseTrianglesSegment(model *Model, dataFlags uint16, dataElements [][]byte) (err error) {
+    p := new(parsedTriangle)
+
     if model.triangles == nil {
         model.triangles = make([]*Triangle, 0, len(dataElements))
     }
 
     for i, element := range dataElements {
-        p := &parsedTriangle{}
         err = binary.Read(bytes.NewReader(element), binary.LittleEndian, p)
         if err != nil {
             return err
@@ -191,12 +195,13 @@ type parsedTriangleNormals struct {
 // Function ParseTriangleNormalsSegment parses the supplied triangle normals segment data and adds
 // it to the model.
 func ParseTriangleNormalsSegment(model *Model, dataFlags uint16, dataElements [][]byte) (err error) {
+    p := new(parsedTriangleNormals)
+
     if model.triangleNormals == nil {
         model.triangleNormals = make([]*TriangleNormals, 0, len(dataElements))
     }
 
     for i, element := range dataElements {
-        p := &parsedTriangleNormals{}
         err = binary.Read(bytes.NewReader(element), binary.LittleEndian, p)
         if err != nil {
             return err
@@ -233,15 +238,16 @@ type parsedTextureCoordinates struct {
     T     [3]float32
 }
 
-// Function ParseTextureCoordinatesSegment parses the supplied metadata segment data and adds it to
-// the model.
+// Function ParseTextureCoordinatesSegment parses the supplied texture coordinates segment data and
+// adds it to the model.
 func ParseTextureCoordinatesSegment(model *Model, dataFlags uint16, dataElements [][]byte) (err error) {
+    p := new(parsedTextureCoordinates)
+
     if model.textureCoordinates == nil {
         model.textureCoordinates = make([]*TextureCoordinates, 0, len(dataElements))
     }
 
     for i, element := range dataElements {
-        p := &parsedTextureCoordinates{}
         err = binary.Read(bytes.NewReader(element), binary.LittleEndian, p)
         if err != nil {
             return err
@@ -261,6 +267,41 @@ func ParseTextureCoordinatesSegment(model *Model, dataFlags uint16, dataElements
 
         textureCoordinates.Associate(model)
         model.textureCoordinates = append(model.textureCoordinates, textureCoordinates)
+    }
+
+    return nil
+}
+
+// Type parsedSmoothnessAngles is used to parse a raw smoothness angles definition from the MM3D
+// file.
+type parsedSmoothnessAngles struct {
+    GroupIndex uint32
+    Angle      uint8
+}
+
+// Function ParseSmoothnessAnglesSegment parses the supplied smoothness angles segment data and adds
+// it to the model.
+func ParseSmoothnessAnglesSegment(model *Model, dataFlags uint16, dataElements [][]byte) (err error) {
+    p := new(parsedSmoothnessAngles)
+
+    if model.smoothnessAngles == nil {
+        model.smoothnessAngles = make([]*SmoothnessAngle, 0, len(dataElements))
+    }
+
+    for i, element := range dataElements {
+        err = binary.Read(bytes.NewReader(element), binary.LittleEndian, p)
+        if err != nil {
+            return err
+        }
+
+        smoothnessAngle := &SmoothnessAngle{
+            index:      i,
+            groupIndex: p.GroupIndex,
+            angle:      p.Angle,
+        }
+
+        smoothnessAngle.Associate(model)
+        model.smoothnessAngles = append(model.smoothnessAngles, smoothnessAngle)
     }
 
     return nil

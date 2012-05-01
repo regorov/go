@@ -9,6 +9,7 @@ type Group struct {
     triangles       []*Triangle
     smoothness      uint8
     materialIndex   uint32
+    smoothnessAngle *SmoothnessAngle
     //material        *Material
 }
 

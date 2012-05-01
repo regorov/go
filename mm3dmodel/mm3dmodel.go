@@ -45,10 +45,10 @@ type parsedSegmentSize struct {
 // Function Read reads an MM3D model definition from the specified io.Reader and returns either the
 // parsed model and nil, or nil and an error.
 func Read(reader io.ReadSeeker) (model *Model, err error) {
-    var header *parsedHeader
-    var offset *parsedOffset
-    var segheader *parsedSegmentHeader
-    var segsize *parsedSegmentSize
+    header := new(parsedHeader)
+    offset := new(parsedOffset)
+    segheader := new(parsedSegmentHeader)
+    segsize := new(parsedSegmentSize)
 
     err = binary.Read(reader, binary.LittleEndian, header)
     if err != nil {
@@ -163,7 +163,8 @@ func Read(reader io.ReadSeeker) (model *Model, err error) {
         //case 0x8041: err = ParseJointsSegment                      (model, dataFlags, dataElements)
         //case 0x8046: err = ParseJointVerticesSegment               (model, dataFlags, dataElements)
         //case 0x8061: err = ParsePointsSegment                      (model, dataFlags, dataElements)
-        //case 0x8106: err = ParseSmoothnessAnglesSegment            (model, dataFlags, dataElements)
+        case 0x8106:
+            err = ParseSmoothnessAnglesSegment(model, dataFlags, dataElements)
         //case 0x8146: err = ParseWeightedInfluencesSegment          (model, dataFlags, dataElements)
         //case 0x8168: err = ParseTextureProjectionsSegment          (model, dataFlags, dataElements)
         case 0x8121:
