@@ -5,7 +5,7 @@ import ()
 type aluImmInstructionHandler func(*Emulator, uint8, uint8, uint16)
 
 var aluImmInstructions = map[uint8]aluImmInstructionHandler{
-    //0x0: handlePushi,
+    0x0: handlePushi,
     //0x1: handleSti,
     0x2: handleAddi,
     0x3: handleSubi,
@@ -16,6 +16,11 @@ var aluImmInstructions = map[uint8]aluImmInstructionHandler{
     0x8: handleShl,
     0x9: handleShr,
     //0xA: handleAshr,
+}
+
+func handlePushi(em *Emulator, a uint8, d uint8, i uint16) {
+    em.Push(uint32(i))
+    em.LogInstruction("pushi 0x%04X", i)
 }
 
 func handleAddi(em *Emulator, a uint8, d uint8, i uint16) {
