@@ -22,14 +22,14 @@ import (
 
 // Type Emulator represents the state of a DCPU-16 processor.
 type Emulator struct {
-    LastPC uint16       // The address of the last instruction executed.
+    LastPC    uint16    // The address of the last instruction executed.
     Registers [8]uint16 // The processor's general purpose registers (A, B, C, X, Y, Z, I, J).
-    SP uint16           // The stack pointer.
-    PC uint16           // The program counter.
-    O uint16            // The overflow register.
-    RAM []uint16        // The main memory.
-    SkipNext bool       // Whether the next instruction will be skipped.
-    Running bool        // When this flag is set to false, Emulator.Run() will stop.
+    SP        uint16    // The stack pointer.
+    PC        uint16    // The program counter.
+    O         uint16    // The overflow register.
+    RAM       []uint16  // The main memory.
+    SkipNext  bool      // Whether the next instruction will be skipped.
+    Running   bool      // When this flag is set to false, Emulator.Run() will stop.
     TraceFile io.Writer // A writer that a log of executed instructions will be written to.
 }
 
@@ -50,7 +50,7 @@ func (em *Emulator) Reset() {
     em.SP = 0
     em.PC = 0
     em.O = 0
-    
+
     for i := 0; i < 8; i++ {
         em.Registers[i] = 0
     }
@@ -67,11 +67,11 @@ func (em *Emulator) GrowMemory(newsize int) {
     if newsize == 0 {
         newsize = (cap(em.RAM) + 1) * 2
     }
-    
+
     if newsize > 0x10000 {
         newsize = 0x10000
     }
-    
+
     m := make([]uint16, newsize)
     copy(m, em.RAM)
     em.RAM = m
@@ -83,7 +83,7 @@ func (em *Emulator) LoadProgram(program []uint16) {
     if len(em.RAM) < len(program) {
         em.GrowMemory(len(program))
     }
-    
+
     copy(em.RAM, program)
 }
 
@@ -93,10 +93,10 @@ func (em *Emulator) LoadProgramBytesBE(program []byte) {
     if len(em.RAM) < (len(program) * 2) {
         em.GrowMemory(len(program) * 2)
     }
-    
-    for i := 0; i < len(program) / 2; i++ {
-        high := uint16(program[i * 2])
-        low := uint16(program[(i * 2) + 1])
+
+    for i := 0; i < len(program)/2; i++ {
+        high := uint16(program[i*2])
+        low := uint16(program[(i*2)+1])
         em.RAM[i] = (high << 8) | low
     }
 }
@@ -107,10 +107,10 @@ func (em *Emulator) LoadProgramBytesLE(program []byte) {
     if len(em.RAM) < (len(program) * 2) {
         em.GrowMemory(len(program) * 2)
     }
-    
-    for i := 0; i < len(program) / 2; i++ {
-        low := uint16(program[i * 2])
-        high := uint16(program[(i * 2) + 1])
+
+    for i := 0; i < len(program)/2; i++ {
+        low := uint16(program[i*2])
+        high := uint16(program[(i*2)+1])
         em.RAM[i] = (high << 8) | low
     }
 }
@@ -123,7 +123,7 @@ func (em *Emulator) MemoryLoad(address uint16) (value uint16) {
     } else {
         return em.RAM[address]
     }
-    
+
     return 0
 }
 
@@ -132,14 +132,14 @@ func (em *Emulator) MemoryLoad(address uint16) (value uint16) {
 func (em *Emulator) MemoryStore(address uint16, value uint16) {
     if int(address) >= len(em.RAM) {
         newsize := cap(em.RAM) + 1
-        
+
         for int(address) >= newsize {
             newsize *= 2
         }
-        
+
         em.GrowMemory(newsize)
     }
-    
+
     em.RAM[address] = value
 }
 
@@ -169,63 +169,63 @@ func (em *Emulator) FetchWord() (word uint16) {
 func (em *Emulator) DecodeOperand(n uint8) (operand Operand) {
     if n < 0x08 { // register
         return NewRegisterOperand(n)
-    
+
     } else if n < 0x10 { // [register]
-        return NewMemoryOperand(em.Registers[n & 0x7])
-    
+        return NewMemoryOperand(em.Registers[n&0x7])
+
     } else if n < 0x18 { // [next word + register]
-        addr := em.FetchWord() + em.Registers[n & 0x7]
+        addr := em.FetchWord() + em.Registers[n&0x7]
         return NewMemoryOperand(addr)
-    
+
     } else if n == 0x18 { // POP
         return NewPopOperand()
-    
+
     } else if n == 0x19 { // PEEK
         return NewMemoryOperand(em.SP)
-    
+
     } else if n == 0x1A { // PUSH
         return NewPushOperand()
-    
+
     } else if n == 0x1B { // SP
         return NewSPOperand()
-    
+
     } else if n == 0x1C { // PC
         return NewPCOperand()
-    
+
     } else if n == 0x1D { // O
         return NewOOperand()
-    
+
     } else if n == 0x1E { // [next word]
         return NewMemoryOperand(em.FetchWord())
-    
+
     } else if n == 0x1F { // next word
         return NewLiteralOperand(em.FetchWord())
-    
+
     } else {
         return NewLiteralOperand(uint16(n & 0x1F))
     }
-    
+
     return nil
 }
 
 // Function Emulator.DecodeInstruction parses `word` as an instruction, and returns the class of the
 // instruction, the opcode within the class, the destination (a) Operand and the source (b) Operand.
 func (em *Emulator) DecodeInstruction(word uint16) (cls uint8, opcode uint8, dest Operand,
-                        src Operand) {
+    src Operand) {
     o := word & 0x000F
     a := (word & 0x03F0) >> 4
     b := (word & 0xFC00) >> 10
-    
+
     if o == 0 { // Opcode is in the a field
         dest = em.DecodeOperand(uint8(b))
         return OP_EXT, uint8(a), dest, nil
-    
+
     } else {
         dest = em.DecodeOperand(uint8(a)) // Important that we handle A first
         src = em.DecodeOperand(uint8(b))
         return OP_BASIC, uint8(o), dest, src
     }
-    
+
     return 0, 0, nil, nil
 }
 
@@ -243,13 +243,13 @@ func (em *Emulator) RunOne() {
     em.LastPC = em.PC
     word := em.FetchWord()
     cls, opcode, dest, src := em.DecodeInstruction(word)
-    
+
     // Make sure operands have fetched extra program words before we skip
     if em.SkipNext {
         em.SkipNext = false
         return
     }
-    
+
     switch cls {
     case OP_BASIC:
         switch opcode {
@@ -258,7 +258,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, v)
             em.LogInstruction("SET %s, %s -- value transferred was 0x%04X", dest.String(),
                 src.String(), v)
-        
+
         case 0x2: // ADD
             d := dest.Load(em)
             s := src.Load(em)
@@ -267,7 +267,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, uint16(v))
             em.LogInstruction("ADD %s, %s -- 0x%04X + 0x%04X = 0x%08X", dest.String(), src.String(),
                 d, s, v)
-        
+
         case 0x3: // SUB
             d := dest.Load(em)
             s := src.Load(em)
@@ -276,7 +276,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, uint16(v))
             em.LogInstruction("SUB %s, %s -- 0x%04X - 0x%04X = 0x%08X", dest.String(), src.String(),
                 d, s, v)
-        
+
         case 0x4: // MUL
             d := dest.Load(em)
             s := src.Load(em)
@@ -285,7 +285,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, uint16(v))
             em.LogInstruction("MUL %s, %s -- 0x%04X * 0x%04X = 0x%08X", dest.String(), src.String(),
                 d, s, v)
-        
+
         case 0x5: // DIV
             d := dest.Load(em)
             s := src.Load(em)
@@ -294,7 +294,7 @@ func (em *Emulator) RunOne() {
                 dest.Store(em, 0)
                 em.LogInstruction("DIV %s, %s -- 0x%04X / 0x%04X = DIV/0!", dest.String(),
                     src.String(), d, s)
-            
+
             } else {
                 v := uint32(d) / uint32(s)
                 em.O = uint16(v >> 16)
@@ -302,23 +302,23 @@ func (em *Emulator) RunOne() {
                 em.LogInstruction("DIV %s, %s -- 0x%04X / 0x%04X = 0x%04X", dest.String(),
                     src.String(), d, s, v)
             }
-        
+
         case 0x6: // MOD
             d := dest.Load(em)
             s := src.Load(em)
-            
+
             if s == 0 {
                 dest.Store(em, 0)
                 em.LogInstruction("MOD %s, %s -- 0x%04X %% 0x%04X = DIV/0", dest.String(),
                     src.String(), d, s)
-            
+
             } else {
                 v := d % s
                 dest.Store(em, v)
                 em.LogInstruction("MOD %s, %s -- 0x%04X %% 0x%04X = 0x%04X", dest.String(),
                     src.String(), d, s, v)
             }
-        
+
         case 0x7: // SHL
             d := dest.Load(em)
             s := src.Load(em)
@@ -327,7 +327,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, uint16(v))
             em.LogInstruction("SHL %s, %s -- 0x%04X << 0x%04X = 0x%08X", dest.String(),
                 src.String(), d, s, v)
-        
+
         case 0x8: // SHR
             d := dest.Load(em)
             s := src.Load(em)
@@ -336,7 +336,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, uint16(v))
             em.LogInstruction("SHR %s, %s -- 0x%04X >> 0x%04X = 0x%04X", dest.String(),
                 src.String(), d, s, v)
-        
+
         case 0x9: // AND
             d := dest.Load(em)
             s := src.Load(em)
@@ -344,7 +344,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, v)
             em.LogInstruction("AND %s, %s -- 0x%04X & 0x%04X = 0x%04X", dest.String(),
                 src.String(), d, s, v)
-        
+
         case 0xA: // BOR
             d := dest.Load(em)
             s := src.Load(em)
@@ -352,7 +352,7 @@ func (em *Emulator) RunOne() {
             dest.Store(em, v)
             em.LogInstruction("BOR %s, %s -- 0x%04X | 0x%04X = 0x%04X", dest.String(), src.String(),
                 d, s, v)
-        
+
         case 0xB: // XOR
             d := dest.Load(em)
             s := src.Load(em)
@@ -360,60 +360,60 @@ func (em *Emulator) RunOne() {
             dest.Store(em, v)
             em.LogInstruction("XOR %s, %s -- 0x%04X ^ 0x%04X = 0x%04X", dest.String(), src.String(),
                 d, s, v)
-        
+
         case 0xC: // IFE
             d := dest.Load(em)
             s := src.Load(em)
             if d == s {
                 em.LogInstruction("IFE %s, %s -- 0x%04X == 0x%04X, executing next", dest.String(),
                     src.String(), d, s)
-            
+
             } else {
                 em.SkipNext = true
                 em.LogInstruction("IFE %s, %s -- 0x%04X != 0x%04X, skipping next", dest.String(),
                     src.String(), d, s)
             }
-        
+
         case 0xD: // IFN
             d := dest.Load(em)
             s := src.Load(em)
             if d != s {
                 em.LogInstruction("IFN %s, %s -- 0x%04X != 0x%04X, executing next", dest.String(),
                     src.String(), d, s)
-            
+
             } else {
                 em.SkipNext = true
                 em.LogInstruction("IFN %s, %s -- 0x%04X == 0x%04X, skipping next", dest.String(),
                     src.String(), d, s)
             }
-        
+
         case 0xE: // IFG
             d := dest.Load(em)
             s := src.Load(em)
             if d > s {
                 em.LogInstruction("IFG %s, %s -- 0x%04X > 0x%04X, executing next", dest.String(),
                     src.String(), d, s)
-            
+
             } else {
                 em.SkipNext = true
                 em.LogInstruction("IFG %s, %s -- 0x%04X <= 0x%04X, skipping next", dest.String(),
                     src.String(), d, s)
             }
-        
+
         case 0xF: // IFB
             d := dest.Load(em)
             s := src.Load(em)
-            if d & s != 0 {
+            if d&s != 0 {
                 em.LogInstruction("IFB %s, %s -- 0x%04X & 0x%04X != 0, executing next",
                     dest.String(), src.String(), d, s)
-            
+
             } else {
                 em.SkipNext = true
                 em.LogInstruction("IFB %s, %s -- 0x%04X & 0x%04X == 0, skipping next",
                     dest.String(), src.String(), d, s)
             }
         }
-    
+
     case OP_EXT:
         switch opcode {
         case 0x01: // JSR
@@ -428,7 +428,7 @@ func (em *Emulator) RunOne() {
 // it is false (it may be set to false upon error, or if a halt-like instruction is detected).
 func (em *Emulator) Run() {
     em.Running = true
-    
+
     for em.Running {
         em.RunOne()
     }
