@@ -5,7 +5,6 @@
 package dcpuem
 
 import (
-    "errors"
     "fmt"
     "log"
 )
@@ -48,6 +47,10 @@ type Emulator struct {
     // If set, the emulator will continue to skip instructions until a non-test instruction is
     // encountered.
     Skip bool
+
+    // If set, interrupts will be queued instead of executed immediately. Internally, an interrupt
+    // will be allowed to execute at the start of every instruction unless this is set to true.
+    InterruptQueueing bool
 }
 
 // Function NewEmulator creates, initialises and returns a new emulator.
@@ -55,8 +58,8 @@ func NewEmulator() (em *Emulator) {
     em = new(Emulator)
     em.Reset()
 
+    em.Hardware = make([]Device, 0, 16)
     em.Logger = nil
-    em.Running = false
 
     return em
 }
@@ -74,18 +77,27 @@ func (em *Emulator) Reset() {
     em.IA = 0
 
     em.RAM = make([]uint16, 1024)
+
+    em.Interrupts = make([]uint16, 0, 256)
+    em.Running = false
+    em.Skip = false
+    em.InterruptQueueing = false
 }
 
 // Function Log logs information to the logger.
 func (em *Emulator) Log(s string, args ...interface{}) {
-    s = fmt.Sprintf(s, args...)
-    em.Logger.Output(2, s)
+    if em.Logger != nil {
+        s = fmt.Sprintf(s, args...)
+        em.Logger.Output(2, s)
+    }
 }
 
 // Function LogInstruction logs an instruction execution to the logger.
 func (em *Emulator) LogInstruction(s string, args ...interface{}) {
-    s = fmt.Sprintf(s, args...)
-    em.Logger.Output(2, fmt.Sprintf("[0x%04X] %s", em.LastPC, s))
+    if em.Logger != nil {
+        s = fmt.Sprintf(s, args...)
+        em.Logger.Output(2, fmt.Sprintf("[0x%04X] %s", em.LastPC, s))
+    }
 }
 
 // Function DumpState dumps the state of the emulator to the logger.
@@ -131,12 +143,24 @@ type Operand struct {
 
 var NilOperand = Operand{0, 0, ""}
 
-// Errors.
-var (
-    ErrInvalidOpcode    = errors.New("Invalid opcode")
-    ErrInvalidOperand   = errors.New("Invalid operand format")
-    ErrStoringToLiteral = errors.New("Storing into literal operand")
-    ErrCrashLoop        = errors.New("Crash loop detected")
+type Error struct {
+    Type    ErrorType
+    Message string
+    Arg     int
+}
+
+func (e *Error) Error() (str string) {
+    return e.Message
+}
+
+type ErrorType uint16
+
+const (
+    _ ErrorType = iota
+    ErrInvalidOpcode
+    ErrInvalidOperand
+    ErrCrashLoop
+    ErrInvalidHardwareIndex
 )
 
 // Register names.

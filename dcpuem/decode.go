@@ -95,7 +95,7 @@ func (em *Emulator) DecodeOperand(x uint16, isA bool) (operand Operand, err erro
         str = fmt.Sprintf("0x%04X", info)
 
     } else {
-        return NilOperand, ErrInvalidOperand
+        return NilOperand, &Error{ErrInvalidOperand, fmt.Sprintf("Invalid operand specifier: 0x%04X", x), int(x)}
     }
 
     return Operand{mode, info, str}, nil
@@ -134,8 +134,7 @@ func (em *Emulator) RunOne() (err error) {
     if opcode == 0 {
         handler := specialHandlers[bSpec]
         if handler == nil {
-            em.Log("Invalid special opcode: 0x%02X", bSpec)
-            return ErrInvalidOpcode
+            return &Error{ErrInvalidOpcode, fmt.Sprintf("Invalid special opcode: 0x%02X", bSpec), int(bSpec)}
         }
 
         return handler(em, a)
@@ -143,8 +142,7 @@ func (em *Emulator) RunOne() (err error) {
     } else {
         handler := basicHandlers[opcode]
         if handler == nil {
-            em.Log("Invalid basic opcode: 0x%02X", bSpec)
-            return ErrInvalidOpcode
+            return &Error{ErrInvalidOpcode, fmt.Sprintf("Invalid basic opcode: 0x%02X", opcode), int(opcode)}
         }
 
         return handler(em, a, b)
@@ -160,10 +158,15 @@ func (em *Emulator) Run() (err error) {
     for em.Running {
         err = em.RunOne()
 
-        if err == ErrCrashLoop {
-            em.Running = false
-        } else if err != nil {
-            return err
+        if err != nil {
+            e, ok := err.(*Error)
+            if ok && e.Type == ErrCrashLoop {
+                em.Running = false
+                break
+
+            } else {
+                return err
+            }
         }
     }
 
@@ -201,7 +204,7 @@ func (em *Emulator) Store(operand Operand, value uint16) (err error) {
     case Literal:
         //return ErrStoringToLiteral
         // Assignments to literals are supposed to fail silently
-        em.Logger.Printf("Notice: ignoring assignment to literal operand.")
+        em.Log("Notice: ignoring assignment to literal operand")
 
     case Register:
         em.Regs[operand.Info] = value
@@ -214,8 +217,7 @@ func (em *Emulator) Store(operand Operand, value uint16) (err error) {
 
     case PC:
         if value == em.LastPC {
-            em.Logger.Printf("Crash loop detected - halting")
-            return ErrCrashLoop
+            return &Error{ErrCrashLoop, "Crash loop detected - halting", 0}
         }
 
         em.PC = value

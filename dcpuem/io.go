@@ -11,7 +11,7 @@ func (em *Emulator) Interrupt(message uint16) {
 // Function ServiceInterrupt services at most one interrupt if the queue is not empty. Otherwise, it
 // does nothing.
 func (em *Emulator) ServiceInterrupt() {
-    if len(em.Interrupts) > 0 {
+    if len(em.Interrupts) > 0 && !em.InterruptQueueing {
         message := em.Interrupts[0]
         em.Interrupts = em.Interrupts[1:]
 
@@ -24,6 +24,8 @@ func (em *Emulator) ServiceInterrupt() {
 
             em.PC = em.IA
             em.Regs[A] = message
+
+            em.InterruptQueueing = true
 
             em.Log("Interrupt with message 0x%04X - jumping to 0x%04X", message, em.IA)
         }
@@ -49,6 +51,8 @@ func (em *Emulator) GetDevice(index int) (device Device) {
 
 // Function DetachDevice detaches the specified device from the CPU.
 func (em *Emulator) DetachDevice(device Device) {
+    device.AssociateEmulator(nil)
+
     for i, d := range em.Hardware {
         if d == device {
             em.Hardware = append(em.Hardware[:i], em.Hardware[i+1:]...)
@@ -74,4 +78,12 @@ type Device interface {
 
     // Function Interrupt should handle an interrupt triggered by a HWI instruction.
     Interrupt() error
+
+    // Function Start should start any background services (e.g. event loops) needed by the device,
+    // ideally starting goroutines.
+    Start()
+
+    // Function Stop should stop all background services needed by the device, ideally stopping the
+    // goroutines started by Start.
+    Stop()
 }

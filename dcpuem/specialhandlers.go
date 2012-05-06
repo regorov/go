@@ -2,6 +2,10 @@
 
 package dcpuem
 
+import (
+    "fmt"
+)
+
 type specialHandler func(*Emulator, Operand) error
 
 var specialHandlers = [32]specialHandler{
@@ -13,11 +17,11 @@ var specialHandlers = [32]specialHandler{
     nil,       // 05
     nil,       // 06
     nil,       // 07
-    nil,       // 08
-    nil,       // 09
-    nil,       // 0A
-    nil,       // 0B
-    nil,       // 0C
+    handleINT, // 08
+    handleIAG, // 09
+    handleIAS, // 0A
+    handleRFI, // 0B
+    handleIAQ, // 0C
     nil,       // 0D
     nil,       // 0E
     nil,       // 0F
@@ -46,6 +50,42 @@ func handleJSR(em *Emulator, a Operand) (err error) {
     return nil
 }
 
+func handleINT(em *Emulator, a Operand) (err error) {
+    em.Interrupt(em.Load(a))
+    em.LogInstruction("INT %s", a.String)
+    return nil
+}
+
+func handleIAG(em *Emulator, a Operand) (err error) {
+    err = em.Store(a, em.IA)
+    if err != nil {
+        return err
+    }
+
+    em.LogInstruction("IAG %s ; value transferred was 0x%04X", a.String, em.IA)
+    return nil
+}
+
+func handleIAS(em *Emulator, a Operand) (err error) {
+    em.IA = em.Load(a)
+    em.LogInstruction("IAS %s ; value transferred was 0x%04X", a.String, em.IA)
+    return nil
+}
+
+func handleRFI(em *Emulator, a Operand) (err error) {
+    em.InterruptQueueing = false
+    em.Regs[A] = em.Pop()
+    em.PC = em.Pop()
+    em.LogInstruction("RFI")
+    return nil
+}
+
+func handleIAQ(em *Emulator, a Operand) (err error) {
+    em.InterruptQueueing = em.Load(a) != 0
+    em.LogInstruction("IAQ %s ; interrupts now queued: %t", a.String, em.InterruptQueueing)
+    return nil
+}
+
 func handleHWN(em *Emulator, a Operand) (err error) {
     n := uint16(len(em.Hardware))
     err = em.Store(a, n)
@@ -59,6 +99,11 @@ func handleHWN(em *Emulator, a Operand) (err error) {
 
 func handleHWQ(em *Emulator, a Operand) (err error) {
     n := em.Load(a)
+
+    if uint16(len(em.Hardware)) <= n {
+        return &Error{ErrInvalidHardwareIndex, fmt.Sprintf("Hardware index out of range: 0x%04X", n), int(n)}
+    }
+
     hw := em.Hardware[n]
 
     id := hw.ID()
@@ -77,11 +122,16 @@ func handleHWQ(em *Emulator, a Operand) (err error) {
 
 func handleHWI(em *Emulator, a Operand) (err error) {
     n := em.Load(a)
+
+    if uint16(len(em.Hardware)) <= n {
+        return &Error{ErrInvalidHardwareIndex, fmt.Sprintf("Hardware index out of range: 0x%04X", n), int(n)}
+    }
+
     hw := em.Hardware[n]
     em.LogInstruction("HWI %s ; interrupting device %d", a.String, n)
 
     em.Log("Device interrupt handling beginning")
-    err = hw.Interrupt(em)
+    err = hw.Interrupt()
 
     if err == nil {
         em.Log("Device interrupt handling completed successfully")

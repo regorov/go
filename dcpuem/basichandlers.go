@@ -14,13 +14,13 @@ var basicHandlers = [32]basicHandler{
     handleDIV, // 06
     handleDVI, // 07
     handleMOD, // 08
-    handleAND, // 09
-    handleBOR, // 0A
-    handleXOR, // 0B
-    handleSHR, // 0C
-    handleASR, // 0D
-    handleSHL, // 0E
-    handleSTI, // 0F
+    handleMDI, // 09
+    handleAND, // 0A
+    handleBOR, // 0B
+    handleXOR, // 0C
+    handleSHR, // 0D
+    handleASR, // 0E
+    handleSHL, // 0F
     handleIFB, // 10
     handleIFC, // 11
     handleIFE, // 12
@@ -35,8 +35,8 @@ var basicHandlers = [32]basicHandler{
     handleSBX, // 1B
     nil,       // 1C
     nil,       // 1D
-    nil,       // 1E
-    nil,       // 1F
+    handleSTI, // 1E
+    handleSTD, // 1F
 }
 
 func handleSET(em *Emulator, a Operand, b Operand) (err error) {
@@ -175,6 +175,27 @@ func handleMOD(em *Emulator, a Operand, b Operand) (err error) {
     return nil
 }
 
+func handleMDI(em *Emulator, a Operand, b Operand) (err error) {
+    x := uint32(em.Load(b))
+    y := uint32(em.Load(a))
+
+    var result uint32
+
+    if y == 0 {
+        result = 0
+    } else {
+        result = uint32(int32(x) % int32(y))
+    }
+
+    err = em.Store(b, uint16(result))
+    if err != nil {
+        return err
+    }
+
+    em.LogInstruction("MDI %s, %s ; 0x%04X %% 0x%04X -> 0x%08X", b.String, a.String, x, y, result)
+    return nil
+}
+
 func handleAND(em *Emulator, a Operand, b Operand) (err error) {
     x := em.Load(b)
     y := em.Load(a)
@@ -260,20 +281,6 @@ func handleSHL(em *Emulator, a Operand, b Operand) (err error) {
 
     em.EX = uint16(uint32(x<<y) >> 16)
     em.LogInstruction("SHL %s, %s ; 0x%04X << 0x%04X -> 0x%04X, EX = 0x%04X", b.String, a.String, x, y, result, em.EX)
-    return nil
-}
-
-func handleSTI(em *Emulator, a Operand, b Operand) (err error) {
-    v := em.Load(a)
-    err = em.Store(b, v)
-    if err != nil {
-        return err
-    }
-
-    em.Regs[I]++
-    em.Regs[J]++
-
-    em.LogInstruction("STI %s, %s ; value transferred was 0x%04X, I = 0x%04X, J = 0x%04X", b.String, a.String, v, em.Regs[I], em.Regs[J])
     return nil
 }
 
@@ -418,5 +425,33 @@ func handleSBX(em *Emulator, a Operand, b Operand) (err error) {
 
     em.EX = uint16(result >> 16)
     em.LogInstruction("SBX %s, %s ; 0x%04X - 0x%04X + 0x%04X -> 0x%08X", b.String, a.String, x, y, ex, result)
+    return nil
+}
+
+func handleSTI(em *Emulator, a Operand, b Operand) (err error) {
+    v := em.Load(a)
+    err = em.Store(b, v)
+    if err != nil {
+        return err
+    }
+
+    em.Regs[I]++
+    em.Regs[J]++
+
+    em.LogInstruction("STI %s, %s ; value transferred was 0x%04X, I = 0x%04X, J = 0x%04X", b.String, a.String, v, em.Regs[I], em.Regs[J])
+    return nil
+}
+
+func handleSTD(em *Emulator, a Operand, b Operand) (err error) {
+    v := em.Load(a)
+    err = em.Store(b, v)
+    if err != nil {
+        return err
+    }
+
+    em.Regs[I]--
+    em.Regs[J]--
+
+    em.LogInstruction("STD %s, %s ; value transferred was 0x%04X, I = 0x%04X, J = 0x%04X", b.String, a.String, v, em.Regs[I], em.Regs[J])
     return nil
 }
