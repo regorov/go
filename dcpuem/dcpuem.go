@@ -7,6 +7,7 @@ package dcpuem
 import (
     "fmt"
     "log"
+    "time"
 )
 
 // Type *Emulator represents a DCPU-16 emulator.
@@ -51,6 +52,9 @@ type Emulator struct {
     // If set, interrupts will be queued instead of executed immediately. Internally, an interrupt
     // will be allowed to execute at the start of every instruction unless this is set to true.
     InterruptQueueing bool
+
+    // The clock ticker. If this is not nil, execution will be limited by it.
+    ClockTicker *time.Ticker
 }
 
 // Function NewEmulator creates, initialises and returns a new emulator.
@@ -161,6 +165,7 @@ const (
     ErrInvalidOperand
     ErrCrashLoop
     ErrInvalidHardwareIndex
+    ErrInvalidHardwareCommand
 )
 
 // Register names.

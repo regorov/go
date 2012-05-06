@@ -103,6 +103,10 @@ func (em *Emulator) DecodeOperand(x uint16, isA bool) (operand Operand, err erro
 
 // Function RunOne runs one instruction.
 func (em *Emulator) RunOne() (err error) {
+    if em.ClockTicker != nil {
+        <-em.ClockTicker.C
+    }
+
     em.ServiceInterrupt()
 
     em.LastPC = em.PC

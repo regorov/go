@@ -61,6 +61,20 @@ func (em *Emulator) DetachDevice(device Device) {
     }
 }
 
+// Function StartDevices starts all the attached devices.
+func (em *Emulator) StartDevices() {
+    for _, d := range em.Hardware {
+        d.Start()
+    }
+}
+
+// Function StopDevices stops all the attached devices.
+func (em *Emulator) StopDevices() {
+    for _, d := range em.Hardware {
+        d.Stop()
+    }
+}
+
 // Interface Device represents a hardware device.
 type Device interface {
     // Function AssociateEmulator should store a reference to the given emulator object in the
