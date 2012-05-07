@@ -1,7 +1,5 @@
 // dcpuem.go - Constants, variables and the Emulator type.
 
-// Package dcpuem implements a DCPU-16 emulator. It currently conforms to revision 1.4 of the
-// specification.
 package dcpuem
 
 import (

@@ -1,16 +1,20 @@
-// Package lem1802_tb implements the Generic Keyboard for the DCPU-16 using Termbox as a backend.
+// Package lem1802_tb implements the Generic Keyboard interface for the DCPU-16 using Termbox as a
+// backend.
+//
+// Device spec: http://0x10c.com/highnerd/rc_1/keyboard.txt
 package keyboard_tb
 
 import (
+    "fmt"
     "github.com/kierdavis/go/dcpuem"
     "github.com/nsf/termbox-go"
     "sync"
 )
 
 type Keyboard struct {
-    Mutex  sync.Mutex
-    Em     *dcpuem.Emulator
-    Buffer []uint16
+    Mutex            sync.Mutex
+    Em               *dcpuem.Emulator
+    Buffer           []uint16
     InterruptMessage uint16
 }
 
@@ -57,16 +61,16 @@ func (d *Keyboard) Interrupt() (err error) {
         } else {
             d.Em.Regs[dcpuem.C] = 0
         }
-    }
-    
+
     case 2:
         // Key checking not implemented
-    
+
     case 3:
         d.InterruptMessage = b
 
     default:
         return &dcpuem.Error{dcpuem.ErrInvalidHardwareCommand, fmt.Sprintf("Invalid command to Generic Keyboard: 0x%04X", a), int(a)}
+    }
 
     return nil
 }
@@ -80,9 +84,12 @@ func (d *Keyboard) Stop() {
 }
 
 func (d *Keyboard) SendKey(key uint16) {
+    d.Mutex.Lock()
+    defer d.Mutex.Unlock()
+
     //termbox.SetCell(32, 12, rune(key), 0, 0)
     d.Buffer = append(d.Buffer, key)
-    
+
     if d.InterruptMessage != 0 {
         d.Em.Interrupt(d.InterruptMessage)
     }

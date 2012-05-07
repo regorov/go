@@ -3,7 +3,9 @@ package main
 import (
     "flag"
     "fmt"
+    "github.com/kierdavis/go/binaryloader"
     "github.com/kierdavis/go/dcpuem"
+    "github.com/kierdavis/go/dcpuem/clock"
     "github.com/kierdavis/go/dcpuem/keyboard_tb"
     "github.com/kierdavis/go/dcpuem/lem1802_tb"
     "github.com/nsf/termbox-go"
@@ -34,23 +36,15 @@ func main() {
     }
 
     fname := flag.Arg(0)
-    fi, err := os.Stat(fname)
-    die(err)
-
-    f, err := os.Open(fname)
-    die(err)
-    defer f.Close()
-
-    buffer := make([]byte, fi.Size())
-    _, err = f.Read(buffer)
-    die(err)
-
     logfile, err := os.Create(fname + ".trace")
     die(err)
     defer logfile.Close()
 
+    program, err := binaryloader.Load(fname)
+    die(err)
+
     em := dcpuem.NewEmulator()
-    em.LoadProgramBytesBE(buffer, 0)
+    em.LoadProgramBytesBE(program, 0)
     em.Logger = log.New(logfile, "", log.LstdFlags|log.Lshortfile)
     em.ClockTicker = time.NewTicker(time.Second / 240.0) // 60Hz
 
@@ -59,6 +53,9 @@ func main() {
 
     kbd := keyboard_tb.New()
     em.AttachDevice(kbd)
+
+    clk := clock.New()
+    em.AttachDevice(clk)
 
     err = termbox.Init()
     die(err)

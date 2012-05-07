@@ -5,6 +5,7 @@ package dcpuem
 // Function Interrupt pushes an interrupt request with the specified message onto the interrupt
 // queue.
 func (em *Emulator) Interrupt(message uint16) {
+    em.Log("Queueing interrupt with message 0x%04X", message)
     em.Interrupts = append(em.Interrupts, message)
 }
 
@@ -27,7 +28,7 @@ func (em *Emulator) ServiceInterrupt() {
 
             em.InterruptQueueing = true
 
-            em.Log("Interrupt with message 0x%04X - jumping to 0x%04X", message, em.IA)
+            em.Log("Interrupting with message 0x%04X - jumping to 0x%04X", message, em.IA)
         }
     }
 }

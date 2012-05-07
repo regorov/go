@@ -1,0 +1,1432 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"the",
+				"them"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "llvm.org/devmtg/2009-10/Korobeynikov_BackendTutorial.pdf\nhttp://www.earslap.com/",
+			"settings":
+			{
+				"buffer_size": 80,
+				"line_ending": "Unix",
+				"name": "llvm.org/devmtg/2009-10/Korobeynikov_BackendTutori"
+			}
+		},
+		{
+			"file": "dcpuem.go",
+			"settings":
+			{
+				"buffer_size": 4027,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/binaryloader/binaryloader.go",
+			"settings":
+			{
+				"buffer_size": 1068,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lem1802_tb/lem1802_tb.go",
+			"settings":
+			{
+				"buffer_size": 5567,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "hmd2043/hmd2043.go",
+			"settings":
+			{
+				"buffer_size": 5387,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "hmd2043/hmu1440.go",
+			"settings":
+			{
+				"buffer_size": 1023,
+				"line_ending": "Unix",
+				"name": "package hmd2043"
+			}
+		},
+		{
+			"file": "/home/kier/gocode/termdialog/termdialog.go",
+			"settings":
+			{
+				"buffer_size": 2250,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "io.go",
+			"settings":
+			{
+				"buffer_size": 3147,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "dcpuem/dcpuem.go",
+			"settings":
+			{
+				"buffer_size": 1744,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "keyboard_tb/keyboard_tb.go",
+			"settings":
+			{
+				"buffer_size": 3056,
+				"line_ending": "Unix",
+				"name": "package keyboard_tb"
+			}
+		},
+		{
+			"file": "clock/clock.go",
+			"settings":
+			{
+				"buffer_size": 2128,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/go/src/pkg/log/log.go",
+			"settings":
+			{
+				"buffer_size": 9347,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/go/src/pkg/sync/mutex.go",
+			"settings":
+			{
+				"buffer_size": 2502,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "memory.go",
+			"settings":
+			{
+				"buffer_size": 3148,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "decode.go",
+			"settings":
+			{
+				"buffer_size": 5162,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "basichandlers.go",
+			"settings":
+			{
+				"buffer_size": 11545,
+				"line_ending": "Unix",
+				"name": "// basichandlers.go - Handlers for basic instructi"
+			}
+		},
+		{
+			"file": "specialhandlers.go",
+			"settings":
+			{
+				"buffer_size": 3418,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": ":MAIN                   [0000]  JSR GET_HARDWARE                7c20 0013\n                        [0002]  SET A, 0                        8401\n                        [0003]  SET B, 0x8000                   7c21 8000\n                        [0005]  HWI [LEM1802]                   7a40 003a\n                        [0007]  SET I, 0x8000                   7cc1 8000\n                        [0009]  SET J, MYSTR                    7ce1 003d\n:PRINT_STR              [000B]  IFE [J], 0                      85f2\n                        [000C]  SET PC, HALT                    7f81 0011\n                        [000E]  STI [I], [J]                    3dde\n                        [000F]  SET PC, PRINT_STR               7f81 000b\n:HALT                   [0011]  SET PC, HALT                    7f81 0011\n:GET_HARDWARE           [0013]  SET PUSH, A                     0301\n                        [0014]  SET PUSH, B                     0701\n                        [0015]  SET PUSH, C                     0b01\n                        [0016]  SET PUSH, X                     0f01\n                        [0017]  SET PUSH, Y                     1301\n                        [0018]  SET PUSH, I                     1b01\n                        [0019]  HWN I                           1a00\n:GET_HARDWARE_LOOP      [001a]  IFE I, 0                        84d1\n                        [001b]  SET PC, GET_HARDWARE_END        7f01 0033\n                        [001d]  HWQ I                           1a20\n                        [001e]  IFE A, 0xF615                   7c12 f615\n                        [0020]  IFE B, 0x7349                   7c32 7349\n                        [0022]  SET [LEM1802], I                1bc1 003a\n                        [0024]  IFE A, 0x7406                   7c12 7406\n                        [0026]  IFE B, 0x30CF                   7c32 30cf\n                        [0028]  SET [KEYBOARD], I               1bc1 003b\n                        [002a]  IFE A, 0xB402                   7c12 b402\n                        [002c]  IFE B, 0x12D0                   7c32 12d0\n                        [002e]  SET [CLOCK], I                  1bc1 003c\n                        [0030]  SUB I, 1                        88c3\n                        [0031]  SET PC, GET_HARDWARE_LOOP       7f81 001a\n:GET_HARDWARE_END       [0033]  SET I, POP                      60c1\n                        [0034]  SET Y, POP                      6081\n                        [0035]  SET X, POP                      6061\n                        [0036]  SET C, POP                      6041\n                        [0037]  SET B, POP                      6021\n                        [0038]  SET A, POP                      6001\n                        [0039]  SET PC, POP                     6381\n:LEM1802                [003a]  DAT 0xFFFF                      ffff\n:KEYBOARD               [003b]  DAT 0xFFFF                      ffff\n:CLOCK                  [003c]  DAT 0xFFFF                      ffff\n:MYSTR                  [003d]  DAT \"Hello, world!\", 0          0068\n                                                                0065\n                                                                006c\n                                                                006c\n                                                                006f\n                                                                002c\n                                                                0020\n                                                                0077\n                                                                006f\n                                                                0072\n                                                                006c\n                                                                0064\n                                                                0021\n                                                                0000\n",
+			"settings":
+			{
+				"buffer_size": 3959,
+				"line_ending": "Unix",
+				"name": ":MAIN                   [0000]  JSR GET_HARDWARE"
+			}
+		},
+		{
+			"file": "/home/kier/tmp/helloworld.dasm16",
+			"settings":
+			{
+				"buffer_size": 932,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/kier/tmp/display.dasm16",
+			"settings":
+			{
+				"buffer_size": 2440,
+				"line_ending": "Unix",
+				"name": ":MAIN                   JSR GET_HARDWARE"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 218.0,
+		"selected_items":
+		[
+			[
+				"Package Control: i",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"z:AAAPackageDev: New .JSON-tmLanguage from Buffer"
+			],
+			[
+				"AAApackagedev: new .J",
+				"z:AAAPackageDev: New .JSON-tmLanguage from Buffer"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 435.0
+	},
+	"console":
+	{
+		"height": 129.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/kier/gocode/k270em/k270em.go",
+		"/home/kier/gocode/dcpuem/lem1802_tb/colors.go",
+		"/home/kier/golib/src/github.com/nsf/termbox-go/api.go",
+		"/home/kier/go/src/pkg/sync/atomic/asm_386.s",
+		"/home/kier/go/src/pkg/sync/atomic/doc.go",
+		"/home/kier/tmp/helloworld.dasm16",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/CHANGELOG.md",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/USAGE.md",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/README.md",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/gscommands.py",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/GoSublime.sublime-settings",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/Default (Linux).sublime-keymap",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/gsfmt.py",
+		"/home/kier/gocode/dcpuem/lem1802/lem1802.go",
+		"/home/kier/gocode/resourcemanager/resourcemanager.go",
+		"/home/kier/gocode/dcpuem/sdlhw/lem1802.go",
+		"/home/kier/gocode/dcpuem_old/dcpuemlib/emulator.go",
+		"/home/kier/gocode/dcpuemlib/emulator.go",
+		"/home/kier/gocode/dcpuemlib/operand.go",
+		"/home/kier/gocode/dcpuemlib/util.go",
+		"/home/kier/projects/active/k270/k270asm/passes.py",
+		"/home/kier/projects/active/vcpu/vcpu/ram.py",
+		"/home/kier/projects/active/vcpu/vcpu/util.py",
+		"/home/kier/projects/active/vcpu/vcpu/part.py",
+		"/home/kier/projects/active/vcpu/vcpu/register.py",
+		"/home/kier/projects/active/vcpu/vcpu/number.py",
+		"/home/kier/projects/active/vcpu/vcpu/operator.py",
+		"/home/kier/projects/active/vcpu/vcpu/__init__.py",
+		"/home/kier/projects/active/vcpu/test.py",
+		"/home/kier/pythonlib/dep.py",
+		"/home/kier/altera/projects/k270/K270.v",
+		"/home/kier/projects/active/vcpu/vcpu/output.py",
+		"/home/kier/gocode/termdialog/termdialog.go",
+		"/home/kier/cd/altera_board_v3eng/3_Sample_Program_Verilog/Advanced experimental_08_PS2_01          Accept the standard keyboard input, print to a PC via the serial port/src/PS2_UART.v",
+		"/home/kier/projects/active/hla/target/k680.py",
+		"/home/kier/projects/active/kappa/compiler/visitors.py",
+		"/home/kier/projects/active/ksim/ksim2/compgen_py/parser.py",
+		"/home/kier/cd/altera_board_v3eng/3_Sample_Program_Verilog/Advanced experimental_06_VGA             VGA display a character, 800X600 @ 72Hz/Quartus/VGA_CTL.qsf",
+		"/home/kier/altera/pins.txt",
+		"/home/kier/altera/projects/dcpu16v2/simulation/modelsim/DCPU16_v.sdo",
+		"/home/kier/gocode/k680emlib/aluimminstructions.go",
+		"/home/kier/gocode/k680emlib/aluinstructions.go",
+		"/home/kier/gocode/k680emlib/emulator.go",
+		"/home/kier/gocode/k680emlib/jumpmeminstructions.go",
+		"/home/kier/gocode/k680emlib/otherinstructions.go",
+		"/home/kier/gocode/k680emlib/util.go",
+		"/home/kier/projects/active/k680/k680.txt",
+		"/home/kier/projects/active/hla/jinit.hla",
+		"/home/kier/projects/active/hla/parser.py",
+		"/home/kier/projects/active/hla/ast.py",
+		"/home/kier/projects/active/hla/lexer.py",
+		"/home/kier/projects/active/hla/hla.py",
+		"/home/kier/projects/active/hla/verifier.py",
+		"/home/kier/projects/active/hla/parser.out",
+		"/home/kier/misc/lalr-reduce.txt",
+		"/home/kier/projects/active/k680/k680.",
+		"/home/kier/golib/build",
+		"/home/kier/gocode/mcactivity/mcactivity.go",
+		"/home/kier/gocode/hydraulics/hydrotest/hydrotest.go",
+		"/home/kier/golib/src/github.com/iand/amberfell/world.go",
+		"/home/kier/gocode/bytereader/bytereader.go",
+		"/home/kier/gocode/bytereader/error.go",
+		"/home/kier/gocode/amberfell/mm3dmodel/error.go",
+		"/home/kier/projects/active/amberfell/functions.go",
+		"/home/kier/projects/active/amberfell/wolf.go",
+		"/home/kier/.config/sublime-text-2/Packages/User/GoSublime.sublime-settings",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/gsshell.py",
+		"/home/kier/.config/sublime-text-2/Packages/GoSublime/GsShell.sublime-build",
+		"/home/kier/golib/src/github.com/iand/amberfell/wolf.go",
+		"/home/kier/golib/src/github.com/iand/amberfell/shapes.go",
+		"/home/kier/golib/src/github.com/iand/amberfell/player.go",
+		"/home/kier/golib/src/github.com/iand/amberfell/vector.go",
+		"/home/kier/gocode/amberfell/mm3dmodel/mm3dmodel.sublime-workspace",
+		"/home/kier/web/kierdavis.com/ghrepos.py",
+		"/home/kier/web/kierdavis.com/templates/index.html",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/github.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/services/repos/__init__.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/services/base.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/requests/base.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/requests/repos/__init__.py",
+		"/usr/local/lib/python2.6/dist-packages/pygithub3-0.3-py2.6.egg/pygithub3/__init__.py",
+		"/home/kier/gocode/resourcemanager/README.md",
+		"/home/kier/tmp/hydraulics-async.go",
+		"/home/kier/gocode/amberfell/hydraulics/hydraulics.go",
+		"/home/kier/gocode/amberfell/hydraulics/lightbulb.go",
+		"/home/kier/gocode/amberfell/hydraulics/feeder.go",
+		"/home/kier/gocode/amberfell/hydraulics/pipe.go",
+		"/home/kier/gocode/amberfell/hydraulics/source.go",
+		"/home/kier/altera/projects/k270/uart.v",
+		"/home/kier/gocode/amberfell/hydraulics/andgate.go",
+		"/home/kier/gocode/amberfell/hydraulics/hydrotest/hydrotest.go",
+		"/home/kier/gocode/k270emlib/emulator.go",
+		"/home/kier/gocode/k270emlib/v_opcodes.go",
+		"/home/kier/altera/projects/k270/programs/buzz-a.asm",
+		"/home/kier/tmp/freqs.py",
+		"/home/kier/altera/projects/k270/programs/notes.asm",
+		"/home/kier/altera/projects/k270/programs/scale.asm",
+		"/home/kier/altera/projects/k270/programs/song.asm",
+		"/home/kier/altera/projects/k270/programs/blink.asm",
+		"/home/kier/altera/projects/k270/programs/uart-tx.asm",
+		"/home/kier/altera/projects/k270/ram.asm",
+		"/home/kier/projects/active/k270/include/rcq208/set_tube_bits.k270.asm",
+		"/home/kier/projects/active/k270/include/rcq208/set_tube_digit.k270.asm",
+		"/home/kier/projects/active/k270/include/rcq208/tube_digits_data.k270.asm",
+		"/home/kier/projects/active/k270/include/rcq208/set_tube_digits.k270.asm",
+		"/home/kier/altera/projects/k270/programs/counter.asm",
+		"/home/kier/bin/sercomm.py",
+		"/home/kier/projects/active/k270/include/stdlib/inc.k270.asm",
+		"/home/kier/gocode/amberfell/hydraulics/splitter.go",
+		"/home/kier/gocode/k270em_nodisp/k270em_nodisp.go",
+		"/home/kier/projects/active/k270/k270asm/macproc.py",
+		"/home/kier/altera/projects/k270/programs/async_interval.asm",
+		"/home/kier/altera/projects/k270/programs/tube.asm",
+		"/home/kier/projects/active/k270/k270asm/lexer.py",
+		"/home/kier/projects/active/k270/k270asm/ast.py",
+		"/home/kier/projects/active/k270/k270asm/parser.py",
+		"/home/kier/altera/projects/counter/Timer.v",
+		"/home/kier/projects/active/k270/k270asm/encoder.py",
+		"/home/kier/projects/active/k270/k270asm/k270asm.py",
+		"/home/kier/pythonlib/base_ast.py",
+		"/home/kier/altera/projects/k270/K270_onehot.v",
+		"/home/kier/altera/projects/k270/programs/delay.asm",
+		"/home/kier/web/kierdavis.com/templates/base.html",
+		"/home/kier/altera/projects/k270/K270_RCQ208_frontend.v",
+		"/home/kier/altera/projects/k270/K270_test.v",
+		"/home/kier/projects/active/n1/oldn5/n5.txt",
+		"/home/kier/projects/active/n1/nu/nu.txt",
+		"/home/kier/projects/active/n1/n2/n2.txt"
+	],
+	"find":
+	{
+		"height": 33.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"d.Em.Disk",
+			"em",
+			"Log",
+			"LogInstruction",
+			"_s",
+			"_i",
+			"_m",
+			"Emulator.",
+			"O",
+			"ST_EXEC1",
+			"inst_a",
+			"LOADA",
+			"a",
+			"LBRACKET",
+			"triangleNormals",
+			"TriangleNormals",
+			"v1",
+			"angle",
+			"vertices",
+			"vertex",
+			"Vertices",
+			"Vertex",
+			"ds",
+			"b",
+			"MM3DModel",
+			"8",
+			"i",
+			"sp",
+			"sp_minus_four",
+			"sp_plus_four",
+			"pc_plus_four",
+			"_",
+			" = ",
+			"68",
+			"ST_RETI:",
+			"resume",
+			"(?<![<=])=(?!=)",
+			"(?<![<=])=",
+			"(?<!<)=",
+			"(?!<)=",
+			"i <=",
+			"sp[",
+			"or",
+			"pipe",
+			"Pipe",
+			"math.Min",
+			"Reciever",
+			"pipe",
+			"Source",
+			"source",
+			"regs_buffer",
+			"ram",
+			"ireq",
+			"ifne",
+			"self.data",
+			"bb",
+			"DirectoryEntry",
+			"HIDDEN",
+			"v7",
+			"v6",
+			"r6",
+			"r0",
+			"code_INTERPRET_",
+			"r5",
+			"r4",
+			"r3",
+			"r2",
+			"r1",
+			"%edi",
+			"%ecx",
+			"//",
+			".split(\",\")",
+			"WORD",
+			".+:",
+			":.+",
+			"print ",
+			"jmp",
+			"-",
+			"+",
+			"str",
+			"@word",
+			"link",
+			"@word",
+			"inf.name",
+			"RSP_L",
+			"RSP_H",
+			"RSP",
+			"NXT_L",
+			"NXT_H",
+			"NXT",
+			"macros",
+			"82",
+			"DCPU16",
+			"0.0, ",
+			"1.0, ",
+			"ram_a",
+			"memory",
+			"memory\\[(.+)\\] <=",
+			"<= memory",
+			"memory",
+			"ST_LOADB",
+			"ST_LOADA",
+			"operand_a",
+			"ST_DECODE",
+			"E_INCORRECT_MODE",
+			"VideoMemory",
+			"type",
+			"calcChecksum",
+			"//  ",
+			"GetArea",
+			"io",
+			"xxxxx",
+			"offset",
+			"lineno",
+			"PLUS",
+			"errors.error",
+			"ast.",
+			"#",
+			"BS_CLEAR",
+			"#",
+			"shift_up",
+			"shift_down",
+			"videoMemory",
+			"ports",
+			"writeln",
+			"//",
+			"SIZE",
+			"push"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"d.Disk",
+			"d.Em",
+			"LogInstruction",
+			"Log",
+			"S",
+			"I",
+			"M",
+			"",
+			"EX",
+			"Ex",
+			"ST_EXEC",
+			"inst_b",
+			"LOADB",
+			"b",
+			"smoothnessAngle",
+			"SmoothnessAngle",
+			"v",
+			"angleNormal",
+			"triangles",
+			"triangle",
+			"Triangles",
+			"Triangle",
+			"vertex",
+			"br",
+			"Model",
+			"64",
+			"32",
+			"16",
+			"64",
+			"32",
+			"interrupts",
+			"regs[R_SP]",
+			"sp - 32'd4",
+			"sp + 32'd4",
+			"pc + 32'd4",
+			"",
+			"50",
+			"ext_int_ready",
+			"splitter",
+			"Splitter",
+			"imin",
+			"Receiver",
+			"lightBulb",
+			"Pipe",
+			"pipe",
+			"ireg",
+			"ifnei",
+			"vbb",
+			"Directory",
+			"a1",
+			"a0",
+			"v6",
+			"v0",
+			".",
+			"v5",
+			"v4",
+			"v3",
+			"v2",
+			"v1",
+			"v2:v3",
+			"v1",
+			";",
+			"",
+			"print >> f, ",
+			"@u16",
+			"LINK",
+			"@u16",
+			"v7",
+			"v6",
+			"v6:v7",
+			"v5",
+			"v4",
+			"v4:v5",
+			"defs",
+			"K270",
+			"  ",
+			"XX",
+			"memory[\\1] =",
+			"= memory",
+			"ST_LOADA",
+			"ST_LOADAREF",
+			"operand_b",
+			"ST_LOADB",
+			"videoMemory",
+			"CalcChecksum",
+			"// ",
+			"getArea",
+			"offset",
+			"lineno",
+			"xxxxx",
+			"ADD",
+			"@",
+			"shift_left",
+			"shift_right",
+			"VideoMemory",
+			";",
+			"A",
+			"PUSH",
+			"POP",
+			"PC",
+			"BOR",
+			"SUB",
+			"AND",
+			"JSR",
+			"IFG",
+			"IFE",
+			"ADD",
+			"SET",
+			"Z",
+			"Y",
+			"X",
+			"C",
+			"B",
+			"A",
+			"z",
+			"y",
+			"x",
+			"c",
+			"b",
+			";",
+			"a",
+			"",
+			"nil",
+			"register",
+			"\\1",
+			"dest.Store(em, ",
+			".Load(em",
+			".Load(em, "
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 19,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"settings":
+					{
+						"buffer_size": 80,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								80,
+								80
+							]
+						],
+						"settings":
+						{
+							"auto_name": "llvm.org/devmtg/2009-10/Korobeynikov_BackendTutori",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "dcpuem.go",
+					"settings":
+					{
+						"buffer_size": 4027,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4027,
+								4027
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2469.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/kier/gocode/binaryloader/binaryloader.go",
+					"settings":
+					{
+						"buffer_size": 1068,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								343,
+								343
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 561.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lem1802_tb/lem1802_tb.go",
+					"settings":
+					{
+						"buffer_size": 5567,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1712,
+								1712
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 867.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "hmd2043/hmd2043.go",
+					"settings":
+					{
+						"buffer_size": 5387,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "hmd2043/hmu1440.go",
+					"settings":
+					{
+						"buffer_size": 1023,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_name": "package hmd2043",
+							"syntax": "Packages/Go/Go.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/kier/gocode/termdialog/termdialog.go",
+					"settings":
+					{
+						"buffer_size": 2250,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								282,
+								288
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "io.go",
+					"settings":
+					{
+						"buffer_size": 3147,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2167,
+								2167
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 510.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "dcpuem/dcpuem.go",
+					"settings":
+					{
+						"buffer_size": 1744,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1744,
+								1744
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 837.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "keyboard_tb/keyboard_tb.go",
+					"settings":
+					{
+						"buffer_size": 3056,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								173,
+								173
+							]
+						],
+						"settings":
+						{
+							"auto_name": "package keyboard_tb",
+							"syntax": "Packages/Go/Go.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "clock/clock.go",
+					"settings":
+					{
+						"buffer_size": 2128,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								133,
+								133
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/kier/go/src/pkg/log/log.go",
+					"settings":
+					{
+						"buffer_size": 9347,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9347,
+								9347
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4815.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/kier/go/src/pkg/sync/mutex.go",
+					"settings":
+					{
+						"buffer_size": 2502,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1135,
+								1154
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 102.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "memory.go",
+					"settings":
+					{
+						"buffer_size": 3148,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 816.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "decode.go",
+					"settings":
+					{
+						"buffer_size": 5162,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2539,
+								2550
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1517.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "basichandlers.go",
+					"settings":
+					{
+						"buffer_size": 11545,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_name": "// basichandlers.go - Handlers for basic instructi",
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "specialhandlers.go",
+					"settings":
+					{
+						"buffer_size": 3418,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2701,
+								2701
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Go/Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1517.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"settings":
+					{
+						"buffer_size": 3959,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								64,
+								0
+							],
+							[
+								138,
+								74
+							],
+							[
+								207,
+								143
+							],
+							[
+								281,
+								217
+							],
+							[
+								355,
+								291
+							],
+							[
+								429,
+								365
+							],
+							[
+								503,
+								439
+							],
+							[
+								572,
+								508
+							],
+							[
+								646,
+								582
+							],
+							[
+								715,
+								651
+							],
+							[
+								789,
+								725
+							],
+							[
+								863,
+								799
+							],
+							[
+								932,
+								868
+							],
+							[
+								1001,
+								937
+							],
+							[
+								1070,
+								1006
+							],
+							[
+								1139,
+								1075
+							],
+							[
+								1208,
+								1144
+							],
+							[
+								1277,
+								1213
+							],
+							[
+								1346,
+								1282
+							],
+							[
+								1415,
+								1351
+							],
+							[
+								1489,
+								1425
+							],
+							[
+								1558,
+								1494
+							],
+							[
+								1632,
+								1568
+							],
+							[
+								1706,
+								1642
+							],
+							[
+								1780,
+								1716
+							],
+							[
+								1854,
+								1790
+							],
+							[
+								1928,
+								1864
+							],
+							[
+								2002,
+								1938
+							],
+							[
+								2076,
+								2012
+							],
+							[
+								2150,
+								2086
+							],
+							[
+								2224,
+								2160
+							],
+							[
+								2293,
+								2229
+							],
+							[
+								2367,
+								2303
+							],
+							[
+								2436,
+								2372
+							],
+							[
+								2505,
+								2441
+							],
+							[
+								2574,
+								2510
+							],
+							[
+								2643,
+								2579
+							],
+							[
+								2712,
+								2648
+							],
+							[
+								2781,
+								2717
+							],
+							[
+								2850,
+								2786
+							],
+							[
+								2919,
+								2855
+							],
+							[
+								2988,
+								2924
+							],
+							[
+								3057,
+								2993
+							]
+						],
+						"settings":
+						{
+							"auto_name": ":MAIN                   [0000]  JSR GET_HARDWARE",
+							"rulers":
+							[
+								70
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 259.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "/home/kier/tmp/helloworld.dasm16",
+					"settings":
+					{
+						"buffer_size": 932,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "/home/kier/tmp/display.dasm16",
+					"settings":
+					{
+						"buffer_size": 2440,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2393,
+								2393
+							]
+						],
+						"settings":
+						{
+							"auto_name": ":MAIN                   JSR GET_HARDWARE",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 55.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 42.0
+	},
+	"input":
+	{
+		"height": 32.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 110.0
+	},
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/home/kier/mininggame/mininggame.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

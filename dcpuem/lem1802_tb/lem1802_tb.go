@@ -1,44 +1,6 @@
 // Package lem1802_tb implements the LEM1802 display for the DCPU-16 using Termbox as a backend.
 // 
-// Example usage:
-// 
-//      var display *lem1802_tb.LEM1802
-//      var em *dcpuem.Emulator
-//      var err error
-//      var ev termbox.Event
-//      
-//      // Create an emulator.
-//      em = dcpuem.NewEmulator()
-//      
-//      // Create a display & attach it to the emulator.
-//      display = lem1802_tb.New()
-//      em.AttachDevice(display)
-//      
-//      // Initialise Termbox.
-//      err = termbox.Init()
-//      if err != nil {panic(err)}
-//      defer termbox.Close()
-//      
-//      // Start the display's service.
-//      display.Start()
-//      defer display.Stop()
-//      
-//      // Start the emulator.
-//      go em.Run()
-//      
-//      // Termbox event loop.
-//      mainloop:
-//      for {
-//          ev = termbox.PollEvent()
-//          
-//          switch ev.Type {
-//          case termbox.EventKey:
-//              switch ev.Key {
-//              case termbox.KeyEsc:
-//                  break mainloop
-//              }
-//          }
-//      }
+// Device spec: http://0x10c.com/highnerd/rc_1/lem1802.txt
 package lem1802_tb
 
 import (
@@ -198,22 +160,22 @@ func (d *LEM1802) Interrupt() (err error) {
         // Fonts not supported.
 
     case 5:
-        d.MemoryStore(b, 0x0000)
-        d.MemoryStore(b+1, 0x0A00)
-        d.MemoryStore(b+2, 0x00A0)
-        d.MemoryStore(b+3, 0x05A0)
-        d.MemoryStore(b+4, 0x000A)
-        d.MemoryStore(b+5, 0x0A0A)
-        d.MemoryStore(b+6, 0x00AA)
-        d.MemoryStore(b+7, 0x0AAA)
-        d.MemoryStore(b+8, 0x0555)
-        d.MemoryStore(b+9, 0x0F55)
-        d.MemoryStore(b+10, 0x05F5)
-        d.MemoryStore(b+11, 0x0FF5)
-        d.MemoryStore(b+12, 0x055F)
-        d.MemoryStore(b+13, 0x0F5F)
-        d.MemoryStore(b+14, 0x05FF)
-        d.MemoryStore(b+15, 0x0FFF)
+        d.Em.MemoryStore(b, 0x0000)
+        d.Em.MemoryStore(b+1, 0x0A00)
+        d.Em.MemoryStore(b+2, 0x00A0)
+        d.Em.MemoryStore(b+3, 0x05A0)
+        d.Em.MemoryStore(b+4, 0x000A)
+        d.Em.MemoryStore(b+5, 0x0A0A)
+        d.Em.MemoryStore(b+6, 0x00AA)
+        d.Em.MemoryStore(b+7, 0x0AAA)
+        d.Em.MemoryStore(b+8, 0x0555)
+        d.Em.MemoryStore(b+9, 0x0F55)
+        d.Em.MemoryStore(b+10, 0x05F5)
+        d.Em.MemoryStore(b+11, 0x0FF5)
+        d.Em.MemoryStore(b+12, 0x055F)
+        d.Em.MemoryStore(b+13, 0x0F5F)
+        d.Em.MemoryStore(b+14, 0x05FF)
+        d.Em.MemoryStore(b+15, 0x0FFF)
 
     default:
         return &dcpuem.Error{dcpuem.ErrInvalidHardwareCommand, fmt.Sprintf("Invalid command to LEM1802: 0x%04X", a), int(a)}
