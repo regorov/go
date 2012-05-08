@@ -12,7 +12,7 @@ var otherInstructions = map[uint8]otherInstructionHandler{
     //0x04: handleInt,
     //0x05: handleRih,
     0x06: handleLda,
-    //0x07: handleSta,
+    0x07: handleSta,
     0x08: handleRet,
     //0x09: handleReti,
     0x0A: handleLdl,
@@ -22,7 +22,7 @@ var otherInstructions = map[uint8]otherInstructionHandler{
     //0x0E: handlePc,
     //0x0F: handlePs,
     0x10: handleCps,
-    //0x11: handleJmcs,
+    0x11: handleJmcs,
 
     0x7F: handleHlt,
 }
@@ -77,6 +77,34 @@ func handleLda(em *Emulator, a uint8, i uint16) {
     }
 }
 
+func handleSta(em *Emulator, a uint8, i uint16) {
+    scale := (i >> 10) & 0x03
+    base := (i >> 5) & 0x1F
+    index := i & 0x1F
+    addr := em.Regs[base] + (em.Regs[index] << scale)
+    data := em.Regs[a]
+
+    switch scale {
+    case 0:
+        em.MemoryStore(addr, uint8(data))
+        em.LogInstruction("sta %s, 0, %s, %s -- [0x%08X] = 0x%02X", RegisterNames[base], RegisterNames[index], RegisterNames[a], addr, data)
+
+    case 1:
+        em.MemoryStoreHalf(addr, uint16(data))
+        em.LogInstruction("sta %s, 1, %s, %s -- [0x%08X] = 0x%04X", RegisterNames[base], RegisterNames[index], RegisterNames[a], addr, data)
+
+    case 2:
+        em.MemoryStoreWord(addr, data)
+        em.LogInstruction("sta %s, 2, %s, %s -- [0x%08X] = 0x%08X", RegisterNames[base], RegisterNames[index], RegisterNames[a], addr, data)
+
+    case 3:
+        data64 := uint64(em.Regs[a>>1]) << 32
+        data64 |= uint64(em.Regs[(a>>1)+1])
+        em.MemoryStoreDouble(addr, data64)
+        em.LogInstruction("sta %s, 3, %s, %s -- [0x%08X] = 0x%016X", RegisterNames[base], RegisterNames[index], RegisterNames[a], addr, data)
+    }
+}
+
 func handleRet(em *Emulator, a uint8, i uint16) {
     em.PC = em.Pop()
     em.LogInstruction("ret")
@@ -105,6 +133,12 @@ func handleCps(em *Emulator, a uint8, i uint16) {
     em.Regs[s]++
     em.Regs[d]++
     em.LogInstruction("cps %s, %s, %s -- [0x%08X] -> [0x%08X], value was 0x%02X, count is now 0x%08X", RegisterNames[d], RegisterNames[s], RegisterNames[a], sa, da, v, em.Regs[a])
+}
+
+func handleJmcs(em *Emulator, a uint8, i uint16) {
+    em.PC = em.Regs[a]
+    em.Regs[4] = em.Regs[7]
+    em.LogInstruction("jmcs %s -- PC = 0x%08X, CS/US = 0x%08X", RegisterNames[a], em.PC, em.Regs[4])
 }
 
 func handleHlt(em *Emulator, a uint8, i uint16) {

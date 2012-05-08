@@ -56,3 +56,18 @@ func (net *Net) Propagate(inputs []byte, outputs []byte) {
 
     return outputs
 }
+
+func (net *Net) Fill(genome Genome) {
+    ch := make(chan float64)
+    done := make(chan bool)
+
+    go genome.Pump(ch, done)
+
+    for _, layer := range net.Layers[1:] {
+        for _, node := range layer {
+            node.Fill(ch)
+        }
+    }
+
+    done <- true
+}

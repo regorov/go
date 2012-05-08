@@ -14,6 +14,7 @@ type Emulator struct {
     Memory    []byte
     TraceFile io.Writer
     Running   bool
+    Conds     [3]bool
 }
 
 // Function NewEmulator creates and returns a new emulator.
@@ -186,7 +187,11 @@ func (em *Emulator) LogInstruction(format string, args ...interface{}) {
 // Function RunOne runs one instruction.
 func (em *Emulator) RunOne() (err error) {
     word := em.FetchWord()
-    mode, _, opcode, a := em.DecodeInstruction(word)
+    mode, xc, opcode, a := em.DecodeInstruction(word)
+
+    if xc > 0 && !em.Conds[xc-1] {
+        return nil
+    }
 
     switch mode {
     case 0:

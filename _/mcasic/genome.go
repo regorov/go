@@ -21,12 +21,12 @@ func RandomGenome(seed int64) (genome Genome) {
     return genome
 }
 
-func PumpGenome(genome Genome, c chan float64, done chan bool) {
+func (genome Genome) Pump(c chan float64, stop chan bool) {
     i := 0
 
     for {
         select {
-        case <-done:
+        case <-stop:
             return
 
         case c <- genome[i]:

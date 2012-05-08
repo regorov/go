@@ -14,12 +14,12 @@ var aluInstructions = map[uint8]aluInstructionHandler{
     0x6: handleXor,
     0x7: handleMul,
     0x8: handleMov,
-    //0xA: handleNot,
-    //0xB: handleNeg,
-    //0xC: handleXeq,
-    //0xD: handleXne,
-    //0xE: handleXlt,
-    //0xF: handleXge,
+    0xA: handleNot,
+    0xB: handleNeg,
+    0xC: handleXeq,
+    0xD: handleXne,
+    0xE: handleXlt,
+    0xF: handleXge,
 }
 
 func handlePush(em *Emulator, a uint8, b uint8, d uint8) {
@@ -83,4 +83,58 @@ func handleMul(em *Emulator, a uint8, b uint8, d uint8) {
 func handleMov(em *Emulator, a uint8, b uint8, d uint8) {
     em.Regs[d] = em.Regs[a]
     em.LogInstruction("mov %s, %s -- value transferred was 0x%08X", RegisterNames[d], RegisterNames[a], em.Regs[d])
+}
+
+func handleNot(em *Emulator, a uint8, b uint8, d uint8) {
+    before := em.Regs[a]
+    after := ^before
+    em.Regs[d] = after
+    em.LogInstruction("not %s, %s -- ~0x%08X = 0x%08X", RegisterNames[d], RegisterNames[a], before, after)
+}
+
+func handleNeg(em *Emulator, a uint8, b uint8, d uint8) {
+    before := em.Regs[a]
+    after := -before
+    em.Regs[d] = after
+    em.LogInstruction("neg %s, %s -- -0x%08X = 0x%08X", RegisterNames[d], RegisterNames[a], before, after)
+}
+
+func handleXeq(em *Emulator, a uint8, b uint8, d uint8) {
+    cond := em.Regs[a] == em.Regs[b]
+
+    if d >= 1 && d <= 3 {
+        em.Conds[d-1] = cond
+    }
+
+    em.LogInstruction("xeq %s, %s, %d -- 0x%08X == 0x%08X is %t", RegisterNames[a], RegisterNames[b], em.Regs[a], em.Regs[b], d, cond)
+}
+
+func handleXne(em *Emulator, a uint8, b uint8, d uint8) {
+    cond := em.Regs[a] != em.Regs[b]
+
+    if d >= 1 && d <= 3 {
+        em.Conds[d-1] = cond
+    }
+
+    em.LogInstruction("xne %s, %s, %d -- 0x%08X != 0x%08X is %t", RegisterNames[a], RegisterNames[b], em.Regs[a], em.Regs[b], d, cond)
+}
+
+func handleXlt(em *Emulator, a uint8, b uint8, d uint8) {
+    cond := em.Regs[a] < em.Regs[b]
+
+    if d >= 1 && d <= 3 {
+        em.Conds[d-1] = cond
+    }
+
+    em.LogInstruction("xlt %s, %s, %d -- 0x%08X < 0x%08X is %t", RegisterNames[a], RegisterNames[b], em.Regs[a], em.Regs[b], d, cond)
+}
+
+func handleXge(em *Emulator, a uint8, b uint8, d uint8) {
+    cond := em.Regs[a] >= em.Regs[b]
+
+    if d >= 1 && d <= 3 {
+        em.Conds[d-1] = cond
+    }
+
+    em.LogInstruction("xge %s, %s, %d -- 0x%08X >= 0x%08X is %t", RegisterNames[a], RegisterNames[b], em.Regs[a], em.Regs[b], d, cond)
 }

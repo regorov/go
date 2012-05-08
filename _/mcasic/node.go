@@ -35,11 +35,11 @@ func NewNode(nodes []*Node) (node *Node) {
     return node
 }
 
-func (node *Node) Fill(genome chan float64) {
-    node.Bias = <-genome
+func (node *Node) Fill(c chan float64) {
+    node.Bias = <-c
 
     for _, input := range node.Inputs {
-        input.Weight = <-genome
+        input.Weight = <-c
     }
 }
 

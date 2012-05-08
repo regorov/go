@@ -6,7 +6,7 @@ type aluImmInstructionHandler func(*Emulator, uint8, uint8, uint16)
 
 var aluImmInstructions = map[uint8]aluImmInstructionHandler{
     0x0: handlePushi,
-    //0x1: handleSti,
+    0x1: handleSti,
     0x2: handleAddi,
     0x3: handleSubi,
     0x4: handleAndi,
@@ -15,12 +15,19 @@ var aluImmInstructions = map[uint8]aluImmInstructionHandler{
     0x7: handleMuli,
     0x8: handleShl,
     0x9: handleShr,
-    //0xA: handleAshr,
+    0xA: handleAshr,
 }
 
 func handlePushi(em *Emulator, a uint8, d uint8, i uint16) {
     em.Push(uint32(i))
     em.LogInstruction("pushi 0x%04X", i)
+}
+
+func handleSti(em *Emulator, a uint8, d uint8, i uint16) {
+    addr := em.Regs[a]
+    data := parseSigned14(i)
+    em.MemoryStoreWord(addr, data)
+    em.LogInstruction("sti %s, %s0x%04X -- [0x%08X] = 0x%08X", RegisterNames[a], sign14(i), abs14(i), addr, data)
 }
 
 func handleAddi(em *Emulator, a uint8, d uint8, i uint16) {
@@ -77,4 +84,11 @@ func handleShr(em *Emulator, a uint8, d uint8, i uint16) {
     y := x >> uint32(i)
     em.Regs[d] = y
     em.LogInstruction("shr %s, %s, 0x%04X -- 0x%08X >> 0x%08X = 0x%08X", RegisterNames[d], RegisterNames[a], i, x, i, y)
+}
+
+func handleAshr(em *Emulator, a uint8, d uint8, i uint16) {
+    x := em.Regs[a]
+    y := uint32(int32(x) >> uint32(i))
+    em.Regs[d] = y
+    em.LogInstruction("ashr %s, %s, 0x%04X -- 0x%08X >> 0x%08X = 0x%08X", RegisterNames[d], RegisterNames[a], i, x, i, y)
 }
