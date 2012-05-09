@@ -143,5 +143,6 @@ func handleJmcs(em *Emulator, a uint8, i uint16) {
 
 func handleHlt(em *Emulator, a uint8, i uint16) {
     em.Running = false
+    em.PC = em.PC - 4
     em.LogInstruction("hlt")
 }
