@@ -96,12 +96,12 @@ func BackPropagate(input Matrix, weight Matrix, bias Matrix, eta float32) (weigh
     return weight
 }
 
-func Train(dataset *Dataset) (weight Matrix, e_train, e_validate, e_test, c_train, c_validate, c_test float32) {
+func Train(dataset *Dataset, chartFile string) (weight Matrix, e_train, e_validate, e_test, c_train, c_validate, c_test float32) {
     weight = InitWeights(0.5, dataset.InputCount, dataset.OutputCount)
 
-    bias_train := FillMatrix(dataset.TrainingSet.Count, 1, 1.0)
-    bias_validate := FillMatrix(dataset.ValidationSet.Count, 1, 1.0)
-    bias_test := FillMatrix(dataset.TestSet.Count, 1, 1.0)
+    dataset.TrainingSet.Bias = FillMatrix(dataset.TrainingSet.Count, 1, 1.0)
+    dataset.ValidationSet.Bias = FillMatrix(dataset.ValidationSet.Count, 1, 1.0)
+    dataset.TestSet.Bias = FillMatrix(dataset.TestSet.Count, 1, 1.0)
 
     var e_train_l []float32
     var e_validate_l []float32
@@ -111,18 +111,18 @@ func Train(dataset *Dataset) (weight Matrix, e_train, e_validate, e_test, c_trai
     var c_test_l []float32
 
     if PLOT_GRAPHS {
-        e_train_l := make([]float32, 0)
-        e_validate_l := make([]float32, 0)
-        e_test_l := make([]float32, 0)
-        c_train_l := make([]float32, 0)
-        c_validate_l := make([]float32, 0)
-        c_test_l := make([]float32, 0)
+        e_train_l = make([]float32, 0)
+        e_validate_l = make([]float32, 0)
+        e_test_l = make([]float32, 0)
+        c_train_l = make([]float32, 0)
+        c_validate_l = make([]float32, 0)
+        c_test_l = make([]float32, 0)
     }
 
     epoch := 0
 
     for epoch < 500 {
-        weight = BackPropagate(data.TrainingSet.Input, weight, 0.1, bias_train)
+        weight = BackPropagate(dataset.TrainingSet.Input, weight, dataset.TrainingSet.Bias, 0.1)
 
         if PLOT_GRAPHS {
             e_train, c_train = CalcError(dataset.TrainingSet, weight)
@@ -141,7 +141,15 @@ func Train(dataset *Dataset) (weight Matrix, e_train, e_validate, e_test, c_trai
     }
 
     if PLOT_GRAPHS {
-        PlotGoogleChart()
+        chart := NewChart()
+        chart.Datasets = append(chart.Datasets, e_train_l)
+        chart.Datasets = append(chart.Datasets, e_validate_l)
+        chart.Datasets = append(chart.Datasets, e_test_l)
+        chart.Datasets = append(chart.Datasets, c_train_l)
+        chart.Datasets = append(chart.Datasets, c_validate_l)
+        chart.Datasets = append(chart.Datasets, c_test_l)
+        chart.Title = "NeuNet2 output"
+        chart.Download(chartFile)
     }
 
     e_train, c_train = CalcError(dataset.TrainingSet, weight)
