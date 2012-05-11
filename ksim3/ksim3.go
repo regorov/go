@@ -5,6 +5,7 @@ import (
 )
 
 type Node chan bool
+type Bus chan int
 
 type Component interface {
     Register(*Simulator) int

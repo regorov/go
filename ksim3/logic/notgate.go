@@ -4,52 +4,42 @@ import (
     "github.com/kierdavis/go/ksim3"
 )
 
-type ANDGate struct {
+type NOTGate struct {
     Sim *ksim3.Simulator
 
     A ksim3.Node
-    B ksim3.Node
     Q ksim3.Node
 }
 
-func NewANDGate(a, b, q ksim3.Node) (c *ANDGate) {
+func NewNOTGate(a, q ksim3.Node) (c *NOTGate) {
     if a == nil {
         a = make(ksim3.Node)
-    }
-
-    if b == nil {
-        b = make(ksim3.Node)
     }
 
     if q == nil {
         q = make(ksim3.Node)
     }
 
-    c = &ANDGate{
+    c = &NOTGate{
         A: a,
-        B: b,
         Q: q,
     }
 
     return c
 }
 
-func (c *ANDGate) Register(sim *ksim3.Simulator) (n int) {
+func (c *NOTGate) Register(sim *ksim3.Simulator) (n int) {
     c.Sim = sim
     return 1
 }
 
-func (c *ANDGate) Run() {
+func (c *NOTGate) Run() {
     var a bool
-    var b bool
 
     for {
         select {
         case a = <-c.A:
-            c.Q <- a && b
-
-        case b = <-c.B:
-            c.Q <- a && b
+            c.Q <- !a
 
         case <-c.Sim.StopChan:
             c.Sim.ComponentStopped()

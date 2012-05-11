@@ -4,7 +4,7 @@ import (
     "github.com/kierdavis/go/ksim3"
 )
 
-type ANDGate struct {
+type ORGate struct {
     Sim *ksim3.Simulator
 
     A ksim3.Node
@@ -12,7 +12,7 @@ type ANDGate struct {
     Q ksim3.Node
 }
 
-func NewANDGate(a, b, q ksim3.Node) (c *ANDGate) {
+func NewORGate(a, b, q ksim3.Node) (c *ORGate) {
     if a == nil {
         a = make(ksim3.Node)
     }
@@ -25,7 +25,7 @@ func NewANDGate(a, b, q ksim3.Node) (c *ANDGate) {
         q = make(ksim3.Node)
     }
 
-    c = &ANDGate{
+    c = &ORGate{
         A: a,
         B: b,
         Q: q,
@@ -34,22 +34,22 @@ func NewANDGate(a, b, q ksim3.Node) (c *ANDGate) {
     return c
 }
 
-func (c *ANDGate) Register(sim *ksim3.Simulator) (n int) {
+func (c *ORGate) Register(sim *ksim3.Simulator) (n int) {
     c.Sim = sim
     return 1
 }
 
-func (c *ANDGate) Run() {
+func (c *ORGate) Run() {
     var a bool
     var b bool
 
     for {
         select {
         case a = <-c.A:
-            c.Q <- a && b
+            c.Q <- a || b
 
         case b = <-c.B:
-            c.Q <- a && b
+            c.Q <- a || b
 
         case <-c.Sim.StopChan:
             c.Sim.ComponentStopped()
