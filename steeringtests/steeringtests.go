@@ -11,19 +11,6 @@ var rm = resourcemanager.NewResourceManager("github.com/kierdavis/go/steeringtes
 const WIDTH = 400
 const HEIGHT = 300
 
-const (
-    X = iota
-    Y
-    Z
-)
-
-func truncate(x, max float32) float32 {
-    if x > max {
-        return max
-    }
-    return x
-}
-
 type Wolf struct {
     Mass     float32
     X        float32
@@ -60,11 +47,12 @@ func main() {
         panic(err)
     }
 
-    wolf_image, _, err := image.Decode(f)
+    wolfImage, _, err := image.Decode(f)
     if err != nil {
         panic(err)
     }
 
-    wolf := sdl.CreateSurfaceFromImage(wolf_image)
+    wolfSurf := sdl.CreateSurfaceFromImage(wolfImage)
+    wolf := new(Wolf)
 
 }
