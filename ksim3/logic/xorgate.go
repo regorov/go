@@ -46,7 +46,7 @@ func NewXORGate(a, b, q ksim3.Node) (c *XORGate) {
 }
 
 func (c *XORGate) Register(sim *ksim3.Simulator) (n int) {
-    return 1 + c.N1.Register(sim) + c.N2.Register(sim) + c.N3.Register(sim) + c.N4.Register(sim)
+    return c.N1.Register(sim) + c.N2.Register(sim) + c.N3.Register(sim) + c.N4.Register(sim)
 }
 
 func (c *XORGate) Run() {

@@ -40,7 +40,7 @@ func NewNANDGate(a, b, q ksim3.Node) (c *NANDGate) {
 }
 
 func (c *NANDGate) Register(sim *ksim3.Simulator) (n int) {
-    return 1 + c.And.Register(sim) + c.Not.Register(sim)
+    return c.And.Register(sim) + c.Not.Register(sim)
 }
 
 func (c *NANDGate) Run() {
