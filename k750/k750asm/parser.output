@@ -1,0 +1,149 @@
+
+state 0
+	$accept: .assembly $end 
+
+	IDENTIFIER  shift 5
+	.  error
+
+	rawitem  goto 4
+	assembly  goto 1
+	itemlist  goto 2
+	item  goto 3
+
+state 1
+	$accept:  assembly.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	assembly:  itemlist.    (1)
+	itemlist:  itemlist.item 
+
+	IDENTIFIER  shift 5
+	.  reduce 1 (src line 32)
+
+	rawitem  goto 4
+	item  goto 6
+
+state 3
+	itemlist:  item.    (3)
+
+	.  reduce 3 (src line 35)
+
+
+state 4
+	item:  rawitem.NL 
+
+	NL  shift 7
+	.  error
+
+
+state 5
+	rawitem:  IDENTIFIER.opt_operands 
+	rawitem:  IDENTIFIER.: 
+	opt_operands: .    (8)
+
+	INTEGER  shift 14
+	REGISTER  shift 13
+	IDENTIFIER  shift 15
+	:  shift 9
+	.  reduce 8 (src line 43)
+
+	operand  goto 11
+	operands  goto 10
+	opt_operands  goto 8
+	integer  goto 12
+
+state 6
+	itemlist:  itemlist item.    (2)
+
+	.  reduce 2 (src line 34)
+
+
+state 7
+	item:  rawitem NL.    (4)
+
+	.  reduce 4 (src line 37)
+
+
+state 8
+	rawitem:  IDENTIFIER opt_operands.    (5)
+
+	.  reduce 5 (src line 39)
+
+
+state 9
+	rawitem:  IDENTIFIER :.    (6)
+
+	.  reduce 6 (src line 40)
+
+
+state 10
+	opt_operands:  operands.    (7)
+	operands:  operands., operand 
+
+	,  shift 16
+	.  reduce 7 (src line 42)
+
+
+state 11
+	operands:  operand.    (10)
+
+	.  reduce 10 (src line 46)
+
+
+state 12
+	operand:  integer.    (11)
+
+	.  reduce 11 (src line 48)
+
+
+state 13
+	operand:  REGISTER.    (12)
+
+	.  reduce 12 (src line 49)
+
+
+state 14
+	integer:  INTEGER.    (13)
+
+	.  reduce 13 (src line 51)
+
+
+state 15
+	integer:  IDENTIFIER.    (14)
+
+	.  reduce 14 (src line 52)
+
+
+state 16
+	operands:  operands ,.operand 
+
+	INTEGER  shift 14
+	REGISTER  shift 13
+	IDENTIFIER  shift 15
+	.  error
+
+	operand  goto 17
+	integer  goto 12
+
+state 17
+	operands:  operands , operand.    (9)
+
+	.  reduce 9 (src line 45)
+
+
+9 terminals, 9 nonterminals
+15 grammar rules, 18/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+58 working sets used
+memory: parser 16/30000
+0 extra closures
+11 shift entries, 1 exceptions
+10 goto entries
+2 entries saved by goto default
+Optimizer space used: output 20/30000
+20 table entries, 0 zero
+maximum spread: 9, maximum offset: 16

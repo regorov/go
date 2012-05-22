@@ -20,10 +20,10 @@ func NewResourceManager(packageName string) (rm *ResourceManager) {
     if gopaths == "" {
         panic("$GOPATH environment variable not found")
     }
-    
+
     gopath := strings.TrimRight(strings.Split(gopaths, ":")[0], "/")
     rootDir := gopath + "/src/" + packageName + "/"
-    
+
     rm = new(ResourceManager)
     rm.rootDir = rootDir
     return rm
