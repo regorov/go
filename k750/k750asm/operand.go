@@ -1,5 +1,9 @@
 package main
 
+import (
+    "fmt"
+)
+
 type Register uint8
 
 const (
@@ -23,6 +27,14 @@ const (
     NoRegister Register = 255
 )
 
+type MemSize uint8
+
+const (
+    Mem8  MemSize = 8
+    Mem16 MemSize = 16
+    Mem32 MemSize = 32
+)
+
 type OperandType uint8
 
 const (
@@ -36,10 +48,19 @@ var RegisterNames = []string{
     "a0", "a1", "a2", "a3", "q0", "q1", "sp", "at",
 }
 
+func (r Register) String() (str string) {
+    if r == NoRegister {
+        return "0"
+    }
+
+    return "%" + RegisterNames[r]
+}
+
 type Operand interface {
     String() string
     Length() uint32
     ReduceLabel(map[string]uint32)
+    SetSize(MemSize)
     SatisfiesType(OperandType) bool
     LiteralValue() uint32
     BitValue() uint8
@@ -48,7 +69,12 @@ type Operand interface {
 }
 
 type LiteralOperand struct {
+    coord Coord
     Literal
+}
+
+func (o *LiteralOperand) SetSize(size MemSize) {
+
 }
 
 func (o *LiteralOperand) SatisfiesType(t OperandType) (result bool) {
@@ -82,15 +108,12 @@ func (o *LiteralOperand) EncodeExtra(extra []byte) {
 }
 
 type RegisterOperand struct {
-    num Register
+    coord Coord
+    num   Register
 }
 
 func (o *RegisterOperand) String() (str string) {
-    return "%" + RegisterNames[o.num]
-}
-
-func (o *RegisterOperand) SatisfiesType(t OperandType) (result bool) {
-    return t == DynamicType
+    return o.num.String()
 }
 
 func (o *RegisterOperand) Length() (length uint32) {
@@ -99,6 +122,14 @@ func (o *RegisterOperand) Length() (length uint32) {
 
 func (o *RegisterOperand) ReduceLabel(labelMap map[string]uint32) {
 
+}
+
+func (o *RegisterOperand) SetSize(size MemSize) {
+
+}
+
+func (o *RegisterOperand) SatisfiesType(t OperandType) (result bool) {
+    return t == DynamicType
 }
 
 func (o *RegisterOperand) LiteralValue() (v uint32) {
@@ -117,15 +148,120 @@ func (o *RegisterOperand) EncodeExtra(extra []byte) {
 
 }
 
+type MemoryOperand struct {
+    coord  Coord
+    size   MemSize
+    reg    Register
+    disp   Literal
+    length uint32
+}
+
+func (o *MemoryOperand) String() (str string) {
+    return fmt.Sprintf("%d[%s + %s]", o.size, o.reg.String(), o.disp.String())
+}
+
+func (o *MemoryOperand) Length() (length uint32) {
+    if o.length != 256 {
+        return o.length
+    }
+
+    v := int32(o.disp.Value())
+
+    if o.reg == NoRegister {
+        if v < -0x8000 || v >= 0x8000 {
+            errChan <- &AsmError{o.coord, fmt.Sprintf("Integer displacement out of range (-0x8000 to 0x7FFF): 0x%08X", v)}
+
+        } else {
+            length = 4
+        }
+
+    } else if !o.disp.Reduced() {
+        length = 2
+
+    } else if v == 0 {
+        length = 0
+
+    } else if v >= -0x8000 && v < 0x8000 {
+        length = 2
+
+    } else {
+        errChan <- &AsmError{o.coord, fmt.Sprintf("Integer displacement out of range (-0x8000 to 0x7FFF): 0x%08X", v)}
+    }
+
+    o.length = length
+    return length
+}
+
+func (o *MemoryOperand) ReduceLabel(labelMap map[string]uint32) {
+    o.disp.ReduceLabel(labelMap)
+}
+
+func (o *MemoryOperand) SetSize(size MemSize) {
+    o.size = size
+}
+
+func (o *MemoryOperand) SatisfiesType(t OperandType) (result bool) {
+    return t == DynamicType
+}
+
+func (o *MemoryOperand) LiteralValue() (v uint32) {
+    return 0
+}
+
+func (o *MemoryOperand) BitValue() (v uint8) {
+    return 0
+}
+
+func (o *MemoryOperand) EncodeKey() (key byte) {
+    if o.reg == NoRegister {
+        return 0xFE
+    }
+
+    if o.Length() == 2 {
+        switch o.size {
+        case Mem8:
+            return 0xC0 | byte(o.reg)
+        case Mem16:
+            return 0xD0 | byte(o.reg)
+        case Mem32:
+            return 0xE0 | byte(o.reg)
+        }
+
+    } else {
+        switch o.size {
+        case Mem8:
+            return 0x90 | byte(o.reg)
+        case Mem16:
+            return 0xA0 | byte(o.reg)
+        case Mem32:
+            return 0xB0 | byte(o.reg)
+        }
+    }
+
+    return 0
+}
+
+func (o *MemoryOperand) EncodeExtra(extra []byte) {
+    if o.reg == NoRegister {
+        v := o.disp.Value()
+        extra[0] = byte(v >> 24)
+        extra[1] = byte(v >> 16)
+        extra[2] = byte(v >> 8)
+        extra[3] = byte(v)
+
+    } else if o.Length() == 2 {
+        v := uint16(int32(o.disp.Value()))
+        extra[0] = byte(v >> 8)
+        extra[1] = byte(v)
+    }
+}
+
 type PCOperand struct {
+    coord Coord
 }
 
 func (o *PCOperand) String() (str string) {
     return "pc"
-}
-
-func (o *PCOperand) SatisfiesType(t OperandType) (result bool) {
-    return t == DynamicType
 }
 
 func (o *PCOperand) Length() (length uint32) {
@@ -134,6 +270,14 @@ func (o *PCOperand) Length() (length uint32) {
 
 func (o *PCOperand) ReduceLabel(labelMap map[string]uint32) {
 
+}
+
+func (o *PCOperand) SetSize(size MemSize) {
+
+}
+
+func (o *PCOperand) SatisfiesType(t OperandType) (result bool) {
+    return t == DynamicType
 }
 
 func (o *PCOperand) LiteralValue() (v uint32) {

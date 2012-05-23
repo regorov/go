@@ -65,14 +65,14 @@ func stage1() (items []Item, ok bool) {
     return items, true
 }
 
-func stage2(items []Item) (labelMap map[string]uint32, ok bool) {
+func stage2(items []Item) (labelMap map[string]uint32, offset uint32, ok bool) {
     // Run the second stage - label mapping
     // Requires that lengths have been computed (in stage 1)
     // Ensure that the items are assigned offsets in the corrent order.
 
     //go errorMonitor()
 
-    offset := uint32(0)
+    offset = uint32(0)
     labelMap = make(map[string]uint32)
 
     for _, item := range items {
@@ -85,31 +85,36 @@ func stage2(items []Item) (labelMap map[string]uint32, ok bool) {
         offset += item.Length()
     }
 
-    return labelMap, true
+    return labelMap, offset, true
 }
 
-func stage3(items []Item, labelMap map[string]uint32) (ok bool) {
+func stage3(items []Item, maxOffset uint32, labelMap map[string]uint32) (image []byte, ok bool) {
     // Run the third stage - encoding
     // Requires that label offsets have been computed
 
     go errorMonitor()
 
+    image = make([]byte, maxOffset)
+
     for _, item := range items {
+        offset := item.Offset()
+        buffer := image[offset : offset+item.Length()]
+
         waitGroup.Add(1)
-        go item.Encode(labelMap)
+        go item.Encode(labelMap, buffer)
     }
 
     waitGroup.Wait()
 
     errControl <- true
     if <-errControl {
-        return false
+        return image, false
     }
 
-    return true
+    return image, true
 }
 
-func RunAssembler(reader io.Reader, filename string) {
+func RunAssembler(reader io.Reader, writer io.Writer, filename string) {
     pushCoord(Coord{filename, 1})
 
     lexer := newLexer(bufio.NewReader(reader))
@@ -126,18 +131,28 @@ func RunAssembler(reader io.Reader, filename string) {
         return
     }
 
-    labelMap, ok := stage2(items)
+    labelMap, maxOffset, ok := stage2(items)
     if !ok {
         return
     }
 
-    ok = stage3(items, labelMap)
+    image, ok := stage3(items, maxOffset, labelMap)
     if !ok {
         return
     }
 
-    for _, item := range items {
-        fmt.Printf("%s %s %v\n", item.GetCoord().String(), item.String(), item.Encoded())
+    /*
+       for _, item := range items {
+           fmt.Printf("%s %s %v\n", item.GetCoord().String(), item.String(), item.Encoded())
+       }
+
+       fmt.Printf("%v\n", image)
+    */
+
+    _, err := writer.Write(image)
+
+    if err != nil {
+        log.Fatal(err)
     }
 }
 
@@ -150,5 +165,11 @@ func main() {
     }
     defer f.Close()
 
-    RunAssembler(f, fname)
+    out, err := os.Create(fname + ".bin")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer out.Close()
+
+    RunAssembler(f, out, fname)
 }

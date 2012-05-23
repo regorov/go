@@ -3,9 +3,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
-//line src/github.com/kierdavis/go/k750/k750asm/parser.y:9
+//line src/github.com/kierdavis/go/k750/k750asm/parser.y:10
 type yySymType struct {
 	yys int
 	i   int
@@ -36,7 +37,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line src/github.com/kierdavis/go/k750/k750asm/parser.y:54
+//line src/github.com/kierdavis/go/k750/k750asm/parser.y:72
 
 //line yacctab:1
 var yyExca = []int{
@@ -45,47 +46,55 @@ var yyExca = []int{
 	-2, 0,
 }
 
-const yyNprod = 15
+const yyNprod = 21
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 20
+const yyLast = 34
 
 var yyAct = []int{
 
-	11, 14, 16, 13, 15, 9, 14, 5, 13, 15,
-	7, 3, 2, 1, 6, 12, 8, 17, 10, 4,
+	12, 26, 11, 25, 24, 15, 18, 13, 16, 9,
+	23, 17, 21, 16, 15, 23, 13, 16, 16, 22,
+	19, 5, 28, 7, 3, 2, 27, 6, 1, 8,
+	10, 20, 14, 4,
 }
 var yyPact = []int{
 
-	0, -1000, 0, -1000, 5, -3, -1000, -1000, -1000, -1000,
-	-7, -1000, -1000, -1000, -1000, -1000, 2, -1000,
+	14, -1000, 14, -1000, 18, 1, -1000, -1000, -1000, -1000,
+	2, -1000, -1000, -1000, -1000, -4, -1000, 10, 6, -1000,
+	-7, -9, -11, -1000, -1000, 11, 16, -1000, -1000,
 }
 var yyPgo = []int{
 
-	0, 19, 0, 18, 16, 15, 13, 12, 11,
+	0, 33, 32, 31, 2, 30, 29, 0, 28, 25,
+	24,
 }
 var yyR1 = []int{
 
-	0, 6, 7, 7, 8, 1, 1, 4, 4, 3,
-	3, 2, 2, 5, 5,
+	0, 8, 9, 9, 10, 1, 1, 6, 6, 5,
+	5, 4, 4, 4, 2, 3, 3, 3, 3, 7,
+	7,
 }
 var yyR2 = []int{
 
 	0, 1, 2, 1, 2, 2, 2, 1, 0, 3,
-	1, 1, 1, 1, 1,
+	1, 1, 1, 1, 4, 1, 3, 3, 1, 1,
+	1,
 }
 var yyChk = []int{
 
-	-1000, -6, -7, -8, -1, 7, -8, 5, -4, 8,
-	-3, -2, -5, 6, 4, 7, 9, -2,
+	-1000, -8, -9, -10, -1, 7, -10, 5, -6, 8,
+	-5, -4, -7, 6, -2, 4, 7, 9, 10, -4,
+	-3, 6, -7, 4, 11, 12, 12, -7, 6,
 }
 var yyDef = []int{
 
 	0, -2, 1, 3, 0, 8, 2, 4, 5, 6,
-	7, 10, 11, 12, 13, 14, 0, 9,
+	7, 10, 11, 12, 13, 19, 20, 0, 0, 9,
+	0, 15, 18, 19, 14, 0, 0, 16, 17,
 }
 var yyTok1 = []int{
 
@@ -93,8 +102,12 @@ var yyTok1 = []int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 9, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 8,
+	3, 3, 3, 12, 9, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 8, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 10, 3, 11,
 }
 var yyTok2 = []int{
 
@@ -329,62 +342,98 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:32
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:33
 		{
 			close(parserOutput)
 		}
 	case 4:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:37
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:38
 		{
 			parserOutput <- yyS[yypt-1].it
 		}
 	case 5:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:39
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:40
 		{
 			yyVAL.it = Item(&Instruction{coord: yyS[yypt-1].coord, name: yyS[yypt-1].s, operands: yyS[yypt-0].oL})
 		}
 	case 6:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:40
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:41
 		{
 			yyVAL.it = Item(&Label{coord: yyS[yypt-1].coord, name: yyS[yypt-1].s})
 		}
 	case 7:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:42
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:43
 		{
 			yyVAL.oL = yyS[yypt-0].oL
 		}
 	case 8:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:43
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:44
 		{
 			yyVAL.oL = nil
 		}
 	case 9:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:45
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:46
 		{
 			yyVAL.oL = append(yyS[yypt-2].oL, yyS[yypt-0].o)
 		}
 	case 10:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:46
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:47
 		{
 			yyVAL.oL = []Operand{yyS[yypt-0].o}
 		}
 	case 11:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:48
-		{
-			yyVAL.o = Operand(&LiteralOperand{Literal: yyS[yypt-0].l})
-		}
-	case 12:
 		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:49
 		{
-			yyVAL.o = Operand(&RegisterOperand{num: yyS[yypt-0].r})
+			yyVAL.o = Operand(&LiteralOperand{coord: yyS[yypt-1].coord, Literal: yyS[yypt-0].l})
+		}
+	case 12:
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:50
+		{
+			yyVAL.o = Operand(&RegisterOperand{coord: yyS[yypt-1].coord, num: yyS[yypt-0].r})
 		}
 	case 13:
 		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:51
 		{
-			yyVAL.l = Literal(&ConstantLiteral{value: uint32(yyS[yypt-0].i)})
+			yyVAL.o = yyS[yypt-0].o
 		}
 	case 14:
-		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:52
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:54
+		{
+			size := yyS[yypt-3].i
+			if size != 8 && size != 16 && size != 32 {
+				log.Fatalf("Invalid memory addressing size: %d (expected 8, 16 or 32)", size)
+			}
+
+			yyVAL.o = yyS[yypt-1].o
+			yyVAL.o.SetSize(MemSize(size))
+		}
+	case 15:
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:64
+		{
+			yyVAL.o = Operand(&MemoryOperand{coord: yyS[yypt-1].coord, reg: yyS[yypt-0].r, disp: Zero})
+		}
+	case 16:
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:65
+		{
+			yyVAL.o = Operand(&MemoryOperand{coord: yyS[yypt-1].coord, reg: yyS[yypt-2].r, disp: yyS[yypt-0].l})
+		}
+	case 17:
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:66
+		{
+			yyVAL.o = Operand(&MemoryOperand{coord: yyS[yypt-1].coord, reg: yyS[yypt-0].r, disp: yyS[yypt-2].l})
+		}
+	case 18:
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:67
+		{
+			yyVAL.o = Operand(&MemoryOperand{coord: yyS[yypt-1].coord, reg: NoRegister, disp: yyS[yypt-0].l})
+		}
+	case 19:
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:69
+		{
+			yyVAL.l = Literal(&ConstantLiteral{coord: yyS[yypt-1].coord, value: uint32(yyS[yypt-0].i)})
+		}
+	case 20:
+		//line src/github.com/kierdavis/go/k750/k750asm/parser.y:70
 		{
 			yyVAL.l = Literal(&LabelLiteral{coord: yyS[yypt-1].coord, name: yyS[yypt-0].s})
 		}

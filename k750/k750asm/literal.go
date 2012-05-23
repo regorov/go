@@ -8,10 +8,12 @@ type Literal interface {
     String() string
     Length() uint32
     ReduceLabel(map[string]uint32)
+    Reduced() bool
     Value() uint32
 }
 
 type ConstantLiteral struct {
+    coord Coord
     value uint32
 }
 
@@ -23,7 +25,7 @@ func (l *ConstantLiteral) Length() (length uint32) {
     // Can either be packed into a sign-extended 7-bit inline (0) or a 32-bit extra (4)
 
     sv := int32(l.value)
-    if sv >= -0x80 && sv < 0x80 {
+    if sv >= -0x40 && sv < 0x40 {
         return 0
     }
 
@@ -32,6 +34,10 @@ func (l *ConstantLiteral) Length() (length uint32) {
 
 func (l *ConstantLiteral) ReduceLabel(labelMap map[string]uint32) {
 
+}
+
+func (l *ConstantLiteral) Reduced() (reduced bool) {
+    return true
 }
 
 func (l *ConstantLiteral) Value() (value uint32) {
@@ -68,6 +74,10 @@ func (l *LabelLiteral) ReduceLabel(labelMap map[string]uint32) {
     l.reduced = true
 }
 
+func (l *LabelLiteral) Reduced() (reduced bool) {
+    return l.reduced
+}
+
 func (l *LabelLiteral) Value() (value uint32) {
     if l.reduced {
         return l.value
@@ -75,3 +85,5 @@ func (l *LabelLiteral) Value() (value uint32) {
 
     return 0
 }
+
+var Zero = Literal(&ConstantLiteral{value: 0})

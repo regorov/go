@@ -48,9 +48,8 @@ var LengthLookup = []uint32{
 
 type Item interface {
     String() string
-    GetCoord() Coord
     VerifyAndReduce()
-    Encode(map[string]uint32)
+    Encode(map[string]uint32, []byte)
     Label() (string, bool)
     Length() uint32
     Offset() uint32
@@ -80,10 +79,6 @@ func (item *Instruction) String() (str string) {
     }
 
     return fmt.Sprintf("%s %s", item.name, strings.Join(operandStrings, ", "))
-}
-
-func (item *Instruction) GetCoord() (coord Coord) {
-    return item.coord
 }
 
 func (item *Instruction) VerifyAndReduce() {
@@ -151,13 +146,13 @@ func (item *Instruction) VerifyAndReduce() {
     switch item.name {
     case "jmp":
         item.name = "mov"
-        item.operands = []Operand{&PCOperand{}, item.operands[0]}
+        item.operands = []Operand{&PCOperand{coord: item.coord}, item.operands[0]}
         operandMode = OperandModeDD
         length = LengthLookup[operandMode] + item.operands[1].Length()
 
     case "ret":
         item.name = "pop"
-        item.operands = []Operand{&PCOperand{}}
+        item.operands = []Operand{&PCOperand{coord: item.coord}}
         operandMode = OperandModeD
         length = LengthLookup[operandMode]
 
@@ -176,7 +171,7 @@ func (item *Instruction) VerifyAndReduce() {
     item.length = length
 }
 
-func (item *Instruction) Encode(labelMap map[string]uint32) {
+func (item *Instruction) Encode(labelMap map[string]uint32, buffer []byte) {
     defer waitGroup.Done()
 
     operands := item.operands
@@ -194,7 +189,7 @@ func (item *Instruction) Encode(labelMap map[string]uint32) {
         opcode = 0x01
     }
 
-    buffer := make([]byte, item.length)
+    //buffer := make([]byte, item.length)
     buffer[0] = opcode
 
     switch item.operandMode {
@@ -302,15 +297,11 @@ func (item *Label) String() (str string) {
     return item.name + ":"
 }
 
-func (item *Label) GetCoord() (coord Coord) {
-    return item.coord
-}
-
 func (item *Label) VerifyAndReduce() {
     defer waitGroup.Done()
 }
 
-func (item *Label) Encode(labelMap map[string]uint32) {
+func (item *Label) Encode(labelMap map[string]uint32, buffer []byte) {
     defer waitGroup.Done()
 }
 

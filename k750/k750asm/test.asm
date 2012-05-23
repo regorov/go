@@ -1,3 +1,3 @@
 main:
-    mov %v0, 3
+    mov 32[256], 3
     jmp main
