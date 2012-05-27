@@ -32,3 +32,13 @@ func Sine(freq float64, length float64, rate float64, phase float64) (chunk Chun
 
     return chunk
 }
+
+func Sawtooth(freq float64, length float64, rate float64, phase float64) (chunk Chunk) {
+    chunk = generateWaveInput(freq, length, rate, phase)
+
+    for i := 0; i < len(chunk); i++ {
+        chunk[i] = math.Mod(chunk[i], 1.0)
+    }
+
+    return chunk
+}
