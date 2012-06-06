@@ -12,9 +12,9 @@ func Silence(length float64, rate float64, output Stream) {
 	}()
 }
 
-func generateWaveInput(freq float64, rate float64, phase float64, output Stream) {
-	factor := (freq * math.Pi * 2) / rate
-	phase *= rate / 2.0
+func generateWaveInput(freq float64, rate uint, phase float64, output Stream) {
+	factor := (freq * math.Pi * 2) / float64(rate)
+	phase *= float64(rate) / 2.0
 
 	go func() {
 		i := 0
@@ -26,7 +26,7 @@ func generateWaveInput(freq float64, rate float64, phase float64, output Stream)
 	}()
 }
 
-func Sine(freq float64, rate float64, phase float64, output Stream) {
+func Sine(freq float64, rate uint, phase float64, output Stream) {
 	input := make(Stream)
 	generateWaveInput(freq, rate, phase, input)
 
@@ -37,7 +37,7 @@ func Sine(freq float64, rate float64, phase float64, output Stream) {
 	}()
 }
 
-func Sawtooth(freq float64, rate float64, phase float64, output Stream) {
+func Sawtooth(freq float64, rate uint, phase float64, output Stream) {
 	input := make(Stream)
 	generateWaveInput(freq, rate, phase, input)
 
@@ -49,7 +49,7 @@ func Sawtooth(freq float64, rate float64, phase float64, output Stream) {
 	}()
 }
 
-func Square(freq float64, rate float64, phase float64, output Stream) {
+func Square(freq float64, rate uint, phase float64, output Stream) {
 	input := make(Stream)
 	generateWaveInput(freq, rate, phase, input)
 

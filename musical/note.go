@@ -76,5 +76,5 @@ func (note Note) Transpose(halfsteps int) (res Note) {
 }
 
 func (note Note) Frequency() (freq float64) {
-	return 16.35159783128741 * math.Pow(2.0, float64(note)/12.0)
+	return 440.0 * math.Pow(2.0, float64(note-57)/12.0)
 }
