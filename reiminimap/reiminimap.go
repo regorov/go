@@ -21,6 +21,8 @@ type Waypoint struct {
 func ReadWaypoints(r io.Reader) (waypoints []*Waypoint, err error) {
 	lineChan, errChan := util.IterLines(r)
 
+	waypoints = make([]*Waypoint, 0)
+
 	for line := range lineChan {
 		parts := strings.Split(line, ":")
 
