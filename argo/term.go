@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+// Generate thread-safe unique IDs
+
 var newBlankIDChan = make(chan int)
 
 func init() {
@@ -72,7 +74,7 @@ func NewBlank(id string) (term Term) {
 }
 
 func NewEmptyBlank() (term Term) {
-	id := fmt.Sprintf("bn%d", <-newBlankIDChan)
+	id := fmt.Sprintf("b%d", <-newBlankIDChan)
 	return NewBlank(id)
 }
 
