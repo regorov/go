@@ -121,7 +121,7 @@ func (ps *NTriplesIO) readTerm(line string, lineno int) (remainder string, term 
 			return "", nil, &NTriplesParseError{"Unterminated blank node (_:...); delimiting whitespace is required", lineno}
 		}
 
-		return line[end+1:], NewBlank(line[2:end]), nil
+		return line[end+1:], NewNode(line[2:end]), nil
 
 		// Literal
 	} else if line[0] == '"' {

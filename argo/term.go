@@ -6,14 +6,14 @@ import (
 
 // Generate thread-safe unique IDs
 
-var newBlankIDChan = make(chan int)
+var newNodeIDChan = make(chan int)
 
 func init() {
 	go func() {
 		i := 1
 
 		for {
-			newBlankIDChan <- i
+			newNodeIDChan <- i
 			i++
 		}
 	}()
@@ -36,9 +36,9 @@ func (term *Resource) String() (str string) {
 }
 
 type Literal struct {
-	Value		string
-	Language	string
-	Datatype	Term
+	Value    string
+	Language string
+	Datatype Term
 }
 
 func NewLiteral(value string) (term Term) {
@@ -53,6 +53,10 @@ func NewLiteralWithDatatype(value string, datatype Term) (term Term) {
 	return Term(&Literal{Value: value, Datatype: datatype})
 }
 
+func NewLiteralWithLanguageAndDatatype(value string, language string, datatype Term) (term Term) {
+	return Term(&Literal{Value: value, Language: language, Datatype: datatype})
+}
+
 func (term *Literal) String() (str string) {
 	str = fmt.Sprintf("\"%s\"", term.Value)
 
@@ -65,19 +69,18 @@ func (term *Literal) String() (str string) {
 	return str
 }
 
-type Blank struct {
+type Node struct {
 	ID string
 }
 
-func NewBlank(id string) (term Term) {
-	return Term(&Blank{ID: id})
+func NewNode(id string) (term Term) {
+	return Term(&Node{ID: id})
 }
 
-func NewEmptyBlank() (term Term) {
-	id := fmt.Sprintf("b%d", <-newBlankIDChan)
-	return NewBlank(id)
+func NewBlankNode() (term Term) {
+	return NewNode(fmt.Sprintf("b%d", <-newNodeIDChan))
 }
 
-func (term *Blank) String() (str string) {
+func (term *Node) String() (str string) {
 	return "_:" + term.ID
 }
