@@ -18,91 +18,79 @@ func (err *NTriplesParseError) Error() (msg string) {
 	return fmt.Sprintf("Error when parsing line %d: %s", err.Line, err.Message)
 }
 
-type NTriplesIO struct {
-}
+func ParseNTriples(r io.Reader, tripleChan chan *Triple, errChan chan error) {
+	defer close(tripleChan)
+	defer close(errChan)
 
-func NewNTriplesIO() (ps *NTriplesIO) {
-	return &NTriplesIO{}
-}
-
-func (ps *NTriplesIO) Parse(r io.Reader) (tripleChan chan *Triple, errChan chan error) {
-	tripleChan = make(chan *Triple)
-	errChan = make(chan error)
+	var err error
 
 	lineChan, lineErrChan := util.IterLines(r)
+	lineno := 0
 
-	go func() {
-		lineno := 0
+	for line := range lineChan {
+		lineno++
 
-		for line := range lineChan {
-			lineno++
-			var err error
-
-			line = strings.Trim(line, Whitespace)
-			if line == "" || line[0] == '#' {
-				continue
-			}
-
-			line, subj, err := ps.readTerm(line, lineno)
-			if err != nil {
-				errChan <- err
-				continue
-			}
-
-			line, pred, err := ps.readTerm(line, lineno)
-			if err != nil {
-				errChan <- err
-				continue
-			}
-
-			line, obj, err := ps.readTerm(line, lineno)
-			if err != nil {
-				errChan <- err
-				continue
-			}
-
-			var ctx Term
-
-			if line[0] != '.' {
-				line, ctx, err = ps.readTerm(line, lineno)
-				if err != nil {
-					errChan <- err
-					continue
-				}
-
-				if line[0] != '.' {
-					errChan <- &NTriplesParseError{"Unterminated line (lines must end with a period - '.')", lineno}
-					continue
-				}
-			}
-
-			tripleChan <- NewQuad(subj, pred, obj, ctx)
+		line = strings.Trim(line, Whitespace)
+		if line == "" || line[0] == '#' {
+			continue
 		}
 
-		err := <-lineErrChan
+		line, subj, err := readNTriplesTerm(line, lineno)
 		if err != nil {
 			errChan <- err
+			continue
 		}
 
-		close(tripleChan)
-		close(errChan)
-	}()
+		line, pred, err := readNTriplesTerm(line, lineno)
+		if err != nil {
+			errChan <- err
+			continue
+		}
 
-	return tripleChan, errChan
+		line, obj, err := readNTriplesTerm(line, lineno)
+		if err != nil {
+			errChan <- err
+			continue
+		}
+
+		var ctx Term
+
+		if line[0] != '.' {
+			line, ctx, err = readNTriplesTerm(line, lineno)
+			if err != nil {
+				errChan <- err
+				continue
+			}
+
+			if line[0] != '.' {
+				errChan <- &NTriplesParseError{"Unterminated line (lines must end with a period - '.')", lineno}
+				continue
+			}
+		}
+
+		tripleChan <- NewQuad(subj, pred, obj, ctx)
+	}
+
+	err = <-lineErrChan
+	if err != nil {
+		errChan <- err
+	}
 }
 
-func (ps *NTriplesIO) Serialise(w io.Writer, tripleChan chan *Triple) (err error) {
+func SerialiseNTriples(w io.Writer, tripleChan chan *Triple, errChan chan error) {
+	defer close(errChan)
+
+	var err error
+
 	for triple := range tripleChan {
 		_, err = fmt.Fprintln(w, triple.String())
 		if err != nil {
-			return err
+			errChan <- err
 		}
 	}
-
-	return nil
 }
 
-func (ps *NTriplesIO) readTerm(line string, lineno int) (remainder string, term Term, err error) {
+func readNTriplesTerm(line string, lineno int) (remainder string, term Term, err error) {
 	line = strings.TrimLeft(line, Whitespace)
 
 	// Resource
@@ -142,7 +130,7 @@ func (ps *NTriplesIO) readTerm(line string, lineno int) (remainder string, term 
 			return line[end+1:], NewLiteralWithLanguage(text, line[1:end]), nil
 
 		} else if strings.HasPrefix(line, "^^") {
-			remainder, datatype, err := ps.readTerm(line[2:], lineno)
+			remainder, datatype, err := readNTriplesTerm(line[2:], lineno)
 			if err != nil {
 				return "", nil, err
 			}

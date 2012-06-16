@@ -5,14 +5,26 @@ import (
 	"strings"
 )
 
+type Parser func(io.Reader, chan *Triple, chan error)
+type Serializer func(io.Writer, chan *Triple, chan error)
+
+type Store interface {
+	Add(*Triple) int
+	Remove(*Triple)
+	RemoveIndex(int)
+	Clear()
+	Num() int
+	IterTriples() chan *Triple
+}
+
 type Graph struct {
-	triples  []*Triple
+	store    Store
 	prefixes map[string]string
 }
 
-func NewGraph() (graph *Graph) {
+func NewGraph(store Store) (graph *Graph) {
 	return &Graph{
-		triples:  make([]*Triple, 0),
+		store:    store,
 		prefixes: map[string]string{"http://www.w3.org/1999/02/22-rdf-syntax-ns#": "rdf"},
 	}
 }
@@ -32,90 +44,64 @@ func (graph *Graph) LookupAndBind(prefix string) (ns Namespace, err error) {
 }
 
 func (graph *Graph) Add(triple *Triple) (index int) {
-	index = len(graph.triples)
-	graph.triples = append(graph.triples, triple)
-	return index
+	return graph.store.Add(triple)
 }
 
-func (graph *Graph) AddTriple(subject Term, predicate Term, object Term) {
-	graph.Add(NewTriple(subject, predicate, object))
+func (graph *Graph) AddTriple(subject Term, predicate Term, object Term) (index int) {
+	return graph.store.Add(NewTriple(subject, predicate, object))
 }
 
-func (graph *Graph) AddQuad(subject Term, predicate Term, object Term, context Term) {
-	graph.Add(NewQuad(subject, predicate, object, context))
+func (graph *Graph) AddQuad(subject Term, predicate Term, object Term, context Term) (index int) {
+	return graph.store.Add(NewQuad(subject, predicate, object, context))
 }
 
 func (graph *Graph) Remove(triple *Triple) {
-	for i, t := range graph.triples {
-		if t == triple {
-			graph.RemoveIndex(i)
-			return
-		}
-	}
+	graph.store.Remove(triple)
 }
 
 func (graph *Graph) RemoveIndex(index int) {
-	graph.triples = append(graph.triples[:index], graph.triples[index+1:]...)
+	graph.store.RemoveIndex(index)
 }
 
 func (graph *Graph) RemoveTriple(subject Term, predicate Term, object Term) {
-	graph.Remove(NewTriple(subject, predicate, object))
+	graph.store.Remove(NewTriple(subject, predicate, object))
 }
 
 func (graph *Graph) RemoveQuad(subject Term, predicate Term, object Term, context Term) {
-	graph.Remove(NewQuad(subject, predicate, object, context))
+	graph.store.Remove(NewQuad(subject, predicate, object, context))
 }
 
 func (graph *Graph) Clear() {
-	graph.triples = graph.triples[:0]
+	graph.store.Clear()
 }
 
 func (graph *Graph) Num() (n int) {
-	return len(graph.triples)
+	return graph.store.Num()
 }
 
 func (graph *Graph) IterTriples() (ch chan *Triple) {
-	ch = make(chan *Triple)
-
-	go func() {
-		for _, triple := range graph.triples {
-			ch <- triple
-		}
-
-		close(ch)
-	}()
-
-	return ch
+	return graph.store.IterTriples()
 }
 
-func (graph *Graph) Triples() (triples []*Triple) {
-	return graph.triples
-}
+func (graph *Graph) Parse(parser Parser, r io.Reader) (err error) {
+	tripleChan := make(chan *Triple)
+	errChan := make(chan error)
 
-func (graph *Graph) TriplesBySubject() (subjects map[Term][]*Triple) {
-	subjects = make(map[Term][]*Triple)
+	go parser(r, tripleChan, errChan)
 
-	for triple := range graph.IterTriples() {
-		subjects[triple.Subject] = append(subjects[triple.Subject], triple)
+	for triple := range tripleChan {
+		graph.Add(triple)
 	}
 
-	return subjects
-}
-
-func (graph *Graph) Parse(parser Parser, r io.Reader) (errChan chan error) {
-	tripleChan, errChan := parser.Parse(r)
-
-	go func() {
-		for triple := range tripleChan {
-			graph.Add(triple)
-		}
-	}()
-
-	return errChan
+	return <-errChan
 }
 
 func (graph *Graph) Serialize(serializer Serializer, w io.Writer) (err error) {
-	return serializer.Serialize(w, graph.IterTriples())
+	errChan := make(chan error)
+
+	serializer(w, graph.IterTriples(), errChan)
+
+	return <-errChan
 }
 
 func splitPrefix(uri string) (base string, name string) {
