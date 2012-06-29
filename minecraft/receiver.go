@@ -14,7 +14,7 @@ func (client *Client) Receiver() {
 		}
 	}()
 
-	for {
+	for client.conn != nil {
 		id, err := client.RecvAnyPacket()
 		if err != nil {
 			client.ErrChan <- err
@@ -133,8 +133,11 @@ func (client *Client) Receiver() {
 			err = client.handlePluginMessagePacket()
 		case 0xFF:
 			err = client.handleKickPacket()
+
 		default:
-			fmt.Fprintf(os.Stderr, "Ignoring unhandled packet with id 0x%02X", id)
+			if client.debug {
+				fmt.Fprintf(os.Stderr, "Ignoring unhandled packet with id 0x%02X", id)
+			}
 		}
 
 		if err == Stop {

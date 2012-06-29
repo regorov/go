@@ -28,7 +28,7 @@ func (client *Client) handleChatMessagePacket() (err error) {
 		return err
 	}
 
-	fmt.Println(ANSIEscapes(msg))
+	client.HandleMessage(msg)
 
 	return nil
 }
@@ -101,6 +101,10 @@ func (client *Client) handlePlayerPositionLookPacket() (err error) {
 	err = client.RecvPacketData(&client.playerX, &client.playerStance, &client.playerY, &client.playerZ, &client.playerYaw, &client.playerPitch, &client.playerOnGround)
 	if err != nil {
 		return err
+	}
+
+	if client.debug {
+		fmt.Printf("Received position update: (%.1f, %.1f, %.1f) (%.1f, %.1f) on ground: %t  stance: %.1f\n", client.playerX, client.playerY, client.playerZ, client.playerYaw, client.playerPitch, client.playerOnGround, client.playerStance)
 	}
 
 	err = client.SendPacket(0x0D, client.playerX, client.playerY, client.playerStance, client.playerZ, client.playerYaw, client.playerPitch, client.playerOnGround)
@@ -725,6 +729,8 @@ func (client *Client) handlePluginMessagePacket() (err error) {
 	if err != nil {
 		return err
 	}
+
+	client.HandleMessage(string(data))
 
 	return nil
 }

@@ -72,7 +72,13 @@ func (client *Client) HTTPKeepAlive() {
 			resp.Body.Close()
 
 		case <-client.stopHTTPKeepAlive:
+			client.stopHTTPKeepAlive <- struct{}{}
 			return
 		}
 	}
+}
+
+func (client *Client) Logout() {
+	client.stopHTTPKeepAlive <- struct{}{}
+	<-client.stopHTTPKeepAlive
 }

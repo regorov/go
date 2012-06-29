@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/kierdavis/go/minecraft"
+	"io"
 	"os"
-	"time"
 )
 
 func die(err error) {
@@ -15,24 +16,56 @@ func die(err error) {
 }
 
 func main() {
-	var err error
+	if len(os.Args) < 2 {
+		fmt.Printf("Not enough arguments\n\nusage: %s <server address>\n\nThis program expects the MC_USER and MC_PASSWD environment variables to be set. Otherwise, the user is logged in with an offline account.\n", os.Args[0])
+		os.Exit(2)
+	}
 
-	//client, err := minecraft.Login(os.Getenv("MC_USER"), os.Getenv("MC_PASSWD"), true)
-	//die(err)
-	client := minecraft.LoginOffline(true)
+	fmt.Printf("*** Welcome to mcchat!\n")
+
+	addr := os.Args[1]
+	username := os.Getenv("MC_USER")
+	password := os.Getenv("MC_PASSWD")
+
+	fmt.Printf("*** Logging in...\n")
+
+	var err error
+	var client *minecraft.Client
+
+	if username == "" {
+		client = minecraft.LoginOffline(false)
+	} else {
+		client, err = minecraft.Login(username, password, false)
+		die(err)
+	}
 
 	go func() {
-		die(<-client.ErrChan)
+		die(<-client.ErrChan) // Die if there's ever an asynchronous error
 	}()
 
-	err = client.Join("localhost")
-	die(err)
-	defer client.Leave()
+	client.HandleMessage = func(msg string) {
+		fmt.Printf("\r%s\n>", minecraft.ANSIEscapes(msg))
+	}
 
-	time.Sleep(time.Second * 5)
+	fmt.Printf("*** Connecting to %s...\n", addr)
+	die(client.Join(addr))
 
-	//client.Chat("hello")
+	fmt.Printf("*** Connected!\n*** Type & press enter to send messages!\n*** Press Ctrl+D to exit\n\n")
+	stdinReader := bufio.NewReader(os.Stdin)
+
+	fmt.Printf(">")
 
 	for {
+		msg, err := stdinReader.ReadString('\n')
+		if err == io.EOF {
+			client.Leave()
+			client.Logout()
+			return
+		}
+
+		fmt.Printf("\x1b[1T>")
+
+		die(err)
+		client.Chat(msg[:len(msg)-1])
 	}
 }

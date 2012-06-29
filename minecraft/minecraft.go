@@ -37,8 +37,10 @@ type ExplosionRecord struct {
 }
 
 type Client struct {
-	ErrChan chan error
-	conn    net.Conn
+	ErrChan       chan error
+	HandleMessage func(string)
+
+	conn net.Conn
 
 	stopHTTPKeepAlive  Signal
 	stopPositionSender Signal
@@ -80,6 +82,7 @@ func newClient(username string, sessionId string, debug bool) (client *Client) {
 	return client
 }
 
+// Converts Minecraft colour escapes to ANSI escape codes for printing in a terminal.
 func ANSIEscapes(input string) (output string) {
 	start := 0
 
@@ -89,6 +92,7 @@ func ANSIEscapes(input string) (output string) {
 			break
 		}
 
+		end += start
 		output += input[start:end]
 
 		switch input[end+2] {

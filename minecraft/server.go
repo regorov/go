@@ -180,6 +180,18 @@ func (client *Client) PositionSender() {
 			return
 
 		case <-ticker.C:
+			/*
+				if !client.playerOnGround && client.serverMode == 0 {
+					if client.debug {
+						fmt.Printf("Falling\n")
+					}
+
+					client.playerY -= 0.2
+				}
+			*/
+
+			//fmt.Printf("sending...\n")
+
 			err := client.SendPacket(0x0D, client.playerX, client.playerY, client.playerStance, client.playerZ, client.playerYaw, client.playerPitch, client.playerOnGround)
 			if err != nil {
 				client.ErrChan <- err
