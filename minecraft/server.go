@@ -15,8 +15,8 @@ func (client *Client) connect() (err error) {
 		client.serverAddr += ":25565"
 	}
 
-	if client.debug {
-		fmt.Printf("Connecting to %s via TCP\n", client.serverAddr)
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Connecting to %s via TCP\n", client.serverAddr)
 	}
 
 	client.conn, err = net.Dial("tcp", client.serverAddr)
@@ -29,8 +29,8 @@ func (client *Client) connect() (err error) {
 
 // Performs the 0x02 handshake transfer.
 func (client *Client) handshake() (err error) {
-	if client.debug {
-		fmt.Printf("Sending handshake packet\n")
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Sending handshake packet\n")
 	}
 
 	err = client.SendPacket(0x02, client.username+";"+client.serverAddr)
@@ -48,8 +48,8 @@ func (client *Client) handshake() (err error) {
 		return err
 	}
 
-	if client.debug {
-		fmt.Printf("Received handshake packet\n")
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Received handshake packet\n")
 	}
 
 	return nil
@@ -57,31 +57,33 @@ func (client *Client) handshake() (err error) {
 
 // Registers the server join with session.minecraft.net
 func (client *Client) registerJoin() (err error) {
-	params := url.Values{
-		"user":      {client.username},
-		"sessionId": {client.sessionId},
-		"serverId":  {client.serverId},
-	}
+	if client.serverId != "-" {
+		params := url.Values{
+			"user":      {client.username},
+			"sessionId": {client.sessionId},
+			"serverId":  {client.serverId},
+		}
 
-	if client.debug {
-		fmt.Printf("Registering join with minecraft.net\n")
-		fmt.Printf("GET http://session.minecraft.net/game/joinserver.jsp?%s\n", params.Encode())
-	}
+		if client.DebugWriter != nil {
+			fmt.Fprintf(client.DebugWriter, "Registering join with minecraft.net\n")
+			fmt.Fprintf(client.DebugWriter, "GET http://session.minecraft.net/game/joinserver.jsp?%s\n", params.Encode())
+		}
 
-	resp, err := http.Get("http://session.minecraft.net/game/joinserver.jsp?" + params.Encode())
-	if err != nil {
-		return err
-	}
+		resp, err := http.Get("http://session.minecraft.net/game/joinserver.jsp?" + params.Encode())
+		if err != nil {
+			return err
+		}
 
-	resp.Body.Close()
+		resp.Body.Close()
+	}
 
 	return nil
 }
 
 // Performs the 0x01 login request.
 func (client *Client) login() (err error) {
-	if client.debug {
-		fmt.Printf("Sending login packet\n")
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Sending login packet\n")
 	}
 
 	err = client.SendPacket(0x01, int32(29), client.username, "", int32(0), int32(0), int8(0), uint8(0), uint8(0))
@@ -96,8 +98,8 @@ func (client *Client) login() (err error) {
 
 	switch id {
 	case 0xFF:
-		if client.debug {
-			fmt.Printf("Received kick: login was rejected\n")
+		if client.DebugWriter != nil {
+			fmt.Fprintf(client.DebugWriter, "Received kick: login was rejected\n")
 		}
 
 		var msg string
@@ -116,8 +118,8 @@ func (client *Client) login() (err error) {
 			return err
 		}
 
-		if client.debug {
-			fmt.Printf("Received login packet\n")
+		if client.DebugWriter != nil {
+			fmt.Fprintf(client.DebugWriter, "Received login packet\n")
 		}
 	}
 
@@ -130,8 +132,8 @@ func (client *Client) Join(addr string) (err error) {
 		client.Leave()
 	}
 
-	if client.debug {
-		fmt.Printf("Joining server %s\n", addr)
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Joining server %s\n", addr)
 	}
 
 	client.serverAddr = addr
@@ -156,12 +158,9 @@ func (client *Client) Join(addr string) (err error) {
 		return err
 	}
 
-	if client.debug {
-		fmt.Printf("Joined!\n\nStarting receiver...\nStarting position sender...\n\n")
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Joined!\n\nStarting receiver...\nStarting position sender...\n\n")
 	}
-
-	// Start the receiver background process.
-	go client.Receiver()
 
 	// Start the position sender background process.
 	go client.PositionSender()
@@ -181,18 +180,14 @@ func (client *Client) PositionSender() {
 
 		case <-ticker.C:
 			/*
-				if !client.playerOnGround && client.serverMode == 0 {
-					if client.debug {
-						fmt.Printf("Falling\n")
-					}
-
-					client.playerY -= 0.2
+				if !client.PlayerOnGround && client.serverMode == 0 {
+					client.PlayerY -= 0.2
 				}
 			*/
 
 			//fmt.Printf("sending...\n")
 
-			err := client.SendPacket(0x0D, client.playerX, client.playerY, client.playerStance, client.playerZ, client.playerYaw, client.playerPitch, client.playerOnGround)
+			err := client.SendPacket(0x0D, client.PlayerX, client.PlayerY, client.PlayerStance, client.PlayerZ, client.PlayerYaw, client.PlayerPitch, client.PlayerOnGround)
 			if err != nil {
 				client.ErrChan <- err
 				continue
@@ -203,8 +198,8 @@ func (client *Client) PositionSender() {
 
 // Sends a kick packet to the server before calling LeaveNoKick
 func (client *Client) Leave() (err error) {
-	if client.debug {
-		fmt.Printf("Disconnecting...\n")
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Disconnecting...\n")
 	}
 
 	err = client.SendPacket(0xFF, "github.com/kierdavis/go/minecraft woz 'ere")
@@ -212,13 +207,15 @@ func (client *Client) Leave() (err error) {
 		return err
 	}
 
+	time.Sleep(time.Millisecond * 100)
+
 	return client.LeaveNoKick()
 }
 
 // Shuts down background processes before closing the connection.
 func (client *Client) LeaveNoKick() (err error) {
-	if client.debug {
-		fmt.Printf("Stopping position sender...\n")
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Stopping position sender...\n")
 	}
 
 	// Tell PositionSender to stop
@@ -226,14 +223,15 @@ func (client *Client) LeaveNoKick() (err error) {
 
 	// Wait for a reply
 	<-client.stopPositionSender
-	if client.debug {
-		fmt.Printf("Closing connection...\n")
+
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Closing connection...\n")
 	}
 
 	client.conn.Close()
 	client.conn = nil
-	if client.debug {
-		fmt.Printf("Done!\n\n")
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Done!\n\n")
 	}
 
 	return nil

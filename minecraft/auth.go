@@ -2,6 +2,7 @@ package minecraft
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -9,16 +10,16 @@ import (
 	"time"
 )
 
-func Login(username string, password string, debug bool) (client *Client, err error) {
+func Login(username string, password string, debugWriter io.Writer) (client *Client, err error) {
 	params := url.Values{
 		"user":     {username},
 		"password": {password},
 		"version":  {"13"},
 	}
 
-	if debug {
-		fmt.Printf("Logging in to minecraft.net as '%s'\n", username)
-		fmt.Printf("POST https://login.minecraft.net username=%s&password=...&version=13\n", username)
+	if debugWriter != nil {
+		fmt.Fprintf(debugWriter, "Logging in to minecraft.net as '%s'", username)
+		fmt.Fprintf(debugWriter, "POST https://login.minecraft.net username=%s&password=...&version=13\n", username)
 	}
 
 	resp, err := http.PostForm("https://login.minecraft.net", params)
@@ -34,17 +35,17 @@ func Login(username string, password string, debug bool) (client *Client, err er
 
 	respparts := strings.Split(string(respdata), ":")
 
-	client = newClient(respparts[2], respparts[3], debug)
+	client = newClient(respparts[2], respparts[3], debugWriter)
 
-	if debug {
-		fmt.Printf("Session ID: %s\n\n", client.sessionId)
+	if debugWriter != nil {
+		fmt.Fprintf(debugWriter, "Session ID: %s\n\n", client.sessionId)
 	}
 
 	return client, nil
 }
 
-func LoginOffline(debug bool) (client *Client) {
-	return newClient("Player", "", debug)
+func LoginOffline(username string, debugWriter io.Writer) (client *Client) {
+	return newClient(username, "", debugWriter)
 }
 
 // Runs in the background, sending a keep-alive request to login.minecraft.net every 5 minutes.
@@ -60,8 +61,8 @@ func (client *Client) HTTPKeepAlive() {
 	for {
 		select {
 		case <-ticker.C:
-			if client.debug {
-				fmt.Printf("(HTTP keep-alive) GET %s\n", sessionURL)
+			if client.DebugWriter != nil {
+				fmt.Fprintf(client.DebugWriter, "(HTTP keep-alive) GET %s\n", sessionURL)
 			}
 
 			resp, err := http.Get(sessionURL)

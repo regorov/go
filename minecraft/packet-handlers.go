@@ -1,6 +1,7 @@
 package minecraft
 
 import (
+	"compress/zlib"
 	"fmt"
 )
 
@@ -28,7 +29,9 @@ func (client *Client) handleChatMessagePacket() (err error) {
 		return err
 	}
 
-	client.HandleMessage(msg)
+	if client.HandleMessage != nil {
+		client.HandleMessage(msg)
+	}
 
 	return nil
 }
@@ -64,9 +67,9 @@ func (client *Client) handleSpawnPositionPacket() (err error) {
 		return err
 	}
 
-	client.playerX = float64(x)
-	client.playerY = float64(y)
-	client.playerZ = float64(z)
+	client.PlayerX = float64(x)
+	client.PlayerY = float64(y)
+	client.PlayerZ = float64(z)
 
 	return nil
 }
@@ -98,16 +101,16 @@ func (client *Client) handleRespawnPacket() (err error) {
 }
 
 func (client *Client) handlePlayerPositionLookPacket() (err error) {
-	err = client.RecvPacketData(&client.playerX, &client.playerStance, &client.playerY, &client.playerZ, &client.playerYaw, &client.playerPitch, &client.playerOnGround)
+	err = client.RecvPacketData(&client.PlayerX, &client.PlayerStance, &client.PlayerY, &client.PlayerZ, &client.PlayerYaw, &client.PlayerPitch, &client.PlayerOnGround)
 	if err != nil {
 		return err
 	}
 
-	if client.debug {
-		fmt.Printf("Received position update: (%.1f, %.1f, %.1f) (%.1f, %.1f) on ground: %t  stance: %.1f\n", client.playerX, client.playerY, client.playerZ, client.playerYaw, client.playerPitch, client.playerOnGround, client.playerStance)
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Received position update: (%.1f, %.1f, %.1f) (%.1f, %.1f) on ground: %t  stance: %.1f\n", client.PlayerX, client.PlayerY, client.PlayerZ, client.PlayerYaw, client.PlayerPitch, client.PlayerOnGround, client.PlayerStance)
 	}
 
-	err = client.SendPacket(0x0D, client.playerX, client.playerY, client.playerStance, client.playerZ, client.playerYaw, client.playerPitch, client.playerOnGround)
+	err = client.SendPacket(0x0D, client.PlayerX, client.PlayerY, client.PlayerStance, client.PlayerZ, client.PlayerYaw, client.PlayerPitch, client.PlayerOnGround)
 	if err != nil {
 		return err
 	}
@@ -417,6 +420,17 @@ func (client *Client) handleMapColumnAllocationPacket() (err error) {
 		return err
 	}
 
+	if client.StoreWorld {
+		coord := ColumnCoord{int(cx), int(cz)}
+
+		if initialize {
+			client.Columns[coord] = &Column{Chunks: make(map[int]*Chunk)}
+
+		} else {
+			delete(client.Columns, coord)
+		}
+	}
+
 	return nil
 }
 
@@ -430,10 +444,59 @@ func (client *Client) handleMapChunksPacket() (err error) {
 		return err
 	}
 
-	compressedData := make([]byte, compressedSize)
-	_, err = client.conn.Read(compressedData)
-	if err != nil {
-		return err
+	if client.StoreWorld {
+		coord := ColumnCoord{int(cx), int(cz)}
+		column, ok := client.Columns[coord]
+
+		if !ok {
+			return fmt.Errorf("Receiving chunks into an unloaded column at (%d, %d)", cx, cz)
+		}
+
+		//r := flate.NewReader(client.conn)
+		r, err := zlib.NewReader(client.conn)
+		if err != nil {
+			return err
+		}
+
+		defer r.Close()
+
+		err = client.readBlockTypes(r, column, primaryBitMap)
+		if err != nil {
+			return err
+		}
+
+		err = client.readBlockMetadata(r, column, primaryBitMap)
+		if err != nil {
+			return err
+		}
+
+		err = client.readBlockLight(r, column, primaryBitMap)
+		if err != nil {
+			return err
+		}
+
+		err = client.readSkyLight(r, column, primaryBitMap)
+		if err != nil {
+			return err
+		}
+
+		err = client.readAddTypes(r, column, addBitMap)
+		if err != nil {
+			return err
+		}
+
+		if groundUpContinuous {
+			err = client.readBiomeData(r, column)
+			if err != nil {
+				return err
+			}
+		}
+
+	} else {
+		_, err = client.conn.Read(make([]byte, compressedSize))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -730,7 +793,9 @@ func (client *Client) handlePluginMessagePacket() (err error) {
 		return err
 	}
 
-	client.HandleMessage(string(data))
+	if client.HandleMessage != nil {
+		client.HandleMessage(string(data))
+	}
 
 	return nil
 }
@@ -743,8 +808,11 @@ func (client *Client) handleKickPacket() (err error) {
 		return err
 	}
 
-	fmt.Println("Disconnected: %s\n", message)
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Disconnected: %s\n", message)
+	}
+
 	client.LeaveNoKick()
 
-	return Stop
+	return Kick(message)
 }

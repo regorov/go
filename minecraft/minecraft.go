@@ -1,8 +1,8 @@
 package minecraft
 
 import (
-	"errors"
 	"fmt"
+	"io"
 	"net"
 	"strconv"
 	"strings"
@@ -12,7 +12,11 @@ import (
 
 const Tick = time.Second / 20
 
-var Stop = errors.New("STOP")
+type Kick string
+
+func (kick Kick) Error() (s string) {
+	return "Kicked: " + string(kick)
+}
 
 type Signal chan struct{}
 type Metadata map[uint8]interface{}
@@ -38,14 +42,24 @@ type ExplosionRecord struct {
 
 type Client struct {
 	ErrChan       chan error
+	DebugWriter   io.Writer
 	HandleMessage func(string)
+	StoreWorld    bool
+	Columns       map[ColumnCoord]*Column
+
+	PlayerX        float64
+	PlayerY        float64
+	PlayerZ        float64
+	PlayerStance   float64
+	PlayerYaw      float32
+	PlayerPitch    float32
+	PlayerOnGround bool
 
 	conn net.Conn
 
 	stopHTTPKeepAlive  Signal
 	stopPositionSender Signal
 
-	debug      bool
 	username   string
 	sessionId  string
 	serverId   string
@@ -57,22 +71,15 @@ type Client struct {
 	dimension  int32
 	difficulty int8
 	maxPlayers uint8
-
-	playerX        float64
-	playerY        float64
-	playerZ        float64
-	playerStance   float64
-	playerYaw      float32
-	playerPitch    float32
-	playerOnGround bool
 }
 
-func newClient(username string, sessionId string, debug bool) (client *Client) {
+func newClient(username string, sessionId string, debugWriter io.Writer) (client *Client) {
 	client = &Client{
 		ErrChan:            make(chan error),
+		DebugWriter:        debugWriter,
+		Columns:            make(map[ColumnCoord]*Column),
 		stopHTTPKeepAlive:  make(Signal),
 		stopPositionSender: make(Signal),
-		debug:              debug,
 		username:           username,
 		sessionId:          sessionId,
 	}
