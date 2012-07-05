@@ -19,16 +19,9 @@ var (
 	debugP    = flag.Bool("debug", false, "Whether to show debug messages.")
 )
 
-var (
-	debugStyle = ansi.Attribute{0, ansi.White, ansi.None}
-	errStyle   = ansi.Attribute{ansi.Bold, ansi.Red, ansi.None}
-	connStyle  = ansi.Attribute{0, ansi.Green, ansi.None}
-	msgStyle   = ansi.Attribute{ansi.Bold, ansi.Yellow, ansi.None}
-)
-
 func die(err error) {
 	if err != nil {
-		ansi.Fprintf(os.Stderr, errStyle, "Error: %s\n", err.Error())
+		ansi.Fprintf(os.Stderr, ansi.RedBold, "Error: %s\n", err.Error())
 		os.Exit(1)
 	}
 }
@@ -36,14 +29,14 @@ func die(err error) {
 type DebugWriter struct{}
 
 func (w DebugWriter) Write(s []byte) (n int, err error) {
-	return ansi.Print(debugStyle, string(s))
+	return ansi.Print(ansi.White, string(s))
 }
 
 func main() {
 	flag.Parse()
 
 	if flag.NArg() < 1 {
-		ansi.Fprintf(os.Stderr, errStyle, "usage: %s [options] <server address>\n", os.Args[0])
+		ansi.Fprintf(os.Stderr, ansi.RedBold, "usage: %s [options] <server address>\n", os.Args[0])
 		os.Exit(2)
 	}
 
@@ -65,11 +58,11 @@ func main() {
 			username = "Player"
 		}
 
-		ansi.Printf(connStyle, "Authenticating offline as %s...\n", username)
+		ansi.Printf(ansi.Green, "Authenticating offline as %s...\n", username)
 		client = minecraft.LoginOffline(username, debugWriter)
 
 	} else {
-		ansi.Printf(connStyle, "Authenticating as %s...\n", username)
+		ansi.Printf(ansi.Green, "Authenticating as %s...\n", username)
 		client, err = minecraft.Login(username, password, debugWriter)
 		die(err)
 	}
@@ -78,7 +71,7 @@ func main() {
 	client.HandleMessage = func(msg string) {
 		matches := WhisperRegexp.FindStringSubmatch(msg)
 		if matches != nil {
-			ansi.Printf(msgStyle, "Message from %s: %s\n", matches[1], matches[2])
+			ansi.Printf(ansi.YellowBold, "Message from %s: %s\n", matches[1], matches[2])
 			client.Chat(fmt.Sprintf("/tell %s %s", matches[1], matches[2]))
 		}
 
@@ -89,22 +82,22 @@ func main() {
 	go func() {
 		/*
 			for err := range client.ErrChan {
-				ansi.Printf(errStyle, "Error: %s\n", err.Error())
+				ansi.Printf(ansi.RedBold, "Error: %s\n", err.Error())
 			}
 		*/
 
 		die(<-client.ErrChan)
 	}()
 
-	ansi.Printf(connStyle, "Connecting to %s...\n", addr)
+	ansi.Printf(ansi.Green, "Connecting to %s...\n", addr)
 	die(client.Join(addr))
 
-	ansi.Printf(connStyle, "Connected!\n")
+	ansi.Printf(ansi.Green, "Connected!\n")
 
 	go bot(client)
 
 	kickMessage := client.Run()
-	ansi.Printf(connStyle, "Disconnected: %s\n", kickMessage)
+	ansi.Printf(ansi.Green, "Disconnected: %s\n", kickMessage)
 }
 
 func bot(client *minecraft.Client) {
@@ -116,7 +109,7 @@ func bot(client *minecraft.Client) {
 			return
 		}
 
-		ansi.Printf(connStyle, "Found tree: %d, %d, %d\n", p.x, p.y, p.z)
+		ansi.Printf(ansi.Green, "Found tree: %d, %d, %d\n", p.x, p.y, p.z)
 
 		chop(client, p)
 	}
@@ -141,7 +134,7 @@ mainloop:
 
 		block, _, _, _, _, ok := client.GetBlock(p.x, p.y, p.z)
 		if !ok {
-			ansi.Printf(errStyle, "No log found!\n")
+			ansi.Printf(ansi.RedBold, "No log found!\n")
 			return p, false
 		}
 
@@ -224,7 +217,7 @@ func moveTo(client *minecraft.Client, p xyz) {
 
 	ticker := time.NewTicker(minecraft.Tick)
 
-	ansi.Printf(connStyle, "Moving from (%d, %d, %d) to (%d, %d, %d)\n", int(client.PlayerX), int(client.PlayerY), int(client.PlayerZ), p.x, p.y, p.z)
+	ansi.Printf(ansi.Green, "Moving from (%d, %d, %d) to (%d, %d, %d)\n", int(client.PlayerX), int(client.PlayerY), int(client.PlayerZ), p.x, p.y, p.z)
 
 	for (int(client.PlayerX) != p.x) || (int(client.PlayerY) != p.y) || (int(client.PlayerZ) != p.z) {
 
@@ -254,7 +247,7 @@ func moveTo(client *minecraft.Client, p xyz) {
 		<-ticker.C
 	}
 
-	ansi.Printf(connStyle, "Done moving\n")
+	ansi.Printf(ansi.Green, "Done moving\n")
 }
 
 func chop(client *minecraft.Client, p xyz) {
@@ -263,7 +256,7 @@ func chop(client *minecraft.Client, p xyz) {
 
 		if block == 17 {
 			moveTo(client, p)
-			ansi.Printf(connStyle, "Breaking block at (%d, %d, %d)\n", p.x, p.y, p.z)
+			ansi.Printf(ansi.Green, "Breaking block at (%d, %d, %d)\n", p.x, p.y, p.z)
 			die(client.SendPacket(0x0E, int8(0), int32(p.x), int8(p.y), int32(p.z), int8(5)))
 			die(client.SendPacket(0x0E, int8(2), int32(p.x), int8(p.y), int32(p.z), int8(5)))
 			time.Sleep(time.Second * 3)
