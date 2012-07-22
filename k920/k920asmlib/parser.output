@@ -1,0 +1,164 @@
+
+state 0
+	$accept: .start $end 
+
+	IDENTIFIER  shift 6
+	.  error
+
+	start  goto 1
+	objects  goto 2
+	object  goto 3
+	instruction  goto 4
+	label  goto 5
+
+state 1
+	$accept:  start.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	start:  objects.EOF 
+	objects:  objects.object 
+
+	EOF  shift 7
+	IDENTIFIER  shift 6
+	.  error
+
+	object  goto 8
+	instruction  goto 4
+	label  goto 5
+
+state 3
+	objects:  object.    (3)
+
+	.  reduce 3 (src line 48)
+
+
+state 4
+	object:  instruction.NL 
+
+	NL  shift 9
+	.  error
+
+
+state 5
+	object:  label.NL 
+
+	NL  shift 10
+	.  error
+
+
+state 6
+	instruction:  IDENTIFIER.opt_operands 
+	label:  IDENTIFIER.: 
+	opt_operands: .    (9)
+
+	IDENTIFIER  shift 18
+	INTEGER  shift 17
+	REGISTER  shift 15
+	BITREG  shift 16
+	:  shift 12
+	.  reduce 9 (src line 85)
+
+	operand  goto 14
+	operands  goto 13
+	opt_operands  goto 11
+
+state 7
+	start:  objects EOF.    (1)
+
+	.  reduce 1 (src line 45)
+
+
+state 8
+	objects:  objects object.    (2)
+
+	.  reduce 2 (src line 47)
+
+
+state 9
+	object:  instruction NL.    (4)
+
+	.  reduce 4 (src line 50)
+
+
+state 10
+	object:  label NL.    (5)
+
+	.  reduce 5 (src line 51)
+
+
+state 11
+	instruction:  IDENTIFIER opt_operands.    (6)
+
+	.  reduce 6 (src line 53)
+
+
+state 12
+	label:  IDENTIFIER :.    (7)
+
+	.  reduce 7 (src line 71)
+
+
+state 13
+	opt_operands:  operands.    (8)
+	operands:  operands.operand 
+
+	IDENTIFIER  shift 18
+	INTEGER  shift 17
+	REGISTER  shift 15
+	BITREG  shift 16
+	.  reduce 8 (src line 84)
+
+	operand  goto 19
+
+state 14
+	operands:  operand.    (11)
+
+	.  reduce 11 (src line 88)
+
+
+state 15
+	operand:  REGISTER.    (12)
+
+	.  reduce 12 (src line 90)
+
+
+state 16
+	operand:  BITREG.    (13)
+
+	.  reduce 13 (src line 91)
+
+
+state 17
+	operand:  INTEGER.    (14)
+
+	.  reduce 14 (src line 92)
+
+
+state 18
+	operand:  IDENTIFIER.    (15)
+
+	.  reduce 15 (src line 93)
+
+
+state 19
+	operands:  operands operand.    (10)
+
+	.  reduce 10 (src line 87)
+
+
+11 terminals, 9 nonterminals
+16 grammar rules, 20/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+58 working sets used
+memory: parser 11/30000
+0 extra closures
+14 shift entries, 1 exceptions
+10 goto entries
+2 entries saved by goto default
+Optimizer space used: output 24/30000
+24 table entries, 0 zero
+maximum spread: 11, maximum offset: 13
