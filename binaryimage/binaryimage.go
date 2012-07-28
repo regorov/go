@@ -29,7 +29,7 @@ type Image struct {
 }
 
 func New() (image *Image) {
-	return &Image{make(Image), 0}
+	return &Image{make(map[uint64]byte), 0}
 }
 
 func (image *Image) Put(addr uint64, data byte) {
@@ -63,16 +63,18 @@ func (image *Image) GetBytes(addr uint64, data []byte) (n uint64) {
 	return n
 }
 
-func (image *Image) Max() (max int) {
+func (image *Image) Max() (max uint64) {
 	return image.max
 }
 
 func (image *Image) ReadRaw(r io.Reader) (err error) {
-	return io.Copy(NewImageWriter(image), r)
+	_, err = io.Copy(NewImageWriter(image), r)
+	return err
 }
 
 func (image *Image) WriteRaw(w io.Writer) (err error) {
-	return io.Copy(w, NewImageReader(image))
+	_, err = io.Copy(w, NewImageReader(image))
+	return err
 }
 
 func (image *Image) ReadIHex(r io.Reader) (err error) {
@@ -110,7 +112,7 @@ func (image *Image) ReadIHex(r io.Reader) (err error) {
 		recordType := record[3]
 		data := record[4:last]
 
-		if len(data) != length {
+		if len(data) != int(length) {
 			return fmt.Errorf("[line %d] Data length mismatch", lineno)
 		}
 
@@ -194,29 +196,29 @@ func (w *ImageWriter) Write(data []byte) (n int, err error) {
 }
 
 type ImageReader struct {
-	image  Image
+	image  *Image
 	offset uint64
 }
 
-func NewImageReader(image Image) (r *ImageReader) {
+func NewImageReader(image *Image) (r *ImageReader) {
 	return &ImageReader{image, 0}
 }
 
 func (r *ImageReader) Offset() (offset uint64) {
-	return w.offset
+	return r.offset
 }
 
 func (r *ImageReader) SetOffset(offset uint64) {
-	w.offset = offset
+	r.offset = offset
 }
 
 func (r *ImageReader) Seek(offset uint64) {
-	w.offset = offset
+	r.offset = offset
 }
 
 func (r *ImageReader) Read(data []byte) (n int, err error) {
-	l := w.image.GetBytes(w.offset, data)
-	w.offset += l
+	l := r.image.GetBytes(r.offset, data)
+	r.offset += l
 	return int(l), nil
 }
 
@@ -247,7 +249,7 @@ func emitIHexRecord(w io.Writer, recordType byte, address uint16, data []byte) (
 	record[2] = byte(address)
 	record[3] = recordType
 	copy(record[4:], data)
-	record[len(record)-1] = ihexChecksum(record[:len(record-1)])
+	record[len(record)-1] = ihexChecksum(record[:len(record)-1])
 
 	buffer := make([]byte, hex.EncodedLen(len(record))+1)
 	buffer[0] = ':'
