@@ -43,6 +43,12 @@ panic(err)
 writer.Flush()
 f.Close()
 
+
+Install
+-------
+
+    $ go get github.com/kierdavis/ihex
+
 Package Dependencies
 --------------------
 

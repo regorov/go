@@ -3,6 +3,13 @@ Package: github.com/kierdavis/go/termdialog
 
 [doc](http://gopkgdoc.appspot.com/pkg/github.com/kierdavis/go/termdialog)
 
+Package termdialog provides a dialog-based GUI system based on Termbox.
+
+
+Install
+-------
+
+    $ go get github.com/kierdavis/termdialog
 
 Package Dependencies
 --------------------

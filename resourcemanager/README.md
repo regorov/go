@@ -7,6 +7,12 @@ Package resourcemanager provides a simple way to load files relative to the inst
 directory. It computes the root directory of the package from the package name and the GOPATH
 environment variable.
 
+
+Install
+-------
+
+    $ go get github.com/kierdavis/resourcemanager
+
 Package Dependencies
 --------------------
 

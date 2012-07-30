@@ -11,6 +11,12 @@ em.SetTraceFile(os.Stdout)       // (optional) log instructions to stdout
 em.Run()                         // Go!
 
 
+
+Install
+-------
+
+    $ go get github.com/kierdavis/k270emlib
+
 Package Dependencies
 --------------------
 

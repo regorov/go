@@ -5,6 +5,12 @@ Command k270em_nodisp is a frontend to the k270emlib K270 processor emulator, bu
 dependencies. This removes the character display element (however, LDV and STV instructions will
 still continue to work).
 
+
+Install
+-------
+
+    $ go get github.com/kierdavis/k270em_nodisp
+
 Package Dependencies
 --------------------
 

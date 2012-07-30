@@ -5,6 +5,12 @@ Command k270em is a frontend to the k270emlib K270 processor emulator, including
 character display. It takes one command-ling argument, the program to load (which should be in
 Intel Hex format).
 
+
+Install
+-------
+
+    $ go get github.com/kierdavis/k270em
+
 Package Dependencies
 --------------------
 
