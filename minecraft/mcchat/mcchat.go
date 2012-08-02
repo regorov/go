@@ -8,13 +8,6 @@ import (
 	"os"
 )
 
-func die(err error) {
-	if err != nil {
-		fmt.Printf("Error: %s\n", err.Error())
-		panic("foobar")
-	}
-}
-
 func main() {
 	defer func() {
 		recover()
@@ -45,11 +38,19 @@ func main() {
 
 	} else {
 		client, err = minecraft.Login(username, password, nil)
-		die(err)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			os.Exit(1)
+		}
 	}
 
 	go func() {
-		die(<-client.ErrChan) // Die if there's ever an asynchronous error
+		err := <-client.ErrChan
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			client.Leave()
+			client.Logout()
+		}
 	}()
 
 	client.HandleMessage = func(msg string) {
@@ -57,7 +58,14 @@ func main() {
 	}
 
 	fmt.Printf("*** Connecting to %s...\n", addr)
-	die(client.Join(addr))
+
+	err = client.Join(addr)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
+		client.Logout()
+		os.Exit(1)
+	}
+
 	fmt.Printf("*** Connected!\n*** Type & press enter to send messages!\n*** Press Ctrl+D to exit\n\n")
 
 	go func() {
@@ -67,18 +75,23 @@ func main() {
 
 		for {
 			msg, err := stdinReader.ReadString('\n')
-			if err == io.EOF {
+			if err != nil {
+				if err != io.EOF {
+					fmt.Printf("Error: %s\n", err.Error())
+				}
+
 				client.Leave()
 				client.Logout()
 				return
 			}
 
 			fmt.Printf("\x1b[1T>")
-
-			die(err)
 			client.Chat(msg[:len(msg)-1])
 		}
 	}()
 
-	client.Run()
+	kickmsg := client.Run()
+	if kickmsg != "" {
+		fmt.Printf("\nKicked: %s\n", kickmsg)
+	}
 }
