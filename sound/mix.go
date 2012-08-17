@@ -1,39 +1,44 @@
 package sound
 
-func Mix(out chan float64, streams ...chan float64) {
+import (
+	"time"
+)
+
+func Mix(out chan Sample, streams ...chan Sample) {
 	defer close(out)
 
+	intermediate := make(chan Sample, ChannelBuffer)
+	go Clip(1.0, intermediate, out)
+
 	for {
-		sample := 0.0
-		ok := true
+		var sample Sample
+
+		numOpenStreams := 0
 
 		for _, stream := range streams {
-			x, y := <-stream
-			sample += x
-			ok = ok || y
+			x, streamOpen := <-stream
+			sample = sample.Add(x)
+
+			if streamOpen {
+				numOpenStreams++
+			}
 		}
 
-		if !ok {
+		if numOpenStreams == 0 {
 			break
 		}
 
-		if sample < -1.0 {
-			sample = -1.0
-		} else if sample > 1.0 {
-			sample = 1.0
-		}
-
-		out <- sample
+		intermediate <- sample.Div(float64(numOpenStreams))
 	}
 }
 
-func GoMix(streams ...chan float64) (out chan float64) {
-	out = make(chan float64)
+func GoMix(streams ...chan Sample) (out chan Sample) {
+	out = make(chan Sample, ChannelBuffer)
 	go Mix(out, streams...)
 	return out
 }
 
-func Concatenate(out chan float64, streams ...chan float64) {
+func Concatenate(out chan Sample, streams ...chan Sample) {
 	defer close(out)
 
 	for _, stream := range streams {
@@ -43,8 +48,46 @@ func Concatenate(out chan float64, streams ...chan float64) {
 	}
 }
 
-func GoConcatenate(streams ...chan float64) (out chan float64) {
-	out = make(chan float64)
+func GoConcatenate(streams ...chan Sample) (out chan Sample) {
+	out = make(chan Sample, ChannelBuffer)
 	go Concatenate(out, streams...)
+	return out
+}
+
+func Append(out chan Sample, in chan Sample) {
+	for sample := range in {
+		out <- sample
+	}
+}
+
+func Delay(d time.Duration, in chan Sample, out chan Sample) {
+	Concatenate(out, GoSilence(d), in)
+}
+
+func GoDelay(d time.Duration, in chan Sample) (out chan Sample) {
+	out = make(chan Sample, ChannelBuffer)
+	go Delay(d, in, out)
+	return out
+}
+
+func CopyFor(d time.Duration, in chan Sample, out chan Sample) {
+	defer close(out)
+
+	var t time.Duration
+
+	for t = 0; t < d; t++ {
+		out <- <-in
+	}
+
+	/*
+		for _ = range in {
+			// do nothing
+		}
+	*/
+}
+
+func GoCopyFor(d time.Duration, in chan Sample) (out chan Sample) {
+	out = make(chan Sample, ChannelBuffer)
+	go CopyFor(d, in, out)
 	return out
 }
