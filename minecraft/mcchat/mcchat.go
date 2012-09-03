@@ -9,9 +9,17 @@ import (
 )
 
 func main() {
-	defer func() {
-		recover()
-	}()
+	/*
+		defer func() {
+			v := recover()
+			if v != nil {
+				err, ok := v.(error)
+				if ok {
+					fmt.Printf("Error: %s\n", err.Error())
+				}
+			}
+		}()
+	*/
 
 	if len(os.Args) < 2 {
 		fmt.Printf("Not enough arguments\n\nusage: %s <server address>\n\nThis program expects the MC_USER and MC_PASSWD environment variables to be set. Otherwise, the user is logged in with an offline account.\n", os.Args[0])
@@ -24,6 +32,9 @@ func main() {
 	username := os.Getenv("MC_USER")
 	password := os.Getenv("MC_PASSWD")
 
+	var debugWriter io.Writer
+	debugWriter = os.Stdout
+
 	fmt.Printf("*** Logging in...\n")
 
 	var err error
@@ -34,10 +45,10 @@ func main() {
 			username = "Player"
 		}
 
-		client = minecraft.LoginOffline(username, nil)
+		client = minecraft.LoginOffline(username, debugWriter)
 
 	} else {
-		client, err = minecraft.Login(username, password, nil)
+		client, err = minecraft.Login(username, password, debugWriter)
 		if err != nil {
 			fmt.Printf("Error: %s\n", err.Error())
 			os.Exit(1)

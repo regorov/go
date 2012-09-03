@@ -1,6 +1,7 @@
 package minecraft
 
 import (
+	"crypto/rsa"
 	"fmt"
 	"io"
 	"net"
@@ -43,6 +44,7 @@ type ExplosionRecord struct {
 type Client struct {
 	ErrChan       chan error
 	DebugWriter   io.Writer
+	PacketLogging bool
 	HandleMessage func(string)
 	StoreWorld    bool
 	Columns       map[ColumnCoord]*Column
@@ -55,15 +57,22 @@ type Client struct {
 	PlayerPitch    float32
 	PlayerOnGround bool
 
-	conn net.Conn
+	netConn net.Conn
+	conn    io.ReadWriter
 
 	stopHTTPKeepAlive  Signal
 	stopPositionSender Signal
 
-	username   string
-	sessionId  string
-	serverId   string
-	serverAddr string
+	username              string
+	sessionId             string
+	serverId              string
+	serverAddr            string
+	serverKeyMessage      []byte
+	serverKey             *rsa.PublicKey
+	serverVerifyToken     []byte
+	encryptedVerifyToken  []byte
+	sharedSecret          []byte
+	encryptedSharedSecret []byte
 
 	entityID   int32
 	levelType  string
@@ -77,6 +86,7 @@ func newClient(username string, sessionId string, debugWriter io.Writer) (client
 	client = &Client{
 		ErrChan:            make(chan error),
 		DebugWriter:        debugWriter,
+		PacketLogging:      false,
 		Columns:            make(map[ColumnCoord]*Column),
 		stopHTTPKeepAlive:  make(Signal),
 		stopPositionSender: make(Signal),

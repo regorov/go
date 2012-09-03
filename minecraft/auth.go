@@ -18,7 +18,7 @@ func Login(username string, password string, debugWriter io.Writer) (client *Cli
 	}
 
 	if debugWriter != nil {
-		fmt.Fprintf(debugWriter, "Logging in to minecraft.net as '%s'", username)
+		fmt.Fprintf(debugWriter, "Logging in to minecraft.net as '%s'\n", username)
 		fmt.Fprintf(debugWriter, "POST https://login.minecraft.net username=%s&password=...&version=13\n", username)
 	}
 
