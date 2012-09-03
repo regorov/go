@@ -1,14 +1,43 @@
 package minecraft
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
+	"strings"
 	"unicode/utf8"
 )
 
+func serializeSendFields(fields []interface{}) (s string) {
+	parts := make([]string, len(fields))
+
+	for i, field := range fields {
+		parts[i] = fmt.Sprint(field)
+	}
+
+	return strings.Join(parts, ", ")
+}
+
+func serializeRecvFields(fields []interface{}) (s string) {
+	parts := make([]string, len(fields))
+
+	for i, field := range fields {
+		field = *(field.(*interface{}))
+		parts[i] = fmt.Sprint(field)
+	}
+
+	return strings.Join(parts, ", ")
+}
+
 // Sends a packet on the channel. The types of the fields are determined by runtime reflection.
 func (client *Client) SendPacket(id byte, fields ...interface{}) (err error) {
-	err = binary.Write(client.conn, binary.BigEndian, id)
+	if client.PacketLogging {
+		fmt.Fprintf(client.DebugWriter, "-> 0x%02X %s\n", id, serializeSendFields(fields))
+	}
+
+	buffer := new(bytes.Buffer)
+
+	err = binary.Write(buffer, binary.BigEndian, id)
 	if err != nil {
 		return err
 	}
@@ -16,30 +45,30 @@ func (client *Client) SendPacket(id byte, fields ...interface{}) (err error) {
 	for _, ifield := range fields {
 		switch field := ifield.(type) {
 		case uint8:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 		case uint16:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 		case uint32:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 		case uint64:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 
 		case int8:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 		case int16:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 		case int32:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 		case int64:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 
 		case float32:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 		case float64:
-			err = binary.Write(client.conn, binary.BigEndian, field)
+			err = binary.Write(buffer, binary.BigEndian, field)
 
 		case string:
-			err = binary.Write(client.conn, binary.BigEndian, uint16(len(field)))
+			err = binary.Write(buffer, binary.BigEndian, uint16(len(field)))
 
 			i := 0
 			for i < len(field) {
@@ -49,8 +78,16 @@ func (client *Client) SendPacket(id byte, fields ...interface{}) (err error) {
 
 				r, n := utf8.DecodeRuneInString(field[i:])
 				i += n
-				err = binary.Write(client.conn, binary.BigEndian, uint16(r))
+				err = binary.Write(buffer, binary.BigEndian, uint16(r))
 			}
+
+		case []byte:
+			err = binary.Write(buffer, binary.BigEndian, uint16(len(field)))
+			if err != nil {
+				return err
+			}
+
+			_, err = buffer.Write(field)
 
 		case bool:
 			u := uint8(0)
@@ -58,7 +95,7 @@ func (client *Client) SendPacket(id byte, fields ...interface{}) (err error) {
 				u = 1
 			}
 
-			err = binary.Write(client.conn, binary.BigEndian, u)
+			err = binary.Write(buffer, binary.BigEndian, u)
 
 		default:
 			err = fmt.Errorf("Invalid type for SendPacket: %T", ifield)
@@ -69,6 +106,11 @@ func (client *Client) SendPacket(id byte, fields ...interface{}) (err error) {
 		}
 	}
 
+	_, err = client.conn.Write(buffer.Bytes())
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -77,6 +119,10 @@ func (client *Client) RecvAnyPacket() (id byte, err error) {
 	err = binary.Read(client.conn, binary.BigEndian, &id)
 	if err != nil {
 		return 0, err
+	}
+
+	if client.PacketLogging {
+		fmt.Fprintf(client.DebugWriter, "<- 0x%02X\n", id)
 	}
 
 	return id, nil
@@ -97,6 +143,16 @@ func (client *Client) RecvPacket(acceptIds ...byte) (id byte, err error) {
 	}
 
 	if !accepted {
+		if id == 0xFF {
+			var msg string
+			err = client.RecvPacketData(&msg)
+			if err != nil {
+				return 0, err
+			}
+
+			return 0, fmt.Errorf("Unexpected 0xFF packet (kick message: %s)", msg)
+		}
+
 		return 0, fmt.Errorf("Unexpected 0x%02X packet", id)
 	}
 
@@ -160,6 +216,22 @@ func (client *Client) RecvPacketData(fields ...interface{}) (err error) {
 
 			*field = string(b)
 
+		case *[]byte:
+			var size uint16
+			err = binary.Read(client.conn, binary.BigEndian, &size)
+			if err != nil {
+				return err
+			}
+
+			if size > 0 {
+				buffer := make([]byte, size)
+				_, err = client.conn.Read(buffer)
+				*field = buffer
+
+			} else {
+				*field = nil
+			}
+
 		case *bool:
 			var b uint8
 			err = binary.Read(client.conn, binary.BigEndian, &b)
@@ -211,6 +283,11 @@ func (client *Client) RecvPacketData(fields ...interface{}) (err error) {
 		}
 	}
 
+	/*
+		if client.PacketLogging {
+			fmt.Fprintf(client.DebugWriter, "%s\n", serializeRecvFields(fields))
+		}
+	*/
 	return nil
 }
 
