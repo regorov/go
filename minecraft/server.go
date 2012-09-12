@@ -183,9 +183,22 @@ func (client *Client) genKey() (err error) {
 		fmt.Fprintf(client.DebugWriter, "Generating encryption key\n")
 	}
 
-	client.sharedSecret = make([]byte, 16)
+	/*
+		client.sharedSecret = make([]byte, 16)
 
-	_, err = rand.Reader.Read(client.sharedSecret)
+		_, err = rand.Reader.Read(client.sharedSecret)
+		if err != nil {
+			return err
+		}
+	*/
+
+	client.sharedSecret = []byte("1234567812345678")
+
+	if client.DebugWriter != nil {
+		fmt.Fprintf(client.DebugWriter, "Encrypting verification token\n")
+	}
+
+	client.encryptedVerifyToken, err = rsa.EncryptPKCS1v15(rand.Reader, client.serverKey, client.serverVerifyToken)
 	if err != nil {
 		return err
 	}
@@ -195,15 +208,6 @@ func (client *Client) genKey() (err error) {
 	}
 
 	client.encryptedSharedSecret, err = rsa.EncryptPKCS1v15(rand.Reader, client.serverKey, client.sharedSecret)
-	if err != nil {
-		return err
-	}
-
-	if client.DebugWriter != nil {
-		fmt.Fprintf(client.DebugWriter, "Encrypting verification token\n")
-	}
-
-	client.encryptedVerifyToken, err = rsa.EncryptPKCS1v15(rand.Reader, client.serverKey, client.serverVerifyToken)
 	if err != nil {
 		return err
 	}
@@ -220,17 +224,15 @@ func (client *Client) registerJoin() (err error) {
 		fmt.Fprint(h, client.serverKeyMessage)
 		sum := h.Sum(nil)
 
-		negative := false
+		negative := sum[0] >= 0x80
 
-		if sum[0] >= 0x80 {
-			negative = true
-
+		if negative {
 			for i := 0; i < h.Size(); i++ {
 				sum[i] = 255 - sum[i]
 			}
 
 			for i := h.Size() - 1; i >= 0; i-- {
-				sum[i] += 1
+				sum[i]++
 
 				if sum[i] != 0 { // no overflow
 					break
@@ -239,7 +241,7 @@ func (client *Client) registerJoin() (err error) {
 		}
 
 		hexSum := hex.EncodeToString(sum)
-		hexSum = strings.TrimLeft(hexSum, " ")
+		hexSum = strings.TrimLeft(hexSum, "0")
 		if negative {
 			hexSum = "-" + hexSum
 		}
@@ -323,7 +325,7 @@ func (client *Client) login() (err error) {
 	switch id {
 	case 0xFF:
 		if client.DebugWriter != nil {
-			fmt.Fprintf(client.DebugWriter, "Received kick: login was rejected\n")
+			fmt.Fprintf(client.DebugWriter, "Received kick; login was rejected\n")
 		}
 
 		var msg string
