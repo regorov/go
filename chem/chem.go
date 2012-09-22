@@ -148,6 +148,16 @@ func ParseCompound(s string) (c Compound) {
 	c = make(Compound, 0)
 
 	i := 0
+	baseCount := 0
+
+	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+		baseCount = (baseCount * 10) + int(s[i]-'0')
+		i++
+	}
+
+	if baseCount == 0 {
+		baseCount = 1
+	}
 
 	for i < len(s) {
 		char := s[i]
@@ -176,7 +186,7 @@ func ParseCompound(s string) (c Compound) {
 			count = 1
 		}
 
-		c = append(c, ElementCount{element, count})
+		c = append(c, ElementCount{element, count * baseCount})
 	}
 
 	return c

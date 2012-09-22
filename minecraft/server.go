@@ -19,9 +19,46 @@ import (
 )
 
 type encryptedStream struct {
-	conn   io.ReadWriter
-	cipher cipher.Block
+	r cipher.StreamReader
+	w cipher.StreamWriter
 }
+
+func newEncryptedStream(conn io.ReadWriter, key []byte) (s *encryptedStream, err error) {
+	rcipher, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	wcipher, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	rstream := cipher.NewCFBDecrypter(rcipher, key)
+	wstream := cipher.NewCFBEncrypter(wcipher, key)
+
+	return &encryptedStream{
+		r: cipher.StreamReader{
+			S: rstream,
+			R: conn,
+		},
+
+		w: cipher.StreamWriter{
+			S: wstream,
+			W: conn,
+		},
+	}, nil
+}
+
+func (s *encryptedStream) Read(plain []byte) (n int, err error) {
+	return s.r.Read(plain)
+}
+
+func (s *encryptedStream) Write(plain []byte) (n int, err error) {
+	return s.w.Write(plain)
+}
+
+/*
 
 func min(a, b int) (min int) {
 	if a < b {
@@ -93,6 +130,7 @@ func (s *encryptedStream) Write(plain []byte) (n int, err error) {
 
 	return n, nil
 }
+*/
 
 type publicKeyInfo struct {
 	Algorithm struct {
@@ -295,12 +333,10 @@ func (client *Client) encryptionResponse() (err error) {
 		fmt.Fprintf(client.DebugWriter, "Received encryption acknowledgement\nSwitching to encrypted transfer\n")
 	}
 
-	c, err := aes.NewCipher(client.sharedSecret)
+	client.conn, err = newEncryptedStream(client.conn, client.sharedSecret)
 	if err != nil {
 		return err
 	}
-
-	client.conn = &encryptedStream{client.conn, c}
 
 	return nil
 }

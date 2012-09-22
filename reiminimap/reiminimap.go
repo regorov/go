@@ -10,12 +10,12 @@ import (
 )
 
 type Waypoint struct {
-	Name	string
-	X	int
-	Y	int
-	Z	int
-	Visible	bool
-	Color	color.Color
+	Name    string
+	X       int
+	Y       int
+	Z       int
+	Visible bool
+	Color   color.Color
 }
 
 func ReadWaypoints(r io.Reader) (waypoints []*Waypoint, err error) {
@@ -51,12 +51,12 @@ func ReadWaypoints(r io.Reader) (waypoints []*Waypoint, err error) {
 		colorBlue := uint8(colorNum)
 
 		waypoint := &Waypoint{
-			Name:		parts[0],
-			X:		int(x),
-			Y:		int(y),
-			Z:		int(z),
-			Visible:	parts[4] == "true",
-			Color:		color.RGBA{colorRed, colorGreen, colorBlue, 0},
+			Name:    parts[0],
+			X:       int(x),
+			Y:       int(y),
+			Z:       int(z),
+			Visible: parts[4] == "true",
+			Color:   color.RGBA{colorRed, colorGreen, colorBlue, 0},
 		}
 
 		waypoints = append(waypoints, waypoint)
