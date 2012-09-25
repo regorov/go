@@ -20,5 +20,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%s (%d/%d online)\n", description, onlineUsers, maxUsers)
+	fmt.Printf("(%d/%d) %s\n", onlineUsers, maxUsers, description)
 }
