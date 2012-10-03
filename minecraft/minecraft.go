@@ -41,6 +41,21 @@ type ExplosionRecord struct {
 	Z int8
 }
 
+type LogReadWriter struct {
+	inner io.ReadWriter
+}
+
+func (lrw LogReadWriter) Read(data []byte) (n int, err error) {
+	n, err = lrw.inner.Read(data)
+	fmt.Printf("R %X\n", data[:n])
+	return n, err
+}
+
+func (lrw LogReadWriter) Write(data []byte) (n int, err error) {
+	fmt.Printf("W %X\n", data)
+	return lrw.inner.Write(data)
+}
+
 type Client struct {
 	ErrChan       chan error
 	DebugWriter   io.Writer

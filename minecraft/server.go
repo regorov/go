@@ -19,8 +19,8 @@ import (
 )
 
 type encryptedStream struct {
-	r cipher.StreamReader
-	w cipher.StreamWriter
+	cipher.StreamReader
+	cipher.StreamWriter
 }
 
 func newEncryptedStream(conn io.ReadWriter, key []byte) (s *encryptedStream, err error) {
@@ -38,24 +38,16 @@ func newEncryptedStream(conn io.ReadWriter, key []byte) (s *encryptedStream, err
 	wstream := cipher.NewCFBEncrypter(wcipher, key)
 
 	return &encryptedStream{
-		r: cipher.StreamReader{
+		StreamReader: cipher.StreamReader{
 			S: rstream,
 			R: conn,
 		},
 
-		w: cipher.StreamWriter{
+		StreamWriter: cipher.StreamWriter{
 			S: wstream,
 			W: conn,
 		},
 	}, nil
-}
-
-func (s *encryptedStream) Read(plain []byte) (n int, err error) {
-	return s.r.Read(plain)
-}
-
-func (s *encryptedStream) Write(plain []byte) (n int, err error) {
-	return s.w.Write(plain)
 }
 
 /*
@@ -156,7 +148,7 @@ func (client *Client) connect() (err error) {
 		return err
 	}
 
-	client.conn = client.netConn
+	client.conn = LogReadWriter{client.netConn}
 
 	return nil
 }
@@ -434,8 +426,10 @@ func (client *Client) Join(addr string) (err error) {
 	client.PacketLogging = false
 
 	if client.DebugWriter != nil {
-		fmt.Fprintf(client.DebugWriter, "Joined!\n\nStarting receiver...\nStarting position sender...\n\n")
+		fmt.Fprintf(client.DebugWriter, "Joined!\n\nStarting position sender...\n\n")
 	}
+
+	// The receiver is run in the foreground with Run() now.
 
 	// Start the position sender background process.
 	go client.PositionSender()
