@@ -10,15 +10,17 @@ type Difference struct {
 }
 
 func Mapify(obj interface{}) (m map[string]interface{}) {
-	v := reflect.ValueOf(obj)
-	t := v.Type()
-
 	m = make(map[string]interface{})
 
-	for i := 0; i < t.NumField(); i++ {
-		name := t.Field(i).Name
-		field := v.Field(i)
-		m[name] = field.Interface()
+	if obj != nil {
+		v := reflect.ValueOf(obj)
+		t := v.Type()
+
+		for i := 0; i < t.NumField(); i++ {
+			name := t.Field(i).Name
+			field := v.Field(i)
+			m[name] = field.Interface()
+		}
 	}
 
 	return m
