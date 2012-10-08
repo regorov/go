@@ -22,7 +22,8 @@ const IDChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func CreateID() (id string) {
 	for i := 0; i < IDLength; i++ {
-		id += IDChars[rand.Intn(len(IDChars))]
+		n := rand.Intn(len(IDChars))
+		id += IDChars[n : n+1]
 	}
 
 	return id
@@ -46,13 +47,18 @@ func handleResponse(w http.ResponseWriter, r *http.Request, err error) {
 	}
 }
 
-func HandleModel(path string, model Model) {
-	http.Handle(path, NewModelHandler(model))
+func HandleModel(path string, model Model) (mh *ModelHandler) {
+	mh = NewModelHandler(model)
+	http.Handle(path, mh)
+	return mh
 }
 
-func HandleCollection(path string, collection *Collection) {
-	http.Handle(path, NewCollectionHandler(collection))
-	http.Handle(path+"/", NewCollectionModelHandler(path+"/", collection))
+func HandleCollection(path string, collection *Collection) (ch *CollectionHandler, cmh *CollectionModelHandler) {
+	ch = NewCollectionHandler(collection)
+	cmh = NewCollectionModelHandler(path+"/", collection)
+	http.Handle(path, ch)
+	http.Handle(path+"/", cmh)
+	return ch, cmh
 }
 
 type HTTPStatus int
@@ -77,13 +83,13 @@ func NewModel(spec ModelSpec) (model Model) {
 }
 
 type Collection struct {
-	Models map[uint64]Model
+	Models map[string]Model
 	Spec   ModelSpec
 }
 
 func NewCollection(spec ModelSpec) (c *Collection) {
 	return &Collection{
-		Models: make(map[uint64]Model),
+		Models: make(map[string]Model),
 		Spec:   spec,
 	}
 }
@@ -95,11 +101,11 @@ func (c *Collection) New() (model Model) {
 }
 
 func (c *Collection) Add(model Model) {
-	c.Models[model["id"]] = model
+	c.Models[model["id"].(string)] = model
 }
 
 func (c *Collection) Remove(model Model) {
-	delete(c.Models, model["id"])
+	delete(c.Models, model["id"].(string))
 }
 
 func (c *Collection) Get(id string) (model Model, ok bool) {
@@ -108,28 +114,53 @@ func (c *Collection) Get(id string) (model Model, ok bool) {
 }
 
 type ModelHandler struct {
-	Model Model
+	Model      Model
+	PreGet     func(Model) error
+	PostGet    func(Model) error
+	PreUpdate  func(Model) error
+	PostUpdate func(Model) error
 }
 
-func NewModelHandler(model Model) (h ModelHandler) {
+func NewModelHandler(model Model) (h *ModelHandler) {
 	return &ModelHandler{
-		Model: *model,
+		Model: model,
 	}
 }
 
-func (h ModelHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ModelHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handleResponse(w, r, h.serve(w, r))
 }
 
-func (h ModelHandler) serve(w http.ResponseWriter, r *http.Request) (err error) {
+func (h *ModelHandler) serve(w http.ResponseWriter, r *http.Request) (err error) {
 	switch r.Method {
 	case "GET":
+		if h.PreGet != nil {
+			err = h.PreGet(h.Model)
+			if err != nil {
+				return err
+			}
+		}
+
 		err = json.NewEncoder(w).Encode(h.Model)
 		if err != nil {
 			return err
 		}
 
+		if h.PostGet != nil {
+			err = h.PostGet(h.Model)
+			if err != nil {
+				return err
+			}
+		}
+
 	case "POST", "PUT":
+		if h.PreUpdate != nil {
+			err = h.PreUpdate(h.Model)
+			if err != nil {
+				return err
+			}
+		}
+
 		err = json.NewDecoder(r.Body).Decode(&h.Model)
 		if err != nil {
 			return HTTPStatus(http.StatusBadRequest)
@@ -138,6 +169,13 @@ func (h ModelHandler) serve(w http.ResponseWriter, r *http.Request) (err error) 
 		err = json.NewEncoder(w).Encode(h.Model)
 		if err != nil {
 			return err
+		}
+
+		if h.PostUpdate != nil {
+			err = h.PostUpdate(h.Model)
+			if err != nil {
+				return err
+			}
 		}
 
 	default:
@@ -149,6 +187,10 @@ func (h ModelHandler) serve(w http.ResponseWriter, r *http.Request) (err error) 
 
 type CollectionHandler struct {
 	Collection *Collection
+	PreList    func(*Collection) error
+	PostList   func(*Collection) error
+	PreCreate  func(*Collection, Model) error
+	PostCreate func(*Collection, Model) error
 }
 
 func NewCollectionHandler(c *Collection) (h *CollectionHandler) {
@@ -161,9 +203,16 @@ func (h *CollectionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handleResponse(w, r, h.serve(w, r))
 }
 
-func (h *CollectionHandler) serve(w http.RespnoseWriter, r *http.Request) (err error) {
+func (h *CollectionHandler) serve(w http.ResponseWriter, r *http.Request) (err error) {
 	switch r.Method {
 	case "GET":
+		if h.PreList != nil {
+			err = h.PreList(h.Collection)
+			if err != nil {
+				return err
+			}
+		}
+
 		var models []Model
 
 		for _, model := range h.Collection.Models {
@@ -175,8 +224,22 @@ func (h *CollectionHandler) serve(w http.RespnoseWriter, r *http.Request) (err e
 			return err
 		}
 
+		if h.PostList != nil {
+			err = h.PostList(h.Collection)
+			if err != nil {
+				return err
+			}
+		}
+
 	case "POST", "PUT":
 		model := h.Collection.New()
+
+		if h.PreCreate != nil {
+			err = h.PreCreate(h.Collection, model)
+			if err != nil {
+				return err
+			}
+		}
 
 		err = json.NewDecoder(r.Body).Decode(&model)
 		if err != nil {
@@ -186,6 +249,13 @@ func (h *CollectionHandler) serve(w http.RespnoseWriter, r *http.Request) (err e
 		err = json.NewEncoder(w).Encode(model)
 		if err != nil {
 			return err
+		}
+
+		if h.PostCreate != nil {
+			err = h.PostCreate(h.Collection, model)
+			if err != nil {
+				return err
+			}
 		}
 
 	default:
@@ -198,6 +268,12 @@ func (h *CollectionHandler) serve(w http.RespnoseWriter, r *http.Request) (err e
 type CollectionModelHandler struct {
 	BaseURL    string
 	Collection *Collection
+	PreGet     func(*Collection, Model) error
+	PostGet    func(*Collection, Model) error
+	PreUpdate  func(*Collection, Model) error
+	PostUpdate func(*Collection, Model) error
+	PreDelete  func(*Collection, Model) error
+	PostDelete func(*Collection, Model) error
 }
 
 func NewCollectionModelHandler(baseURL string, c *Collection) (h *CollectionModelHandler) {
@@ -211,7 +287,7 @@ func (h *CollectionModelHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	handleResponse(w, r, h.serve(w, r))
 }
 
-func (h *CollectionModelHandler) serve(w http.RespnoseWriter, r *http.Request) (err error) {
+func (h *CollectionModelHandler) serve(w http.ResponseWriter, r *http.Request) (err error) {
 	id := r.URL.Path[len(h.BaseURL):]
 
 	switch r.Method {
@@ -221,15 +297,36 @@ func (h *CollectionModelHandler) serve(w http.RespnoseWriter, r *http.Request) (
 			return HTTPStatus(http.StatusNotFound)
 		}
 
+		if h.PreGet != nil {
+			err = h.PreGet(h.Collection, model)
+			if err != nil {
+				return err
+			}
+		}
+
 		err = json.NewEncoder(w).Encode(model)
 		if err != nil {
 			return err
+		}
+
+		if h.PostGet != nil {
+			err = h.PreGet(h.Collection, model)
+			if err != nil {
+				return err
+			}
 		}
 
 	case "POST", "PUT":
 		model, ok := h.Collection.Get(id)
 		if !ok {
 			model = h.Collection.New()
+		}
+
+		if h.PreUpdate != nil {
+			err = h.PreUpdate(h.Collection, model)
+			if err != nil {
+				return err
+			}
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&model)
@@ -242,13 +339,34 @@ func (h *CollectionModelHandler) serve(w http.RespnoseWriter, r *http.Request) (
 			return err
 		}
 
+		if h.PostUpdate != nil {
+			err = h.PostUpdate(h.Collection, model)
+			if err != nil {
+				return err
+			}
+		}
+
 	case "DELETE":
 		model, ok := h.Collection.Get(id)
 		if !ok {
 			return HTTPStatus(http.StatusNotFound)
 		}
 
-		h.Collection.Delete(model)
+		if h.PreDelete != nil {
+			err = h.PreDelete(h.Collection, model)
+			if err != nil {
+				return err
+			}
+		}
+
+		h.Collection.Remove(model)
+
+		if h.PostDelete != nil {
+			err = h.PostDelete(h.Collection, model)
+			if err != nil {
+				return err
+			}
+		}
 
 	default:
 		return HTTPStatus(http.StatusMethodNotAllowed)
